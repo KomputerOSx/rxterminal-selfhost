@@ -45,7 +45,7 @@ gem "jwt"
 gem "fuzzy_match"
 
 # Pagination for admin and product lists
-gem "kaminari", "~> 1.2"
+gem "kaminari", "~> 1.3"
 
 # Error tracking (production; DSN from credentials)
 gem "sentry-ruby"
