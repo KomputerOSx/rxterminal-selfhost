@@ -80,15 +80,6 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
   private
 
   def enable_public_portal!(*feature_keys)
-    FeatureRegistry.sync!
-
-    portal = Feature.find_by!(key: "public_portal")
-    portal.update!(enabled: true, applies_to_all_organizations: true)
-
-    feature_keys.each do |key|
-      feature = Feature.find_by!(key: key.to_s)
-      feature.update!(enabled: true, applies_to_all_organizations: true)
-      @organization.update_feature!(key, enabled: true) if feature.org_opt_in_required?
-    end
+    feature_keys.each { |key| @organization.update_feature!(key, enabled: true) }
   end
 end

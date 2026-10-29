@@ -58,7 +58,6 @@ class Organization < ApplicationRecord
   has_many :users, through: :memberships
   has_many :membership_roles, through: :memberships
   has_many :organization_invitations, dependent: :destroy
-  has_many :feature_organization_accesses, dependent: :destroy
   has_many :services, dependent: :destroy
   has_many :service_requests, dependent: :destroy
   has_many :calendars, dependent: :destroy

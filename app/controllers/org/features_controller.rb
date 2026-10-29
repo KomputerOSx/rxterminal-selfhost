@@ -11,15 +11,15 @@ module Org
     def index
       authorize Current.organization, :update?, policy_class: OrganizationPolicy
 
-      @features = Feature.available_to_organization(Current.organization)
+      @features = OrgFeature.all
     end
 
     def update
       authorize Current.organization, :update?, policy_class: OrganizationPolicy
 
-      # Only ever writes keys this org is actually granted (tiers 1+2) - a member can't
-      # use a crafted request to write arbitrary keys into the features JSON column.
-      available_keys = Feature.available_to_organization(Current.organization).pluck(:key)
+      # Only writes keys from the catalog - a crafted request can't write arbitrary keys
+      # into the features JSON column.
+      available_keys = OrgFeature.keys
       submitted = params.fetch(:features, {}).to_unsafe_h
 
       submitted.each do |key, attrs|

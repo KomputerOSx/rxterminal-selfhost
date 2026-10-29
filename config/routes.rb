@@ -98,7 +98,6 @@ Rails.application.routes.draw do
     end
     resources :roles
     resources :permissions
-    resources :features, only: [ :index, :edit, :update ]
     resources :audit_logs, only: [ :index, :show ]
     mount MissionControl::Jobs::Engine, at: "/jobs"
     resources :notifications, only: [ :index, :new, :create ] do

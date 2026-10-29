@@ -209,15 +209,6 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     assert_match '<link rel="apple-touch-icon" href="/icon.png">', response.body
   end
 
-  test "portal returns 404 when public portal feature is disabled" do
-    Feature.find_by!(key: "public_portal").update!(enabled: false)
-
-    get portal_root_path(organization_slug: @organization.slug)
-
-    assert_response :not_found
-    assert_match "Page not found", response.body
-  end
-
   test "customer can book an appointment through the public portal" do
     appointment_date = next_weekday(Date.current + 1.day)
 
@@ -693,16 +684,7 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
   end
 
   def enable_public_portal!(organization, *feature_keys)
-    FeatureRegistry.sync!
-
-    portal = Feature.find_by!(key: "public_portal")
-    portal.update!(enabled: true, applies_to_all_organizations: true)
-
-    feature_keys.each do |key|
-      feature = Feature.find_by!(key: key.to_s)
-      feature.update!(enabled: true, applies_to_all_organizations: true)
-      organization.update_feature!(key, enabled: true) if feature.org_opt_in_required?
-    end
+    feature_keys.each { |key| organization.update_feature!(key, enabled: true) }
   end
 
   def start_walk_in_session!
