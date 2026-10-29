@@ -2,12 +2,18 @@
 
 require "test_helper"
 
+# Run separately from the main suite (it commits real data):
+#   bin/rails test test/concurrency/appointment_booking_check.rb
+#
 # with_lock is a no-op row lock on SQLite. Double-booking protection relies on Rails opening
 # write transactions with BEGIN IMMEDIATE (save wraps validation and INSERT in one), so only
 # one writer runs at a time. These tests run real concurrent writers with transactional
 # tests off.
 class AppointmentConcurrencyTest < ActiveSupport::TestCase
   self.use_transactional_tests = false
+  # Reloading fixtures outside a transaction deletes fixture tables but not the rows seeded
+  # elsewhere that reference them, leaving orphans that break every later test in the worker.
+  self.fixture_table_names = []
 
   THREADS = 5
 
@@ -50,6 +56,8 @@ class AppointmentConcurrencyTest < ActiveSupport::TestCase
     Appointment.where(organization_id: @organization.id).delete_all
     @organization.destroy
     @owner.destroy
+    leftovers = ActiveRecord::Base.connection.select_rows("PRAGMA foreign_key_check")
+    assert_empty leftovers, "test left orphaned rows behind: #{leftovers.inspect}"
   end
 
   test "only one of several concurrent bookings for the same slot succeeds" do
