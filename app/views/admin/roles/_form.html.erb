@@ -1,0 +1,54 @@
+<div class="form-control">
+  <%= f.label :name, class: "label" do %><span class="label-text">Name</span><% end %>
+  <%= f.text_field :name, class: error_class_for(@role, :name, "input-field w-full"), disabled: @role.permanent? %>
+  <% if @role.permanent? %>
+    <p class="mt-1 text-xs text-base-content/60">Permanent roles can't be renamed.</p>
+  <% end %>
+  <%= field_errors(@role, :name) %>
+</div>
+
+<div class="form-control">
+  <% if @role.new_record? %>
+    <%= f.label :scope, class: "label" do %><span class="label-text">Scope</span><% end %>
+    <%= f.select :scope, Role.scopes.keys, {}, class: "select-field w-full" %>
+    <p class="mt-1 text-xs text-base-content/60">
+      System-scope roles attach directly to a user; app-scope roles attach to an organization
+      membership. Can't be changed after creation.
+    </p>
+  <% else %>
+    <label class="label"><span class="label-text">Scope</span></label>
+    <p><span class="badge badge-outline"><%= @role.scope %></span></p>
+  <% end %>
+</div>
+
+<div class="form-control">
+  <%= f.label :description, class: "label" do %><span class="label-text">Description</span><% end %>
+  <%= f.text_area :description, class: error_class_for(@role, :description, "textarea-field w-full"), rows: 2 %>
+  <%= field_errors(@role, :description) %>
+</div>
+
+<div class="form-control" <%= tag.attributes(data: { controller: "options-filter" }) if options_filter_enabled?(@permissions.size) %>>
+  <label class="label"><span class="label-text">Permissions</span></label>
+  <% if options_filter_enabled?(@permissions.size) %>
+    <%= render "shared/options_filter_search", placeholder: "Search" %>
+  <% end %>
+  <% if @permissions.any? %>
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 <%= "mt-4 max-h-72 overflow-y-auto" if options_filter_enabled?(@permissions.size) %>">
+      <%= f.collection_check_boxes :permission_ids, @permissions, :id, :key do |b| %>
+        <label class="label cursor-pointer justify-start gap-2"
+               <%= tag.attributes(data: { options_filter_target: "item", label: b.text }) if options_filter_enabled?(@permissions.size) %>>
+          <%= b.check_box(class: "checkbox-field") %>
+          <span class="label-text"><%= b.text %></span>
+        </label>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-base-content/60">
+      No permissions exist yet. <%= link_to "Create one", new_admin_permission_path, class: "link" %>.
+    </p>
+  <% end %>
+</div>
+
+<div class="form-control mt-2">
+  <%= f.submit(@role.new_record? ? "Create role" : "Save changes", class: "btn btn-primary") %>
+</div>

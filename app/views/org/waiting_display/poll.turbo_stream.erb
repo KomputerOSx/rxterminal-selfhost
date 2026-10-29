@@ -1,0 +1,18 @@
+<%= turbo_stream.replace "waiting-cards" do %>
+  <%= render partial: "org/waiting_display/waiting_cards_list", locals: { waiting: @waiting } %>
+<% end %>
+
+<%= turbo_stream.replace "in-progress-cards" do %>
+  <%= render partial: "org/waiting_display/in_progress_cards_list", locals: { in_progress: @in_progress } %>
+<% end %>
+
+<%= turbo_stream.update "waitingCount", @waiting.size.to_s %>
+<%= turbo_stream.update "inProgressCount", @in_progress.size.to_s %>
+
+<%= turbo_stream.replace "portal-qr-code" do %>
+  <%= render "qr_code" %>
+<% end %>
+
+<% if @organization.waiting_time_enabled? %>
+  <%= turbo_stream.update "stat-avg-wait", @avg_wait_display.to_s %>
+<% end %>

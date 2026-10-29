@@ -1,0 +1,57 @@
+/* Scoped to the appointments print layout only — this file is also bundled via :app,
+   so avoid unscoped html/body rules that would leak into the main app shell. */
+html.print-layout,
+html.print-layout body.print-layout-body {
+  color-scheme: light only;
+  background: #fff;
+}
+
+html.print-layout {
+  --color-base-100: oklch(98% 0.001 106.423);
+  --color-base-200: oklch(97% 0.001 106.424);
+  --color-base-300: oklch(86% 0.005 56.366);
+  --color-base-content: oklch(0% 0 0);
+  --color-primary: oklch(62% 0.194 149.214);
+  --color-primary-content: oklch(100% 0 0);
+  --color-neutral: oklch(21% 0.006 56.043);
+  --color-neutral-content: oklch(100% 0 0);
+}
+
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+html.print-layout body.print-layout-body {
+  color: #111827;
+  font-family: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.print-page-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+html.print-layout table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+html.print-layout th,
+html.print-layout td {
+  vertical-align: top;
+}
+
+@media print {
+  html.print-layout,
+  html.print-layout body.print-layout-body {
+    background: #fff !important;
+    color: #111827 !important;
+  }
+
+  html.print-layout .print-hidden {
+    display: none !important;
+  }
+}

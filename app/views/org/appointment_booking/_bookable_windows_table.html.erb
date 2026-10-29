@@ -1,0 +1,78 @@
+<div class="overflow-x-auto" data-controller="bookable-times">
+  <table class="table table-sm">
+    <thead class="bg-base-200 text-sm font-semibold text-base-content">
+      <tr class="border-b border-base-300">
+        <th>Day</th>
+        <th class="w-20">Bookable</th>
+        <th class="w-24">Interval</th>
+        <th>Starts at</th>
+        <th>Ends at</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% Organization::WEEKDAYS.each do |day| %>
+        <% bookable = day_bookable_for_appointments?(record, day) %>
+        <% periods = bookable_periods_for_day(record, day) %>
+        <% interval_count = PortalConfigHelper::MAX_BOOKABLE_PERIODS_PER_DAY %>
+
+        <tr class="border-b border-base-300 hover:bg-base-200 <%= "hidden" if bookable %>"
+            data-day="<%= day %>"
+            data-bookable-times-role="no-booking">
+          <td class="font-medium"><%= weekday_label(day) %></td>
+          <td>
+            <input type="hidden" name="<%= field_name %>[<%= day %>][bookable_day]" value="0">
+            <input type="checkbox"
+                   name="<%= field_name %>[<%= day %>][bookable_day]"
+                   value="1"
+                   class="toggle toggle-primary toggle-sm"
+                   data-bookable-day="<%= day %>"
+                   data-action="bookable-times#openChanged"
+                   <%= "checked" if bookable %>>
+          </td>
+          <td class="text-sm text-base-content/50">-</td>
+          <td colspan="2" class="text-sm text-base-content/50">No booking</td>
+        </tr>
+
+        <% interval_count.times do |index| %>
+          <% period = periods[index] || {} %>
+          <tr class="border-b border-base-300 hover:bg-base-200 <%= "hidden" unless bookable %>"
+              data-day="<%= day %>"
+              data-bookable-times-role="interval">
+            <% if index.zero? %>
+              <td class="align-top font-medium" rowspan="<%= interval_count %>"><%= weekday_label(day) %></td>
+              <td class="align-top" rowspan="<%= interval_count %>">
+                <input type="hidden" name="<%= field_name %>[<%= day %>][bookable_day]" value="0">
+                <input type="checkbox"
+                       name="<%= field_name %>[<%= day %>][bookable_day]"
+                       value="1"
+                       class="toggle toggle-primary toggle-sm"
+                       data-bookable-day="<%= day %>"
+                       data-action="bookable-times#openChanged"
+                       <%= "checked" if bookable %>>
+              </td>
+            <% end %>
+            <td class="text-sm text-base-content/50"><%= index + 1 %></td>
+            <td>
+              <input type="time"
+                     name="<%= field_name %>[<%= day %>][<%= index %>][start]"
+                     value="<%= time_field_value(period["start"]) %>"
+                     lang="en-GB"
+                     class="input-field w-full min-w-[8rem]"
+                     aria-label="<%= weekday_label(day) %> interval <%= index + 1 %> starts"
+                     <%= "disabled" unless bookable %>>
+            </td>
+            <td>
+              <input type="time"
+                     name="<%= field_name %>[<%= day %>][<%= index %>][end]"
+                     value="<%= time_field_value(period["end"]) %>"
+                     lang="en-GB"
+                     class="input-field w-full min-w-[8rem]"
+                     aria-label="<%= weekday_label(day) %> interval <%= index + 1 %> ends"
+                     <%= "disabled" unless bookable %>>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

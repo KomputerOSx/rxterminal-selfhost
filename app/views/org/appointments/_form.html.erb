@@ -1,0 +1,168 @@
+<%
+  max_date = [ Current.organization.booking_schedule.window.last, Date.current ].max
+  postcode_required = Current.organization.kiosk_collect_postcode?
+  dob_required = Current.organization.kiosk_collect_dob?
+  email_required = Current.organization.require_appointment_email? && (appointment.new_record? || appointment.email_was.present?)
+%>
+
+<%= form_with model: [:org, appointment],
+      class: "space-y-6",
+      data: {
+        controller: "appointment-slots",
+        appointment_slots_slots_url_value: slots_org_appointments_path
+      } do |form| %>
+  <% if appointment.persisted? %>
+    <input type="hidden" value="<%= appointment.id %>" data-appointment-slots-target="excludeId">
+  <% end %>
+
+  <% if @prefill_queue_number.present? %>
+    <div class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
+      Walk-in queue <strong>#<%= @prefill_queue_number %></strong> is waiting while you book this appointment.
+    </div>
+  <% end %>
+
+  <% if appointment.errors.any? %>
+    <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <p class="font-medium">There were some problems with this appointment:</p>
+      <ul class="mt-2 list-inside list-disc">
+        <% appointment.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Service &amp; time</h2>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Service *</span></label>
+        <%= form.collection_select :service_id, services, :id, :display_name,
+              { include_blank: true },
+              class: error_class_for(appointment, :service_id, "select-field w-full"),
+              data: {
+                appointment_slots_target: "serviceSelect",
+                action: "change->appointment-slots#serviceChanged"
+              } %>
+        <%= field_errors(appointment, :service_id) %>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-control">
+          <label class="label"><span class="label-text">Date *</span></label>
+          <%= form.date_field :appointment_date,
+                value: appointment_date_value(appointment) || params[:date] || Date.current.iso8601,
+                class: error_class_for(appointment, :appointment_date, "input-field w-full"),
+                lang: "en-GB",
+                min: Date.current.iso8601,
+                max: max_date.iso8601,
+                data: {
+                  appointment_slots_target: "dateInput",
+                  action: "input->appointment-slots#dateChanged change->appointment-slots#dateChanged"
+                },
+                autocomplete: "off" %>
+          <%= field_errors(appointment, :appointment_date) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">Time *</span></label>
+          <%= form.hidden_field :appointment_time,
+                value: appointment_time_value(appointment),
+                data: { appointment_slots_target: "timeInput" } %>
+          <p class="text-sm text-base-content/60">
+            Selected:
+            <span data-appointment-slots-target="timeLabel" class="font-medium text-base-content">
+              <%= appointment_time_value(appointment).presence || "None" %>
+            </span>
+          </p>
+          <%= field_errors(appointment, :appointment_time) %>
+        </div>
+      </div>
+
+      <div>
+        <label class="label"><span class="label-text">Available slots</span></label>
+        <div data-appointment-slots-target="slotsContainer" class="min-h-8">
+          <% if appointment.service_id.present? && appointment.appointment_date.present? %>
+            <% slots = SlotAvailabilityService.new(
+                  Current.organization,
+                  services.find { |service| service.id == appointment.service_id.to_i } || appointment.service,
+                  appointment.appointment_date,
+                  exclude_appointment_id: appointment.id
+                ).available_slots %>
+            <%= render "org/appointments/slots", slots: slots, selected_time: appointment_time_value(appointment) %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Customer details</h2>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="form-control">
+          <label class="label"><span class="label-text">First name *</span></label>
+          <%= form.text_field :first_name,
+                class: error_class_for(appointment, :first_name, "input-field w-full uppercase"),
+                autocomplete: "off" %>
+          <%= field_errors(appointment, :first_name) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">Last name *</span></label>
+          <%= form.text_field :last_name,
+                class: error_class_for(appointment, :last_name, "input-field w-full uppercase"),
+                autocomplete: "off" %>
+          <%= field_errors(appointment, :last_name) %>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Date of birth<%= dob_required ? " *" : " (optional)" %></span></label>
+        <%= form.date_field :dob,
+              value: appointment.dob&.iso8601,
+              class: error_class_for(appointment, :dob, "input-field w-full"),
+              required: dob_required,
+              lang: "en-GB",
+              min: "1900-01-01",
+              max: Date.current.iso8601,
+              autocomplete: "off" %>
+        <%= field_errors(appointment, :dob) %>
+      </div>
+
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Postcode<%= postcode_required ? " *" : " (optional)" %></span>
+        </label>
+        <%= form.text_field :postcode,
+              class: error_class_for(appointment, :postcode, "input-field w-full uppercase"),
+              autocomplete: "off" %>
+        <%= field_errors(appointment, :postcode) %>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Email<%= email_required ? " *" : " (optional)" %></span></label>
+        <%= form.email_field :email,
+              class: error_class_for(appointment, :email, "input-field w-full"),
+              required: email_required,
+              autocomplete: "off" %>
+        <%= field_errors(appointment, :email) %>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Notes</span></label>
+        <%= form.text_area :notes,
+              class: error_class_for(appointment, :notes, "textarea-field w-full"),
+              rows: 3 %>
+        <%= field_errors(appointment, :notes) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    <%= form.submit appointment.persisted? ? "Save changes" : "Book appointment", class: "btn btn-primary" %>
+    <%= link_to "Cancel", appointment.persisted? ? org_appointment_path(appointment) : org_appointments_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

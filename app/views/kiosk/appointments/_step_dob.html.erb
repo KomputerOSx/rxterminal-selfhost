@@ -1,0 +1,70 @@
+<div class="flex min-h-full flex-col items-center justify-center gap-6 overflow-y-auto p-4">
+
+  <div class="flex w-full max-w-sm items-center gap-4">
+    <button data-action="pointerdown->kiosk-appointment#dobBack"
+            class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="flex-1 text-center">
+      <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Date of Birth</div>
+      <div class="text-xl text-base-content/70">Step 3 of 7</div>
+    </div>
+    <button data-action="pointerdown->kiosk-appointment#dobReset"
+            class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0 text-xs font-bold uppercase tracking-widest">
+      Clear
+    </button>
+  </div>
+
+  <div class="card w-full max-w-sm border border-base-300 bg-base-200">
+    <div class="card-body p-8 pt-9">
+
+      <div class="mb-5 flex items-end justify-center gap-2.5">
+        <div data-kiosk-appointment-target="ddWrap"
+             data-action="pointerdown->kiosk-appointment#dobSegmentFocus"
+             data-segment="0" data-active="true" data-state="active"
+             class="dob-segment w-[90px]">
+          <div class="mb-1 text-center text-xs font-bold uppercase tracking-widest text-base-content/60">Day</div>
+          <div data-kiosk-appointment-target="ddDisplay" data-state="active" class="dob-display text-center text-3xl font-black">DD</div>
+        </div>
+        <div data-kiosk-appointment-target="mmWrap"
+             data-action="pointerdown->kiosk-appointment#dobSegmentFocus"
+             data-segment="1" data-active="false" data-state="idle"
+             class="dob-segment w-[90px]">
+          <div class="mb-1 text-center text-xs font-bold uppercase tracking-widest text-base-content/60">Month</div>
+          <div data-kiosk-appointment-target="mmDisplay" data-state="idle" class="dob-display text-center text-3xl font-black">MM</div>
+        </div>
+        <div data-kiosk-appointment-target="yyyyWrap"
+             data-action="pointerdown->kiosk-appointment#dobSegmentFocus"
+             data-segment="2" data-active="false" data-state="idle"
+             class="dob-segment w-[154px]">
+          <div class="mb-1 text-center text-xs font-bold uppercase tracking-widest text-base-content/60">Year</div>
+          <div data-kiosk-appointment-target="yyyyDisplay" data-state="idle" class="dob-display text-center text-3xl font-black">YYYY</div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2.5">
+        <% [["1","2","3"],["4","5","6"],["7","8","9"],["⌫","0","✓"]].each do |row| %>
+          <div class="flex gap-2.5">
+            <% row.each do |key| %>
+              <% is_confirm = key == "✓" %>
+              <% is_back    = key == "⌫" %>
+              <% klass = is_confirm ? "btn btn-primary" : is_back ? "btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete" : "btn btn-lg kiosk-keyboard-key" %>
+              <button data-action="pointerdown->kiosk-appointment#dobKey"
+                      data-key="<%= key %>"
+                      class="<%= klass %> h-16 min-h-0 flex-1 rounded-2xl px-0 text-2xl font-bold">
+                <% if is_back %>
+                  <span class="material-symbols-outlined">backspace</span>
+                <% elsif is_confirm %>
+                  <span class="material-symbols-outlined">check</span>
+                <% else %>
+                  <%= key %>
+                <% end %>
+              </button>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

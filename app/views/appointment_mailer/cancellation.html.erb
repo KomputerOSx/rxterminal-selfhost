@@ -1,0 +1,40 @@
+<h2 style="margin:0 0 4px;font-size:22px;">Appointment Cancelled</h2>
+<p style="margin:0 0 20px;">Your appointment has been cancelled.</p>
+
+<p style="margin:0 0 12px;">Dear <%= @appointment.first_name %>,</p>
+<p style="margin:0 0 20px;">We're writing to confirm that your appointment at <strong><%= @organization.name %></strong> has been cancelled.</p>
+
+<table style="width:100%;border-collapse:collapse;margin:0 0 24px;">
+  <tr>
+    <td style="padding:6px 0;">Booking Reference</td>
+    <td style="padding:6px 0;font-weight:bold;letter-spacing:2px;"><%= @appointment.booking_reference %></td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;width:40%;">Service</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @service.display_name %></td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;">Date</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @appointment.appointment_date.strftime("%A, %d %B %Y") %></td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;">Time</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @appointment.formatted_time %></td>
+  </tr>
+</table>
+
+<% if @appointment.cancellation_reason.present? %>
+  <p style="margin:0 0 4px;font-size:14px;font-weight:bold;">Reason for cancellation</p>
+  <%= simple_format(h(@appointment.cancellation_reason), style: "margin:0 0 20px;font-size:14px;") %>
+<% end %>
+
+<p style="margin:0 0 24px;font-size:14px;">
+  If you'd like to rebook or have any questions, please contact us directly.
+</p>
+
+<hr style="margin:24px 0;">
+<p style="margin:0;font-size:12px;">
+  <%= @organization.name %><% if @organization.full_address.present? %> · <%= @organization.full_address %><% end %>
+  <% if @organization.contact_phone.present? %> · <%= @organization.contact_phone %><% end %>
+  <% if @organization.contact_email.present? %> · <%= @organization.contact_email %><% end %>
+</p>

@@ -1,0 +1,31 @@
+<% content_for :head, portal_structured_data_tag %>
+
+<%= render "public/shared/page_header", title: "Book an appointment" %>
+
+<% if @services.any? %>
+  <div data-controller="portal-search" class="mt-6 space-y-4">
+    <div class="form-control">
+      <label class="label"><span class="label-text">Search services</span></label>
+      <input type="search"
+             data-portal-search-target="input"
+             data-action="input->portal-search#filter"
+             aria-label="Search services"
+             class="input-field w-full">
+    </div>
+
+    <div class="space-y-3">
+      <% @services.each do |service| %>
+        <%= render "public/shared/service_link",
+              service: service,
+              url: new_portal_appointment_path(service_id: service.id),
+              searchable: true %>
+      <% end %>
+    </div>
+
+    <p data-portal-search-target="empty" class="hidden py-10 text-center text-sm text-base-content/60">
+      No services match your search.
+    </p>
+  </div>
+<% else %>
+  <p class="mt-6 text-sm text-base-content/60">No appointment services are currently available.</p>
+<% end %>

@@ -1,0 +1,180 @@
+<section class="w-full max-w-4xl">
+  <p class="text-sm font-medium text-base-content/60">
+    <%= link_to "Appointments", org_appointments_path(@return_params), class: "hover:text-base-content" %>
+    <span class="mx-1">/</span>
+    <span><%= @appointment.booking_reference %></span>
+  </p>
+
+  <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold"><%= appointment_customer_name(@appointment) %></h1>
+      <p class="mt-1 text-sm text-base-content/60">
+        <%= @appointment.formatted_date %> at <%= @appointment.formatted_time %>
+        - <%= @appointment.service.display_name %>
+      </p>
+      <div class="mt-2 flex flex-wrap items-center gap-2">
+        <%= appointment_status_badge(@appointment) %>
+        <span class="badge badge-outline badge-sm font-mono"><%= @appointment.booking_reference %></span>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <%= link_to "Back", org_appointments_path(@return_params), class: "btn btn-outline btn-sm" %>
+    </div>
+  </div>
+
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold">Customer</h2>
+      <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <dt class="text-sm text-base-content/60">Name</dt>
+          <dd class="mt-1 font-medium"><%= appointment_customer_name(@appointment) %></dd>
+        </div>
+        <div>
+          <dt class="text-sm text-base-content/60">Date of birth</dt>
+          <dd class="mt-1 font-medium"><%= @appointment.dob&.strftime("%d %B %Y") %></dd>
+        </div>
+        <% if @appointment.postcode.present? %>
+          <div>
+            <dt class="text-sm text-base-content/60">Postcode</dt>
+            <dd class="mt-1 font-medium"><%= @appointment.postcode %></dd>
+          </div>
+        <% end %>
+        <% if @appointment.email.present? %>
+          <div>
+            <dt class="text-sm text-base-content/60">Email</dt>
+            <dd class="mt-1 font-medium"><%= @appointment.email %></dd>
+          </div>
+        <% end %>
+      </dl>
+      <% if @appointment.notes.present? %>
+        <div class="mt-4">
+          <dt class="text-sm text-base-content/60">Notes</dt>
+          <dd class="mt-1 text-sm text-base-content/80"><%= simple_format(@appointment.notes) %></dd>
+        </div>
+      <% end %>
+      <% if @appointment.cancellation_reason.present? %>
+        <div class="mt-4">
+          <dt class="text-sm text-base-content/60">Cancellation reason</dt>
+          <dd class="mt-1 text-sm text-base-content/80"><%= simple_format(@appointment.cancellation_reason) %></dd>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold">Booking</h2>
+      <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <dt class="text-sm text-base-content/60">Service</dt>
+          <dd class="mt-1 font-medium"><%= @appointment.service.display_name %></dd>
+        </div>
+        <div>
+          <dt class="text-sm text-base-content/60">Duration</dt>
+          <dd class="mt-1 font-medium"><%= @appointment.service.estimated_duration %> minutes</dd>
+        </div>
+        <% if @appointment.calendar %>
+          <div>
+            <dt class="text-sm text-base-content/60">Calendar</dt>
+            <dd class="mt-1 font-medium"><%= @appointment.calendar.name %></dd>
+          </div>
+        <% end %>
+        <% if @appointment.service_request %>
+          <div>
+            <dt class="text-sm text-base-content/60">Queue number</dt>
+            <dd class="mt-1 font-medium">#<%= @appointment.service_request.queue_number %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+  </div>
+
+  <% if appointment_manage_actions?(@appointment) %>
+    <div class="card mt-6 border border-base-300">
+      <div class="card-body gap-4">
+        <h2 class="text-lg font-semibold">Actions</h2>
+        <div class="flex flex-wrap gap-2">
+          <%= link_to edit_org_appointment_path(@appointment), class: "btn btn-outline btn-sm gap-1" do %>
+            <span class="material-symbols-outlined !text-[18px]">edit</span>
+            Edit appointment
+          <% end %>
+          <% if @appointment.status == "booked" && @appointment.appointment_date == Date.current %>
+            <%= button_to check_in_org_appointment_path(@appointment), method: :patch, class: "btn btn-success btn-sm gap-1" do %>
+              <span class="material-symbols-outlined !text-[18px]">how_to_reg</span>
+              Check in to queue
+            <% end %>
+          <% end %>
+          <% if @appointment.status == "checked_in" %>
+            <%= button_to return_to_booked_org_appointment_path(@appointment), method: :patch,
+                  class: "btn btn-outline btn-sm gap-1",
+                  data: {
+                    controller: "confirm-modal",
+                    action: "click->confirm-modal#confirm",
+                    confirm_modal_message_value: "Return this appointment to booked? If it hasn't been called yet, its queue entry will be removed."
+                  } do %>
+              <span class="material-symbols-outlined !text-[18px]">undo</span>
+              Return to booked
+            <% end %>
+          <% end %>
+          <% if @appointment.email.present? %>
+            <%= button_to resend_confirmation_org_appointment_path(@appointment), method: :post, class: "btn btn-outline btn-sm gap-1" do %>
+              <span class="material-symbols-outlined !text-[18px]">mail</span>
+              Resend confirmation
+            <% end %>
+          <% end %>
+          <% if @appointment.status == "booked" %>
+            <div data-controller="modal">
+              <button type="button" class="btn btn-error btn-outline btn-sm gap-1" data-action="click->modal#open">
+                <span class="material-symbols-outlined !text-[18px]">event_busy</span>
+                Cancel appointment
+              </button>
+              <dialog data-modal-target="dialog" class="modal">
+                <div class="modal-box border border-base-300">
+                  <h3 class="text-lg font-bold">Cancel this appointment?</h3>
+                  <%= form_with url: cancel_org_appointment_path(@appointment), method: :patch, class: "mt-4 space-y-4" do |f| %>
+                    <div class="form-control">
+                      <%= f.label :cancellation_reason, class: "label" do %>
+                        <span class="label-text">Reason (optional)</span>
+                      <% end %>
+                      <%= f.text_area :cancellation_reason,
+                            rows: 3,
+                            maxlength: Appointment::CANCELLATION_REASON_MAX_LENGTH,
+                            class: "textarea-field w-full",
+                            placeholder: "e.g. The pharmacist is unavailable on this day." %>
+                      <p class="mt-1 text-xs text-base-content/60">
+                        <% if @appointment.email.present? %>
+                          Included in the cancellation email sent to <%= @appointment.email %>.
+                        <% else %>
+                          No email address on this appointment, so the customer won't be emailed.
+                        <% end %>
+                      </p>
+                    </div>
+                    <div class="modal-action">
+                      <button type="button" class="btn btn-sm" data-action="click->modal#close">Keep appointment</button>
+                      <%= f.button "Cancel appointment", type: "submit", class: "btn btn-error btn-sm" %>
+                    </div>
+                  <% end %>
+                </div>
+                <form method="dialog" class="modal-backdrop"><button>close</button></form>
+              </dialog>
+            </div>
+          <% end %>
+          <% if @appointment.status == "booked" && @appointment.past_due? %>
+            <%= button_to no_show_org_appointment_path(@appointment), method: :patch,
+                  class: "btn btn-warning btn-outline btn-sm gap-1",
+                  data: {
+                    controller: "confirm-modal",
+                    action: "click->confirm-modal#confirm",
+                    confirm_modal_message_value: "Mark this appointment as a no-show?"
+                  } do %>
+              <span class="material-symbols-outlined !text-[18px]">person_off</span>
+              Mark no-show
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

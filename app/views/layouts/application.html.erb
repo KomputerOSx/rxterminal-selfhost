@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+  <head>
+    <title><%= content_for?(:title) ? "#{yield(:title)} - RxTerminal" : "RxTerminal" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="RxTerminal">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_tag nonce: true do %>
+      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+    <% end %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <!-- Shoelace for Rails Blocks -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/color-picker/color-picker.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css"
+    />
+
+    <!-- Tom Select -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.css" rel="stylesheet">
+
+    <!-- Photoswipe -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe/dist/photoswipe.css">
+
+    <!-- Fonts -->
+    <%= render "shared/fonts" %>
+
+
+    <!-- Matomo -->
+    <script>
+      var _paq = window._paq = window._paq || [];
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="//analytics.strixon.co.uk/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '1']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script>
+    <!-- End Matomo Code -->
+
+    <!-- Matomo Tag Manager -->
+      <script>
+        var _mtm = window._mtm = window._mtm || [];
+        _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+        (function() {
+          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+          g.async=true; g.src='https://analytics.strixon.co.uk/js/container_vmFBiNAT.js'; s.parentNode.insertBefore(g,s);
+        })();
+      </script>
+      <!-- End Matomo Tag Manager -->
+  </head>
+
+  <body class="min-h-screen bg-base-100 text-base-content antialiased">
+    <div class="flex h-screen w-full" data-controller="sidebar" data-sidebar-storage-key-value="basicSidebar">
+      <%= render "shared/sidebar" %>
+
+      <div class="flex min-h-screen flex-1 flex-col overflow-y-auto">
+        <header class="sticky top-0 z-50 flex h-14 items-center border-b border-base-300 bg-base-100/95 backdrop-blur">
+          <%= render "shared/navbar" %>
+        </header>
+
+        <% if current_user && Current.organization&.past_due? %>
+          <%= render "shared/past_due_banner" %>
+        <% end %>
+
+        <%= render "shared/confirm_modal" %>
+
+        <main class="flex w-full flex-col items-center px-4 py-8 lg:px-8">
+          <%= render "shared/toast_container" %>
+          <div id="flash_messages"><%= render "shared/flash" %></div>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

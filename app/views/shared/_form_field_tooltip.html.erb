@@ -1,0 +1,14 @@
+<%# locals: (text:, max_width: 280) %>
+<%= tag.button type: "button",
+      class: "inline-flex shrink-0 align-middle text-base-content/40 hover:text-base-content/70",
+      data: {
+        controller: "tooltip",
+        tooltip_content: text,
+        tooltip_placement_value: "top",
+        tooltip_arrow: "true",
+        tooltip_size_value: "small",
+        tooltip_max_width_value: max_width
+      },
+      aria: { label: "Help" } do %>
+  <span class="material-symbols-outlined !text-[16px]">info</span>
+<% end %>

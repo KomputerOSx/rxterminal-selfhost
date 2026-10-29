@@ -1,0 +1,161 @@
+<section class="w-full max-w-4xl">
+
+  <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold"><%= @device.name.presence || "Device" %></h1>
+      <div class="mt-2"><%= device_status_badge(@device) %></div>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <%= link_to edit_org_device_path(@device), class: "btn btn-primary btn-sm gap-1" do %>
+        <span class="material-symbols-outlined !text-[18px]">edit</span>
+        Edit
+      <% end %>
+      <%= link_to "Back", org_devices_path, class: "btn btn-outline btn-sm" %>
+    </div>
+  </div>
+
+  <% if flash[:api_key] %>
+    <div class="card mt-6 border border-warning/40 bg-warning/10">
+      <div class="card-body gap-3">
+        <h2 class="font-semibold">Save this API key now</h2>
+        <p class="text-sm text-base-content/70">This is the only time the key is shown. Copy it before leaving this page.</p>
+        <div class="flex items-start gap-2 rounded-lg border border-base-300 bg-base-100 p-3">
+          <p class="min-w-0 flex-1 font-mono text-sm break-all"><%= flash[:api_key] %></p>
+          <button type="button"
+                  class="btn btn-ghost btn-sm btn-square shrink-0"
+                  data-controller="clipboard"
+                  data-clipboard-text-value="<%= flash[:api_key] %>"
+                  data-action="clipboard#copy"
+                  aria-label="Copy API key"
+                  title="Copy">
+            <span class="material-symbols-outlined !text-[18px]" data-clipboard-target="icon">content_copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body gap-4">
+      <h2 class="text-lg font-semibold">Device information</h2>
+      <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Device ID</dt>
+          <dd class="mt-1">
+            <%= render "shared/copyable_value", value: @device.device_id %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Name</dt>
+          <dd class="mt-1 text-sm"><%= @device.name.presence || "Not set" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Serial number</dt>
+          <dd class="mt-1 font-mono text-sm"><%= @device.serial_number.presence || "Not set" %></dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Registered IP</dt>
+          <dd class="mt-1">
+            <% if @device.registered_ip.present? %>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-mono text-sm"><%= @device.registered_ip %></span>
+                <%= button_to clear_ip_org_device_path(@device), method: :post, class: "btn btn-outline btn-xs",
+                      data: {
+                        controller: "confirm-modal",
+                        action: "click->confirm-modal#confirm",
+                        confirm_modal_message_value: "Clear the registered IP? The device will re-capture its IP on next authentication."
+                      } do %>
+                  Clear IP
+                <% end %>
+              </div>
+            <% else %>
+              <span class="text-sm text-base-content/60">Not set - auto-captures on first auth</span>
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Last seen</dt>
+          <dd class="mt-1 text-sm">
+            <% if @device.last_seen_at %>
+              <%= @device.last_seen_at.strftime("%d %b %Y, %H:%M") %>
+              <span class="text-base-content/50">(<%= time_ago_in_words(@device.last_seen_at) %> ago)</span>
+            <% else %>
+              Never
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Created</dt>
+          <dd class="mt-1 text-sm"><%= @device.created_at.strftime("%d %b %Y, %H:%M") %></dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Status actions</dt>
+          <dd class="mt-1 flex flex-wrap gap-2">
+            <% if @device.active? %>
+              <%= button_to set_status_org_device_path(@device, status: "inactive"), method: :patch,
+                    class: "btn btn-outline btn-xs",
+                    data: {
+                      controller: "confirm-modal",
+                      action: "click->confirm-modal#confirm",
+                      confirm_modal_message_value: "Deactivate this device? It will stop working immediately."
+                    } do %>
+                Deactivate
+              <% end %>
+            <% elsif @device.status == "inactive" %>
+              <%= button_to set_status_org_device_path(@device, status: "active"), method: :patch,
+                    class: "btn btn-outline btn-xs",
+                    data: {
+                      controller: "confirm-modal",
+                      action: "click->confirm-modal#confirm",
+                      confirm_modal_message_value: "Reactivate this device?"
+                    } do %>
+                Activate
+              <% end %>
+            <% end %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card mt-6 border border-error/30">
+    <div class="card-body gap-4">
+      <h2 class="text-lg font-semibold text-error">Danger zone</h2>
+
+      <div class="flex flex-wrap items-start justify-between gap-4 border-b border-base-300 pb-4">
+        <div>
+          <p class="font-medium text-sm">Regenerate API key</p>
+          <p class="mt-1 text-xs text-base-content/60">Invalidates the current key and all active kiosk sessions. Reconfigure the device with the new key.</p>
+        </div>
+        <%= button_to regenerate_key_org_device_path(@device), method: :post,
+              class: "btn btn-warning btn-outline btn-sm shrink-0",
+              data: {
+                controller: "confirm-modal",
+                action: "click->confirm-modal#confirm",
+                confirm_modal_message_value: "Regenerate API key? The device will stop working until reconfigured."
+              } do %>
+          Regenerate key
+        <% end %>
+      </div>
+
+      <% unless @device.status == "revoked" %>
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p class="font-medium text-sm">Revoke device</p>
+            <p class="mt-1 text-xs text-base-content/60">Permanently disables this device. Revocation cannot be undone.</p>
+          </div>
+          <%= button_to set_status_org_device_path(@device, status: "revoked"), method: :patch,
+                class: "btn btn-error btn-sm shrink-0",
+                data: {
+                  controller: "confirm-modal",
+                  action: "click->confirm-modal#confirm",
+                  confirm_modal_message_value: "Revoke this device? This cannot be undone."
+                } do %>
+            Revoke device
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

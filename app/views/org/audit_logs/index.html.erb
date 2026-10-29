@@ -1,0 +1,42 @@
+<section class="w-full max-w-7xl">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Audit logs</h1>
+    </div>
+  </div>
+
+  <% if (retention_days = Current.organization.audit_log_retention_days) %>
+    <div class="card mt-4 border border-info/40 bg-info/10">
+      <div class="card-body flex-row items-center gap-3 py-4">
+        <span class="material-symbols-outlined text-info">info</span>
+        <p class="text-sm">
+          Your <%= Current.organization.current_plan&.name || Billing::Plans::STARTER.name %> plan includes
+          <strong><%= retention_days %> days</strong> of audit log history. Older events are not available.
+        </p>
+      </div>
+    </div>
+  <% end %>
+
+  <%= form_with url: org_audit_logs_path,
+        method: :get,
+        data: {
+          turbo_frame: "org_audit_logs_results_frame",
+          controller: "audit-log-filters",
+          audit_log_filters_min_from_value: (retention_days ? audit_log_filter_datetime(audit_log_retention_cutoff(retention_days)) : "")
+        },
+        class: "mt-6" do %>
+    <%= render "audit_logs/filter_panel",
+          form_url: org_audit_logs_path,
+          clear_url: org_audit_logs_path,
+          results_frame: "org_audit_logs_results_frame",
+          show_organization_filter: false,
+          max_retention_days: retention_days %>
+  <% end %>
+
+  <%= turbo_frame_tag "org_audit_logs_results_frame", class: "mt-2 block" do %>
+    <%= render "audit_logs/results",
+          path_prefix: :org,
+          results_frame: "org_audit_logs_results_frame",
+          show_organization_columns: false %>
+  <% end %>
+</section>

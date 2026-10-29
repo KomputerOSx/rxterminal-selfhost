@@ -1,0 +1,74 @@
+<% if results.appointments.any? || results.service_requests.any? %>
+  <div class="mt-10">
+    <h2 class="text-lg font-semibold">Matching records</h2>
+
+    <div class="card mt-4 border border-base-300">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table table-sm">
+            <thead class="bg-base-200 text-sm font-semibold text-base-content">
+              <tr class="border-b border-base-300">
+                <% if show_selection %>
+                  <th class="w-12 text-center bg-base-200">Select</th>
+                <% end %>
+                <th class="bg-base-200">Type</th>
+                <th class="bg-base-200">Organization</th>
+                <th class="bg-base-200">Customer</th>
+                <th class="bg-base-200">Reference / queue</th>
+                <th class="bg-base-200">Status</th>
+                <th class="bg-base-200">When</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% results.appointments.each do |appointment| %>
+                <tr class="hover:bg-base-200">
+                  <% if show_selection %>
+                    <td>
+                      <div class="flex justify-center">
+                        <input type="checkbox"
+                               name="appointment_ids[]"
+                               value="<%= appointment.id %>"
+                               class="checkbox-field"
+                               checked>
+                      </div>
+                    </td>
+                  <% end %>
+                  <td>Appointment</td>
+                  <td><%= appointment.organization.name %></td>
+                  <td class="font-medium"><%= appointment.first_name %> <%= appointment.last_name %></td>
+                  <td><%= appointment.booking_reference %></td>
+                  <td><%= appointment.status.humanize %></td>
+                  <td class="text-base-content/60"><%= appointment.appointment_date.to_fs(:long) %></td>
+                </tr>
+              <% end %>
+
+              <% results.service_requests.each do |service_request| %>
+                <tr class="hover:bg-base-200">
+                  <% if show_selection %>
+                    <td>
+                      <div class="flex justify-center">
+                        <input type="checkbox"
+                               name="service_request_ids[]"
+                               value="<%= service_request.id %>"
+                               class="checkbox-field"
+                               checked>
+                      </div>
+                    </td>
+                  <% end %>
+                  <td>Queue</td>
+                  <td><%= service_request.organization.name %></td>
+                  <td class="font-medium"><%= service_request.first_name %> <%= service_request.last_name %></td>
+                  <td>#<%= service_request.queue_number %> · <%= service_request.request_type.humanize %></td>
+                  <td><%= service_request.status.humanize %></td>
+                  <td class="text-base-content/60"><%= service_request.created_at.to_fs(:long) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+<% elsif defined?(searched) && searched %>
+  <p class="mt-4 text-sm text-base-content/60">No matching records with PII found.</p>
+<% end %>

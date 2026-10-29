@@ -1,0 +1,107 @@
+<div class="mx-auto w-full max-w-5xl">
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold">Upsell opportunity</h1>
+    <p class="mt-1 text-sm text-base-content/60">
+      Queue <strong>#<%= session[:upsell_queue_number] %></strong>
+      - <%= @original_sr&.service&.display_name %>
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+    <div class="space-y-4 lg:col-span-2">
+      <% if @prior_accepted %>
+        <div class="rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+          This customer has previously accepted this type of upsell - they are a warm lead.
+        </div>
+      <% elsif @prior_seen %>
+        <div class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
+          This customer was offered this upsell before but did not accept. Approach gently.
+        </div>
+      <% end %>
+
+      <div class="card border border-base-300">
+        <div class="card-body gap-4">
+          <div class="flex items-center gap-4">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+              <span class="material-symbols-outlined text-primary">medical_services</span>
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">Additional service</p>
+              <h2 class="text-xl font-semibold"><%= @template.title.presence || @rule.suggested_service.display_name %></h2>
+            </div>
+          </div>
+
+          <% if @template.description.present? %>
+            <p class="text-sm leading-relaxed text-base-content/70"><%= @template.description %></p>
+          <% end %>
+
+          <div class="flex flex-wrap gap-2">
+            <% if @rule.suggested_service.price.to_f > 0 %>
+              <span class="badge badge-outline badge-sm"><%= number_to_currency(@rule.suggested_service.price, unit: @rule.suggested_service.organization.service_currency_symbol) %></span>
+            <% else %>
+              <span class="badge badge-success badge-sm">Free</span>
+            <% end %>
+            <span class="badge badge-outline badge-sm"><%= @rule.suggested_service.estimated_duration %> min</span>
+            <span class="badge badge-outline badge-sm">Same visit</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <%= button_to org_upsell_accept_walk_in_path, method: :post, class: "btn btn-primary btn-lg w-full" do %>
+          <%= @template.cta_text.presence || "Customer accepts" %>
+        <% end %>
+
+        <% if @rule.suggested_service.requires_appointment? %>
+          <%= button_to org_upsell_book_later_walk_in_path, method: :post, class: "btn btn-warning btn-outline btn-lg w-full" do %>
+            Book for later
+          <% end %>
+        <% end %>
+
+        <%= button_to org_upsell_decline_walk_in_path, method: :post, class: "btn btn-ghost btn-lg w-full" do %>
+          Customer declines - skip
+        <% end %>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <div class="card border border-base-300">
+        <div class="card-body gap-4 p-5">
+          <h3 class="flex items-center gap-2 text-sm font-semibold">
+            <span class="material-symbols-outlined !text-[18px] text-info">trending_up</span>
+            Rule performance
+          </h3>
+          <div class="grid grid-cols-2 gap-3 text-center">
+            <div class="rounded-lg border border-base-300 bg-base-200/50 p-3">
+              <div class="text-2xl font-bold <%= @stats[:rate] >= 20 ? "text-success" : @stats[:rate] >= 10 ? "text-warning" : "text-base-content/50" %>">
+                <%= @stats[:rate] %>%
+              </div>
+              <div class="mt-1 text-xs text-base-content/50">Conv. rate</div>
+            </div>
+            <div class="rounded-lg border border-base-300 bg-base-200/50 p-3">
+              <div class="text-2xl font-bold"><%= @stats[:triggered] %></div>
+              <div class="mt-1 text-xs text-base-content/50">Times shown</div>
+            </div>
+            <div class="rounded-lg border border-base-300 bg-base-200/50 p-3">
+              <div class="text-2xl font-bold text-success"><%= @stats[:conversions] %></div>
+              <div class="mt-1 text-xs text-base-content/50">Accepted</div>
+            </div>
+            <div class="rounded-lg border border-base-300 bg-base-200/50 p-3">
+              <div class="text-2xl font-bold text-info"><%= @stats[:book_laters] %></div>
+              <div class="mt-1 text-xs text-base-content/50">Booked later</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <% if @template.description.present? %>
+        <div class="card border border-warning/30 bg-warning/10">
+          <div class="card-body p-5">
+            <h3 class="mb-2 text-sm font-semibold text-warning">Suggested talking point</h3>
+            <p class="text-sm italic leading-relaxed text-base-content/80">"<%= @template.description %>"</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

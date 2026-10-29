@@ -1,0 +1,77 @@
+<div class="w-full max-w-md space-y-8">
+  <div class="text-center">
+    <div class="rx-terminal-brand inline-flex items-center text-6xl normal-case">
+      <span class="rx">Rx</span>Terminal
+    </div>
+  </div>
+
+  <% if @is_authenticated %>
+    <div class="card border border-base-300 bg-base-200">
+      <div class="card-body items-center gap-4 text-center">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-success/15">
+          <span class="material-symbols-outlined text-success !text-4xl">check_circle</span>
+        </div>
+        <h2 class="text-2xl font-bold">Kiosk Ready!</h2>
+        <p class="text-sm text-base-content/70">
+          Device: <span class="font-mono font-semibold text-base-content"><%= @authenticated_device_id %></span>
+        </p>
+        <div class="flex w-full flex-col gap-3">
+          <%= link_to "Continue to Kiosk", kiosk_root_path, class: "btn btn-primary btn-lg w-full" %>
+          <%= button_to "Logout", kiosk_setup_logout_path, method: :post, class: "btn btn-outline btn-lg w-full" %>
+        </div>
+      </div>
+    </div>
+
+  <% elsif @is_configured %>
+    <div class="card border border-base-300 bg-base-200">
+      <div class="card-body items-center gap-4 text-center">
+        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/15">
+          <span class="material-symbols-outlined text-primary !text-4xl">tablet</span>
+        </div>
+        <h2 class="text-2xl font-bold">Kiosk Configured</h2>
+        <p class="text-sm text-base-content/70">
+          Device: <span class="font-mono font-semibold text-base-content"><%= @device_id %></span>
+        </p>
+        <div class="flex w-full flex-col gap-3">
+          <%= button_to "Start Kiosk", kiosk_setup_authenticate_path, method: :post, class: "btn btn-primary btn-lg w-full" %>
+          <p class="text-xs text-base-content/50">Need to reconfigure?</p>
+          <%= button_to "Reconfigure Device", kiosk_setup_clear_path, method: :post,
+                class: "btn btn-outline btn-sm",
+                data: {
+                  controller: "confirm-modal",
+                  action: "click->confirm-modal#confirm",
+                  confirm_modal_message_value: "Are you sure? This will clear stored credentials."
+                } %>
+        </div>
+      </div>
+    </div>
+
+  <% else %>
+    <div class="card border border-base-300 bg-base-200">
+      <div class="card-body gap-6">
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-base-200">
+            <span class="material-symbols-outlined text-base-content/70 !text-4xl">settings</span>
+          </div>
+          <h2 class="text-2xl font-bold">Kiosk Setup</h2>
+        </div>
+
+        <%= form_with url: kiosk_setup_configure_path, method: :post, class: "flex flex-col gap-4" do %>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Device ID</span></label>
+            <input type="text" name="device_id" required autofocus autocomplete="off"
+                   class="input-field w-full font-mono">
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">API Key</span></label>
+            <input type="password" name="api_key" required autocomplete="off"
+                   class="input-field w-full font-mono">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg mt-2 w-full">Save Configuration</button>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

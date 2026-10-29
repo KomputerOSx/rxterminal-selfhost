@@ -1,0 +1,68 @@
+<div class="mt-4" data-controller="table-selection">
+  <div class="form-control max-w-md">
+    <label class="label"><span class="label-text">Search organizations</span></label>
+    <input type="text"
+           class="input-field"
+           data-table-selection-target="searchInput"
+           data-action="input->table-selection#filter">
+  </div>
+
+  <div class="card mt-4 border border-base-300">
+    <div class="card-body p-0">
+      <div class="overflow-x-auto max-h-96">
+        <table class="table table-sm">
+          <thead class="bg-base-200 text-sm font-semibold text-base-content sticky top-0 z-10">
+            <tr class="border-b border-base-300">
+              <th class="w-12 text-center bg-base-200">
+                <input type="checkbox"
+                       class="checkbox-field"
+                       data-table-selection-target="selectAll"
+                       data-action="change->table-selection#toggleAll">
+              </th>
+              <th class="bg-base-200">Name</th>
+              <th class="bg-base-200">Slug</th>
+              <th class="bg-base-200">ID</th>
+              <th class="bg-base-200">Address</th>
+              <th class="bg-base-200">Contact email</th>
+              <th class="bg-base-200">Contact phone</th>
+              <th class="bg-base-200">Owner</th>
+              <th class="bg-base-200">Custom domain</th>
+              <th class="bg-base-200">Members</th>
+              <th class="bg-base-200">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% organizations.each do |organization| %>
+              <tr class="hover:bg-base-200" data-table-selection-target="row">
+                <td>
+                  <div class="flex justify-center">
+                    <input type="checkbox"
+                           name="customer_pii_search[organization_ids][]"
+                           value="<%= organization.id %>"
+                           class="checkbox-field"
+                           <%= "checked" if selected_ids.include?(organization.id) %>
+                           data-table-selection-target="checkbox"
+                           data-action="change->table-selection#updateSelectAllState">
+                  </div>
+                </td>
+                <td class="font-medium"><%= organization.name %></td>
+                <td class="font-mono text-xs text-base-content/60"><%= organization.slug %></td>
+                <td class="font-mono text-xs text-base-content/60"><%= organization.id %></td>
+                <td class="max-w-xs text-base-content/60"><%= customer_pii_organization_address(organization) %></td>
+                <td class="text-base-content/60"><%= organization.contact_email.presence || "-" %></td>
+                <td class="text-base-content/60"><%= organization.contact_phone.presence || "-" %></td>
+                <td class="text-base-content/60"><%= customer_pii_organization_owner_emails(organization) %></td>
+                <td class="text-base-content/60"><%= organization.custom_domain.presence || "-" %></td>
+                <td><%= organization.memberships.size %></td>
+                <td class="text-base-content/60"><%= organization.created_at.to_date.to_fs(:long) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <% if organizations.none? %>
+        <p class="px-5 py-4 text-sm text-base-content/60">No organizations found.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

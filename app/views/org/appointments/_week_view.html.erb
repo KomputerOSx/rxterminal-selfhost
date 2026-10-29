@@ -1,0 +1,36 @@
+<div class="card mt-6 border border-base-300">
+  <div class="card-body p-0">
+    <div class="overflow-x-auto">
+      <div class="grid min-w-[56rem] grid-cols-7 divide-x divide-base-300">
+        <% @range.each do |date| %>
+          <% closure = @closures[date] %>
+          <% day_appointments = @appointments_by_date.fetch(date, []) %>
+          <div class="flex min-w-0 flex-col" id="<%= "appointments_day_#{date.iso8601}" %>">
+            <%= link_to appointment_calendar_path(view: "day", date: date.iso8601),
+                  class: "block border-b border-base-300 bg-base-200 px-3 py-2 hover:bg-base-300" do %>
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="text-sm <%= date == Date.current ? 'font-semibold text-primary' : 'font-medium' %>">
+                  <%= date.strftime("%a %-d") %>
+                </span>
+                <% if day_appointments.any? %>
+                  <span class="text-xs text-base-content/60"><%= day_appointments.size %></span>
+                <% end %>
+              </div>
+              <% if closure %>
+                <div class="truncate text-xs text-base-content/60" title="<%= "Closed: #{closure}" %>">Closed: <%= closure %></div>
+              <% end %>
+            <% end %>
+
+            <div class="flex min-h-40 flex-1 flex-col gap-1 p-1 <%= 'bg-base-200/50' if closure %>">
+              <% if day_appointments.any? %>
+                <%= render partial: "org/appointments/calendar_entry", collection: day_appointments, as: :appointment %>
+              <% else %>
+                <p class="px-2 py-1 text-xs text-base-content/60">No appointments</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

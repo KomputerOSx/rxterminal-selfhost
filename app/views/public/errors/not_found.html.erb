@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Page not found - RxTerminal</title>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= render "shared/fonts" %>
+  </head>
+  <body class="flex min-h-screen items-center justify-center bg-base-100 px-4 text-base-content antialiased">
+    <main class="w-full max-w-md text-center">
+      <%= render "shared/rx_terminal_brand", class: "text-4xl" %>
+      <p class="mt-4 text-5xl font-bold">404</p>
+      <h1 class="mt-4 text-2xl font-semibold">Page not found</h1>
+      <p class="mt-3 text-sm text-base-content/60">
+        This booking portal does not exist or is not available at this address.
+      </p>
+      <div class="mt-8">
+        <%= link_to "Go home", root_path, class: "btn btn-outline btn-sm" %>
+      </div>
+    </main>
+  </body>
+</html>

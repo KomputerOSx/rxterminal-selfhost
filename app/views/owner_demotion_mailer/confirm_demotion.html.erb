@@ -1,0 +1,26 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Confirm owner demotion
+</h1>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  <% if @self_initiated %>
+    You requested to step down from owner to admin in
+    <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @organization.name %></strong>.
+  <% else %>
+    <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @initiator.email %></strong>
+    requested to demote you from owner to admin in
+    <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @organization.name %></strong>.
+  <% end %>
+</p>
+
+<div style="margin-bottom:24px;">
+  <%= render "shared/mailer/code_card", code: @code, label: "Confirmation code" %>
+</div>
+
+<p style="margin:0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Enter this code to confirm the change. It expires in 30 minutes.
+</p>
+
+<p style="margin:16px 0 0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  If you didn't request this and don't want to be demoted, ignore this email.
+</p>

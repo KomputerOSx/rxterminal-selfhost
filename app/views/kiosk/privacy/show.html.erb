@@ -1,0 +1,40 @@
+<%= render layout: "kiosk/shared/flow_shell",
+      locals: {
+        back_path: kiosk_root_path,
+        back_label: "Back to home",
+        title: "Privacy Policy",
+        subtitle: "How we collect and use your information"
+      } do %>
+  <div class="mx-auto max-w-3xl space-y-8">
+    <% sections = [
+      ["business", "Who is collecting your data?", "Your pharmacy or healthcare provider (#{@organization.name}) is the data controller. RxTerminal processes data on their behalf as a data processor."],
+      ["inventory_2", "What we collect", "Name, date of birth, postcode, contact details where provided, service selections, appointment details, and queue information needed to manage your visit."],
+      ["gavel", "Lawful basis", "We process your data to deliver healthcare services you request, manage appointments and waiting queues, and meet legal obligations."],
+      ["settings", "How we use it", "To check you in, manage your place in the queue, book appointments, and communicate about your visit with pharmacy staff."],
+      ["schedule", "Retention", "Personal data is retained according to your organisation's policy and anonymised when no longer required for active care or legal purposes."],
+      ["share", "Sharing", "Data is shared only with authorised staff at your organisation and trusted processors required to operate this kiosk service."],
+      ["verified_user", "Your rights", "You may request access, correction, or deletion of your data by speaking to staff or contacting your organisation directly."],
+      ["support_agent", "Complaints", "If you have concerns about how your data is handled, contact your organisation or the relevant data protection authority."]
+    ] %>
+
+    <% sections.each do |icon, heading, body| %>
+      <section class="card border border-base-300 bg-base-200">
+        <div class="card-body gap-3">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-primary !text-3xl"><%= icon %></span>
+            <div>
+              <h2 class="text-lg font-semibold"><%= heading %></h2>
+              <p class="mt-2 text-base text-base-content/70"><%= body %></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    <% end %>
+
+    <p class="text-center text-sm text-base-content/50">
+      This notice applies to kiosk use at <strong><%= @organization.name %></strong>.
+    </p>
+  </div>
+<% end %>
+
+<%= render "kiosk/shared/idle_timer", timeout: 60_000, countdown: 10 %>

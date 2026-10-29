@@ -1,0 +1,26 @@
+<%# locals: lines:, total:, total_label: "Total", footnote: nil, heading: "Order summary" %>
+<div class="card border border-base-300">
+  <div class="card-body">
+    <% if heading.present? %>
+      <p class="mb-3 text-sm font-semibold text-base-content"><%= heading %></p>
+    <% end %>
+
+    <dl class="space-y-2 text-sm">
+      <% Array(lines).each do |line| %>
+        <div class="flex items-baseline justify-between gap-4">
+          <dt class="text-base-content/70"><%= line[:label] %></dt>
+          <dd class="tabular-nums"><%= line[:amount] %></dd>
+        </div>
+      <% end %>
+    </dl>
+
+    <div class="mt-3 flex items-baseline justify-between border-t border-base-300 pt-3 text-sm font-semibold">
+      <dt><%= total_label %></dt>
+      <dd class="tabular-nums text-base"><%= total %></dd>
+    </div>
+
+    <% if footnote.present? %>
+      <p class="mt-2 text-xs text-base-content/60"><%= footnote %></p>
+    <% end %>
+  </div>
+</div>

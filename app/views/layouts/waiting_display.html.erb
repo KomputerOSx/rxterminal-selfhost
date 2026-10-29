@@ -1,0 +1,24 @@
+<%
+  kiosk_theme = kiosk_theme_for(@organization)
+  kiosk_theme_style = @organization&.kiosk_theme_inline_style
+%>
+<!DOCTYPE html>
+<html <%= tag.attributes(
+      lang: "en",
+      data: { theme: kiosk_theme },
+      style: kiosk_theme_style.presence
+    ) %>>
+  <head>
+    <title><%= content_for(:title) || "Waiting display" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= render "shared/fonts" %>
+  </head>
+  <body class="min-h-screen bg-base-100 text-base-content antialiased">
+    <%= yield %>
+  </body>
+</html>

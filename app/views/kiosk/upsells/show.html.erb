@@ -1,0 +1,19 @@
+<% suggested = @rule.suggested_service %>
+<% price = suggested.price %>
+
+<div class="kiosk-upsell-shell" data-controller="kiosk-upsell">
+  <%= render "kiosk/upsells/offer_panel",
+        title: @template.title,
+        description: @template.description,
+        cta_text: @template.cta_text,
+        icon: suggested.icon.presence || "medical_services",
+        price: price,
+        currency_symbol: suggested.organization.service_currency_symbol,
+        duration: suggested.estimated_duration,
+        requires_appointment: suggested.requires_appointment? %>
+</div>
+
+<%= render "kiosk/shared/idle_timer",
+      timeout: 20_000,
+      mode: "auto-submit",
+      form_selector: "form[action*='decline']" %>

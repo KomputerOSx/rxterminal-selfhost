@@ -1,0 +1,26 @@
+<div class="kiosk-confirmed-page kiosk-confirmed-page--panel w-full h-full">
+
+  <div data-kiosk-confirmed-animate="header" class="confirmed-header kiosk-confirmed-header-row">
+    <span class="material-symbols-outlined kiosk-confirmed-icon">check_circle</span>
+    <div>
+      <div class="kiosk-confirmed-heading">You're all set!</div>
+      <div class="kiosk-confirmed-subtext kiosk-confirmed-subtext-muted">Please wait for your number to be called</div>
+    </div>
+  </div>
+
+  <div data-kiosk-confirmed-animate="card"
+       class="confirmed-card kiosk-confirmed-number-card">
+    <div data-kiosk-service-request-target="serviceName"
+         class="kiosk-confirmed-service-label"></div>
+    <div data-kiosk-service-request-target="queueNumber"
+         class="queue-number kiosk-confirmed-queue-num"></div>
+  </div>
+
+  <button data-action="pointerdown->kiosk-service-request#done"
+          data-kiosk-confirmed-animate="home"
+          class="confirmed-btn kiosk-confirmed-home-btn">
+    <span class="material-symbols-outlined">home</span>
+    Main Screen
+  </button>
+
+</div>

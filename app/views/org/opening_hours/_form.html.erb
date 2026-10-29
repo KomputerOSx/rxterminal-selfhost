@@ -1,0 +1,78 @@
+<%= form_with url: org_opening_hours_path, method: :patch,
+      class: "mt-6 space-y-6",
+      data: { controller: "opening-hours" } do %>
+  <% if Current.organization.errors.any? %>
+    <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <p class="font-medium">There were some problems with your opening hours:</p>
+      <ul class="mt-2 list-inside list-disc">
+        <% Current.organization.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5 p-0">
+      <div class="overflow-x-auto">
+        <table class="table table-sm">
+          <thead class="bg-base-200 text-sm font-semibold text-base-content">
+            <tr class="border-b border-base-300">
+              <th>Day</th>
+              <th class="w-20">Open</th>
+              <th>Opens at</th>
+              <th>Closes at</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% Organization::WEEKDAYS.each do |day| %>
+              <% hours = Current.organization.operating_hours[day] %>
+              <% closed = day_closed?(hours) %>
+              <tr class="border-b border-base-300 hover:bg-base-200" data-opening-hours-target="dayRow">
+                <td class="font-medium"><%= weekday_label(day) %></td>
+                <td>
+                  <input type="hidden" name="organization[operating_hours][<%= day %>][open_day]" value="0">
+                  <input type="checkbox"
+                         name="organization[operating_hours][<%= day %>][open_day]"
+                         value="1"
+                         class="toggle toggle-primary toggle-sm"
+                         data-opening-hours-target="openCheckbox"
+                         data-action="opening-hours#openChanged"
+                         <%= "checked" unless closed %>>
+                </td>
+                <td>
+                  <div data-opening-hours-target="timeFields" class="<%= "hidden" if closed %>">
+                    <input type="time"
+                           name="organization[operating_hours][<%= day %>][open]"
+                           value="<%= time_field_value(hours&.dig("open")) %>"
+                           lang="en-GB"
+                           class="input-field w-full min-w-[8rem]"
+                           data-opening-hours-target="openInput">
+                  </div>
+                  <span data-opening-hours-target="closedNote"
+                        class="text-sm text-base-content/50 <%= "hidden" unless closed %>">
+                    Closed
+                  </span>
+                </td>
+                <td>
+                  <div data-opening-hours-target="timeFields" class="<%= "hidden" if closed %>">
+                    <input type="time"
+                           name="organization[operating_hours][<%= day %>][close]"
+                           value="<%= time_field_value(hours&.dig("close")) %>"
+                           lang="en-GB"
+                           class="input-field w-full min-w-[8rem]"
+                           data-opening-hours-target="closeInput">
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= submit_tag "Save opening hours", class: "btn btn-primary btn-sm" %>
+  </div>
+<% end %>

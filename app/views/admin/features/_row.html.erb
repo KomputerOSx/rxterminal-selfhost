@@ -1,0 +1,24 @@
+<tr id="<%= dom_id(feature) %>" class="hover:bg-base-200">
+  <td class="font-medium font-mono text-sm"><%= feature.key %></td>
+  <td class="text-base-content/60"><%= feature.name %></td>
+  <%= render "admin/features/enabled_cell", feature: feature %>
+  <%= render "admin/features/opt_in_cell", feature: feature %>
+  <%= render "admin/features/org_count_cell", feature: feature %>
+  <td>
+    <div class="flex justify-end">
+      <div data-controller="modal">
+        <button data-action="click->modal#open" class="link link-primary">Edit</button>
+        <dialog id="<%= dom_id(feature, :dialog) %>" data-modal-target="dialog" class="modal">
+          <div class="modal-box max-w-3xl">
+            <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" data-action="click->modal#close">✕</button></form>
+            <h3 class="font-bold text-lg mb-4"><%= feature.name %></h3>
+            <%= turbo_frame_tag dom_id(feature, :edit_frame), src: edit_admin_feature_path(feature) do %>
+              <p class="text-center py-8 text-sm text-base-content/60">Loading…</p>
+            <% end %>
+          </div>
+          <form method="dialog" class="modal-backdrop"><button>close</button></form>
+        </dialog>
+      </div>
+    </div>
+  </td>
+</tr>

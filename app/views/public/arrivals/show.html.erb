@@ -1,0 +1,28 @@
+<%= render "public/shared/page_header", title: "Welcome to #{@organization.name}" %>
+
+<div class="mt-6 space-y-3">
+  <% if @token_valid %>
+    <% if @organization.mobile_service_request_enabled? %>
+      <%= render "public/shared/action_tile",
+            url: new_portal_walk_in_path,
+            icon: "groups",
+            title: "Join the queue",
+            highlight: false
+            %>
+    <% end %>
+
+    <% if @organization.online_appointment_check_enabled? %>
+      <%= render "public/shared/action_tile",
+            url: new_portal_appointment_checkin_path,
+            icon: "event_available",
+            title: "Check in for appointment" %>
+    <% end %>
+  <% end %>
+
+  <% if @organization.online_appointment_booking_enabled? %>
+    <%= render "public/shared/action_tile",
+          url: portal_root_path,
+          icon: "calendar_month",
+          title: "Book appointment" %>
+  <% end %>
+</div>

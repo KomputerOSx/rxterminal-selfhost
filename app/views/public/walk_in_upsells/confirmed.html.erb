@@ -1,0 +1,24 @@
+<div class="text-center">
+  <%= render "public/shared/status_icon", icon: "check_circle", tone: "success" %>
+  <h1 class="text-2xl font-semibold">You are in the queue</h1>
+</div>
+
+<% if @queue_numbers.size == 1 %>
+  <div class="mt-6">
+    <%= render "public/shared/queue_banner",
+          number: @queue_numbers.first,
+          subtitle: @service_names.first %>
+  </div>
+<% else %>
+  <div class="mt-6 space-y-3">
+    <% @queue_numbers.each_with_index do |number, index| %>
+      <%= render "public/shared/queue_banner",
+            number: number,
+            label: (@service_names[index].presence || "Service #{index + 1}") %>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="mt-8 text-center">
+  <%= link_to "Back", portal_arrive_path, class: "btn btn-outline btn-sm" %>
+</div>

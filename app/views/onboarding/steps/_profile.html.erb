@@ -1,0 +1,25 @@
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div class="form-control">
+    <%= label_tag "user[first_name]", class: "label" do %>
+      <span class="label-text">First name</span>
+    <% end %>
+    <%= text_field_tag "user[first_name]", @user.first_name,
+          id: "onboarding_first_name",
+          class: error_class_for(@user, :first_name, "input-field w-full"),
+          autocomplete: "given-name",
+          required: true %>
+    <%= field_errors(@user, :first_name) %>
+  </div>
+
+  <div class="form-control">
+    <%= label_tag "user[last_name]", class: "label" do %>
+      <span class="label-text">Last name</span>
+    <% end %>
+    <%= text_field_tag "user[last_name]", @user.last_name,
+          id: "onboarding_last_name",
+          class: error_class_for(@user, :last_name, "input-field w-full"),
+          autocomplete: "family-name",
+          required: true %>
+    <%= field_errors(@user, :last_name) %>
+  </div>
+</div>

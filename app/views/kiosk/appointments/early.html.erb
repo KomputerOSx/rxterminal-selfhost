@@ -1,0 +1,33 @@
+<div class="checkin-result checkin-result--early"
+     data-controller="kiosk-idle"
+     data-kiosk-idle-timeout-value="0"
+     data-kiosk-idle-countdown-value="20"
+     data-kiosk-idle-mode-value="auto-redirect"
+     data-kiosk-idle-interruptible-value="false"
+     data-kiosk-idle-redirect-url-value="<%= kiosk_root_path %>">
+
+  <div class="early-slide checkin-result-center">
+    <div class="checkin-result-icon-wrap">
+      <span class="material-symbols-outlined checkin-result-icon">calendar_clock</span>
+    </div>
+    <h1 class="checkin-result-headline">Your appointment isn't today</h1>
+    <p class="checkin-result-lead">Your appointment is booked for</p>
+    <p class="checkin-result-date"><%= @appointment.formatted_date %></p>
+  </div>
+
+  <div class="early-info">
+    <p class="checkin-result-info-copy">
+      Please come back on the correct date to check in.<br>
+      If you need to reschedule, speak to a member of staff at the counter.
+    </p>
+  </div>
+
+  <%= link_to kiosk_root_path, class: "early-pulse early-home-btn", data: { turbo_action: "replace" } do %>
+    <span class="material-symbols-outlined">home</span>
+    Back to Home
+  <% end %>
+
+  <p class="checkin-countdown-text" data-kiosk-idle-target="countdownText">
+    Returning to home screen in 20 seconds&hellip;
+  </p>
+</div>

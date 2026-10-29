@@ -1,0 +1,21 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Confirm ownership promotion
+</h1>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  We received a request to promote
+  <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @target.email %></strong>
+  to owner of <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @organization.name %></strong>.
+</p>
+
+<div style="margin-bottom:24px;">
+  <%= render "shared/mailer/code_card", code: @code, label: "Confirmation code" %>
+</div>
+
+<p style="margin:0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Enter this code on the promotion confirmation screen. It expires in 30 minutes.
+</p>
+
+<p style="margin:16px 0 0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  If you did not request this, ignore this email. <%= @target.email %> will not be promoted unless you complete the confirmation.
+</p>

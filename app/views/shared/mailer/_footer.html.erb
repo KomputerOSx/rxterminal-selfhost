@@ -1,0 +1,47 @@
+<% campaign = local_assigns.fetch(:campaign, false) %>
+<% unsubscribe_url = local_assigns[:unsubscribe_url] %>
+
+<% if campaign %>
+  <tr>
+    <td bgcolor="<%= MailerTheme::HEADER_FOOTER_BG %>"
+        style="background-color: <%= MailerTheme::HEADER_FOOTER_BG %>; padding: 32px 24px 0; text-align: center; font-family: Arial, Helvetica, sans-serif; font-size: 13px;">
+      <a href="mailto:<%= mailer_contact_email %>" style="color: <%= MailerTheme::HEADER_FOOTER_TEXT %>; text-decoration: underline;">Contact Us</a>
+      <span style="color: <%= MailerTheme::BASE_300 %>;">&nbsp;&middot;&nbsp;</span>
+      <a href="<%= mailer_privacy_policy_url %>" style="color: <%= MailerTheme::HEADER_FOOTER_TEXT %>; text-decoration: underline;">Privacy Policy</a>
+      <span style="color: <%= MailerTheme::BASE_300 %>;">&nbsp;&middot;&nbsp;</span>
+      <a href="<%= mailer_terms_url %>" style="color: <%= MailerTheme::HEADER_FOOTER_TEXT %>; text-decoration: underline;">Terms and Conditions</a>
+    </td>
+  </tr>
+  <tr>
+    <td bgcolor="<%= MailerTheme::HEADER_FOOTER_BG %>"
+        style="background-color: <%= MailerTheme::HEADER_FOOTER_BG %>; padding: 20px 24px 8px; text-align: center; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 18px; color: <%= MailerTheme::FOOTER_MUTED %>;">
+      RxTerminal is a product of and operated by <%= mailer_company_name %>.
+    </td>
+  </tr>
+  <% if unsubscribe_url.present? %>
+    <tr>
+      <td bgcolor="<%= MailerTheme::HEADER_FOOTER_BG %>"
+          style="background-color: <%= MailerTheme::HEADER_FOOTER_BG %>; padding: 8px 24px 16px; text-align: center; font-family: Arial, Helvetica, sans-serif; font-size: 11px; line-height: 16px; color: <%= MailerTheme::FOOTER_MUTED %>; border-top: 1px solid <%= MailerTheme::HEADER_FOOTER_BORDER %>;">
+        You're receiving this email because you have an account with RxTerminal.<br>
+        <a href="<%= unsubscribe_url %>" style="color: <%= MailerTheme::FOOTER_MUTED %>;">Manage your email preferences</a>
+      </td>
+    </tr>
+  <% end %>
+  <tr>
+    <td bgcolor="<%= MailerTheme::HEADER_FOOTER_BG %>"
+        style="background-color: <%= MailerTheme::HEADER_FOOTER_BG %>; padding: 8px 24px 28px; text-align: center; font-family: Arial, Helvetica, sans-serif;">
+      <%= render "shared/mailer/powered_by" %>
+    </td>
+  </tr>
+<% else %>
+  <tr>
+    <td bgcolor="<%= MailerTheme::HEADER_FOOTER_BG %>"
+        style="background-color: <%= MailerTheme::HEADER_FOOTER_BG %>; padding: 24px; text-align: center; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 18px; color: <%= MailerTheme::FOOTER_MUTED %>; border-top: 1px solid <%= MailerTheme::HEADER_FOOTER_BORDER %>;">
+      <p style="margin: 0 0 12px;">
+        <%= mailer_company_name %> &middot;
+        <a href="mailto:<%= mailer_contact_email %>" style="color: <%= MailerTheme::FOOTER_MUTED %>;"><%= mailer_contact_email %></a>
+      </p>
+      <%= render "shared/mailer/powered_by" %>
+    </td>
+  </tr>
+<% end %>

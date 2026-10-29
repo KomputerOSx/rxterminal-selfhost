@@ -1,0 +1,96 @@
+<div class="text-center">
+  <%= render "public/shared/status_icon", icon: "check_circle", tone: "success" %>
+  <h1 class="text-2xl font-semibold">Booking confirmed</h1>
+</div>
+
+<% if @walk_in_queue_number.present? %>
+  <div class="mt-6">
+    <%= render "public/shared/queue_banner",
+          number: @walk_in_queue_number,
+          label: "Your queue number",
+          subtitle: @walk_in_queue_service %>
+  </div>
+<% end %>
+
+<div class="card mt-6 border border-base-300">
+  <div class="card-body gap-4">
+    <h2 class="text-sm font-semibold text-base-content/60">Appointment details</h2>
+
+    <dl class="divide-y divide-base-300 text-sm">
+      <div class="flex justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Reference</dt>
+        <dd class="font-mono font-medium"><%= @appointment.booking_reference %></dd>
+      </div>
+      <div class="flex justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Service</dt>
+        <dd class="font-medium"><%= @appointment.service.display_name %></dd>
+      </div>
+      <div class="flex justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Date</dt>
+        <dd class="font-medium"><%= @appointment.appointment_date.strftime("%A %-d %B %Y") %></dd>
+      </div>
+      <div class="flex justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Time</dt>
+        <dd class="font-medium"><%= portal_slot_label(@appointment.appointment_time.strftime("%H:%M")) %></dd>
+      </div>
+      <div class="flex justify-between gap-4 py-3">
+        <dt class="text-base-content/60">Name</dt>
+        <dd class="font-medium"><%= @appointment.first_name %> <%= @appointment.last_name %></dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+<% if @appointment.email.present? %>
+  <p class="mt-4 text-center text-sm text-base-content/60">
+    A confirmation email was sent to <span class="font-medium text-base-content"><%= @appointment.email %></span>.
+  </p>
+<% end %>
+
+<%
+  appt_date = @appointment.appointment_date
+  appt_time = @appointment.appointment_time
+  duration_min = @appointment.service.estimated_duration || 15
+  summary = "#{@appointment.service.display_name} at #{@organization.name}"
+  description = "Booking reference: #{@appointment.booking_reference}"
+
+  google_date = appt_date.strftime("%Y%m%d")
+  google_start = appt_time.strftime("%H%M00")
+  google_end = (appt_time + duration_min.minutes).strftime("%H%M00")
+  google_url = "https://calendar.google.com/calendar/render?action=TEMPLATE" \
+    "&text=#{CGI.escape(summary)}" \
+    "&dates=#{google_date}T#{google_start}/#{google_date}T#{google_end}" \
+    "&details=#{CGI.escape(description)}"
+
+  start_iso = Time.zone.local(appt_date.year, appt_date.month, appt_date.day, appt_time.hour, appt_time.min).utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+  end_iso = Time.zone.local(appt_date.year, appt_date.month, appt_date.day, appt_time.hour, appt_time.min).utc.then { |time| (time + duration_min.minutes).strftime("%Y-%m-%dT%H:%M:%SZ") }
+
+  outlook_url = "https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent" \
+    "&subject=#{CGI.escape(summary)}" \
+    "&startdt=#{CGI.escape(start_iso)}" \
+    "&enddt=#{CGI.escape(end_iso)}" \
+    "&body=#{CGI.escape(description)}"
+%>
+
+<div class="mt-6">
+  <p class="mb-3 text-center text-xs font-semibold uppercase tracking-wide text-base-content/50">Add to calendar</p>
+  <div class="flex flex-col gap-2 sm:flex-row sm:justify-center">
+    <%= link_to google_url, target: "_blank", rel: "noopener noreferrer", class: "btn btn-outline btn-sm gap-1" do %>
+      <%= material_icon("calendar_add_on", size: 18) %>
+      Google Calendar
+    <% end %>
+    <%= link_to outlook_url, target: "_blank", rel: "noopener noreferrer", class: "btn btn-outline btn-sm gap-1" do %>
+      <%= material_icon("calendar_add_on", size: 18) %>
+      Outlook
+    <% end %>
+    <%= link_to portal_appointment_ics_path(@appointment), class: "btn btn-outline btn-sm gap-1" do %>
+      <%= material_icon("calendar_add_on", size: 18) %>
+      Apple / iCal
+    <% end %>
+  </div>
+</div>
+
+<div class="mt-8 text-center">
+  <% home_path = @walk_in_queue_number.present? ? portal_arrive_path : portal_root_path %>
+  <%= link_to "Back", home_path, class: "btn btn-outline btn-sm" %>
+</div>

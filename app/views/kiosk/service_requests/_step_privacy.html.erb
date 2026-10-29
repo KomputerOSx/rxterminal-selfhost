@@ -1,0 +1,64 @@
+<%# Step: Private Consultation Preference %>
+
+<div class="flex min-h-full flex-col items-center justify-center gap-6 p-5">
+
+  <div class="flex w-full max-w-3xl items-center gap-4">
+    <button data-action="pointerdown->kiosk-service-request#privacyBack"
+            class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="flex-1 text-center">
+      <div class="mb-1 text-5xl font-bold tracking-tight text-base-content">Private Room?</div>
+      <div class="text-xl text-base-content/70">Choose your consultation preference</div>
+    </div>
+    <div class="h-[54px] w-[70px] shrink-0"></div>
+  </div>
+
+  <div class="card w-full max-w-3xl border border-base-300 bg-base-200">
+    <div class="card-body flex flex-col gap-4 p-6">
+
+      <button data-action="pointerdown->kiosk-service-request#privacySelect"
+              data-kiosk-service-request-target="privacyOptionPrivate"
+              data-option="true"
+              data-active="false"
+              class="privacy-choice kiosk-input-surface flex w-full items-center gap-4 rounded-2xl border-2 p-5 text-left transition-all">
+        <div class="privacy-choice-icon flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-base-100">
+          <span class="material-symbols-outlined text-3xl text-primary">door_front</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="privacy-choice-label text-xl font-bold text-base-content">Private Consultation Room</div>
+          <div class="text-base text-base-content/70">I would like to be seen away from other customers</div>
+        </div>
+        <div class="privacy-choice-radio flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-base-300 bg-base-100">
+          <div class="privacy-choice-dot h-3 w-3 rounded-full bg-primary"></div>
+        </div>
+      </button>
+
+      <button data-action="pointerdown->kiosk-service-request#privacySelect"
+              data-kiosk-service-request-target="privacyOptionNone"
+              data-option="false"
+              data-active="false"
+              class="privacy-choice kiosk-input-surface flex w-full items-center gap-4 rounded-2xl border-2 p-5 text-left transition-all">
+        <div class="privacy-choice-icon flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-base-100">
+          <span class="material-symbols-outlined text-3xl text-primary">groups</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="privacy-choice-label text-xl font-bold text-base-content">No Preference</div>
+          <div class="text-base text-base-content/70">I am happy to be seen wherever is most convenient</div>
+        </div>
+        <div class="privacy-choice-radio flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-base-300 bg-base-100">
+          <div class="privacy-choice-dot h-3 w-3 rounded-full bg-primary"></div>
+        </div>
+      </button>
+
+      <button data-kiosk-service-request-target="privacyContinueBtn"
+              data-action="pointerdown->kiosk-service-request#privacyContinue"
+              data-active="false"
+              class="privacy-continue-btn btn btn-disabled h-[76px] min-h-0 w-full rounded-2xl border-0 text-xl font-bold">
+        Continue
+      </button>
+
+    </div>
+  </div>
+
+</div>

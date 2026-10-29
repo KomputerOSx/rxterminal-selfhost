@@ -1,0 +1,23 @@
+<%# locals: (form:, required: false, value: nil, object: nil) %>
+<% if required %>
+  <%
+    error_object = object || form.object
+    dob_value = value
+    if dob_value.blank? && error_object.present?
+      raw_dob = error_object.try(:dob)
+      dob_value = raw_dob.is_a?(Date) ? raw_dob.iso8601 : raw_dob
+    end
+  %>
+  <div class="form-control">
+    <label class="label"><span class="label-text">Date of birth *</span></label>
+    <%= form.date_field :dob,
+          class: error_class_for(error_object, :dob, "input-field w-full"),
+          required: true,
+          lang: "en-GB",
+          min: "1900-01-01",
+          max: Date.current.iso8601,
+          autocomplete: "off",
+          value: dob_value %>
+    <%= field_errors(error_object, :dob) %>
+  </div>
+<% end %>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+  <head>
+    <title><%= content_for?(:title) ? "#{yield(:title)} - RxTerminal" : "RxTerminal" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="RxTerminal">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_tag nonce: true do %>
+      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+    <% end %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <!-- Shoelace for Rails Blocks -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/components/color-picker/color-picker.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css"
+    />
+
+    <!-- Tom Select -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.css" rel="stylesheet">
+
+    <!-- Photoswipe -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe/dist/photoswipe.css">
+
+    <%= render "shared/fonts" %>
+
+  </head>
+
+  <body class="min-h-screen bg-base-100 text-base-content antialiased">
+    <div class="fixed top-4 right-4 z-50">
+      <button data-controller="theme" data-action="click->theme#toggle" class="btn btn-ghost btn-square btn-sm" aria-label="Toggle theme">
+        <span class="material-symbols-outlined !text-[20px]" data-theme-target="icon">light_mode</span>
+      </button>
+    </div>
+    <%# Kiosk shortcuts are opt-in: only the login and signup pages set :show_kiosk_links. %>
+    <% if content_for?(:show_kiosk_links) %>
+      <div class="fixed bottom-4 right-4 z-50 flex gap-2">
+        <%= link_to "Kiosk", kiosk_root_path, class: "btn btn-outline btn-sm" %>
+        <%= link_to "Kiosk Setup", kiosk_setup_path, class: "btn btn-outline btn-sm" %>
+      </div>
+    <% end %>
+    <div class="min-h-screen flex flex-col justify-center items-center bg-base-100">
+      <main class="w-full max-w-md px-4 py-8">
+        <%= render "shared/toast_container" %>
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>

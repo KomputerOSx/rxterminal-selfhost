@@ -1,0 +1,26 @@
+<%# locals: (back_path:, back_label:, title:, subtitle: nil) %>
+<div class="flex min-h-screen flex-col bg-base-100">
+  <header class="shrink-0 border-b border-base-300 px-6 py-5 md:px-10">
+    <div class="mx-auto flex max-w-[1100px] items-center justify-between">
+      <%= link_to back_path,
+            class: "btn btn-outline gap-2",
+            data: { kiosk_nav: "back", turbo_prefetch: false } do %>
+        <span class="material-symbols-outlined">arrow_back</span>
+        <%= back_label %>
+      <% end %>
+
+      <div class="text-center">
+        <div class="text-2xl font-extrabold"><%= title %></div>
+        <% if subtitle.present? %>
+          <div class="mt-0.5 text-sm text-base-content/60"><%= subtitle %></div>
+        <% end %>
+      </div>
+
+      <div class="w-[120px]" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <div class="mx-auto w-full max-w-[1100px] flex-1 overflow-y-auto px-6 py-8 md:px-10">
+    <%= yield %>
+  </div>
+</div>

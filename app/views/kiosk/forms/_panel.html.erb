@@ -1,0 +1,66 @@
+<% service = local_assigns[:service] %>
+
+<div class="flex flex-col items-center justify-center gap-6 bg-base-100 p-5">
+  <div class="flex w-full max-w-3xl items-center gap-4">
+    <span class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </span>
+    <div class="flex-1 text-center">
+      <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Customer Name</div>
+      <div class="text-xl text-base-content/70">
+        <span class="keep-english"><%= service&.display_name || "Service" %></span> &middot; Step 1 of 4
+      </div>
+    </div>
+    <span class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0 text-xs font-bold uppercase tracking-widest">
+      Clear
+    </span>
+  </div>
+
+  <div class="card w-full max-w-3xl border border-base-300 bg-base-200">
+    <div class="card-body p-9">
+      <div class="mb-5 flex gap-3">
+        <div class="kiosk-input-field flex-1" data-active="true">
+          <div class="mb-1 text-xs font-bold uppercase tracking-widest text-base-content/60">First Name</div>
+          <div class="text-3xl font-bold text-base-content">Alex</div>
+        </div>
+        <div class="kiosk-input-field flex-1 opacity-80" data-active="false">
+          <div class="mb-1 text-xs font-bold uppercase tracking-widest text-base-content/60">Last Name</div>
+          <div class="text-3xl font-bold text-base-content/40">&middot;</div>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center gap-2">
+        <div class="grid grid-cols-10 gap-2">
+          <% %w[Q W E R T Y U I O P].each do |key| %>
+            <span class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= key %></span>
+          <% end %>
+        </div>
+        <div class="grid grid-cols-9 gap-2 pl-6">
+          <% %w[A S D F G H J K L].each do |key| %>
+            <span class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= key %></span>
+          <% end %>
+        </div>
+        <div class="grid grid-cols-8 gap-2 pl-12">
+          <% %w[Z X C V B N M].each do |key| %>
+            <span class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= key %></span>
+          <% end %>
+          <span class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete h-14 w-14 min-h-0 px-0">
+            <span class="material-symbols-outlined">backspace</span>
+          </span>
+        </div>
+        <div class="flex gap-2">
+          <span class="btn btn-lg kiosk-keyboard-key h-14 min-h-0 w-64 text-sm font-bold tracking-widest uppercase">Space</span>
+          <span class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--accent h-14 min-h-0 w-14 text-lg font-bold">'</span>
+          <span class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--accent h-14 min-h-0 w-14 text-lg font-bold">-</span>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+        <span class="btn btn-primary h-[62px] min-h-0 w-[172px] gap-2 rounded-2xl border-0 text-sm font-bold uppercase tracking-widest">
+          <span class="material-symbols-outlined">check</span>
+          Confirm
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

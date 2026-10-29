@@ -1,0 +1,46 @@
+<% content_for :title, "Contact - #{@organization.name}" %>
+
+<h1 class="text-2xl font-semibold">Contact</h1>
+
+<% address = @organization.full_address %>
+<% phone = @organization.contact_phone.presence %>
+<% email = @organization.contact_email.presence %>
+
+<% if address.present? || phone || email %>
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body divide-y divide-base-300 p-0">
+      <% if address.present? %>
+        <div class="flex items-start gap-4 p-5">
+          <%= material_icon("location_on", size: 22, class: "mt-0.5 shrink-0 text-primary") %>
+          <div class="min-w-0 flex-1">
+            <p class="font-medium">Address</p>
+            <p class="text-sm text-base-content/60"><%= address %></p>
+          </div>
+          <%= link_to "Map", portal_map_url(address), target: "_blank", rel: "noopener", class: "btn btn-outline btn-sm shrink-0" %>
+        </div>
+      <% end %>
+
+      <% if phone %>
+        <div class="flex items-start gap-4 p-5">
+          <%= material_icon("call", size: 22, class: "mt-0.5 shrink-0 text-primary") %>
+          <div class="min-w-0 flex-1">
+            <p class="font-medium">Phone</p>
+            <%= link_to phone, portal_tel_href(phone), class: "link link-hover text-sm" %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if email %>
+        <div class="flex items-start gap-4 p-5">
+          <%= material_icon("mail", size: 22, class: "mt-0.5 shrink-0 text-primary") %>
+          <div class="min-w-0 flex-1">
+            <p class="font-medium">Email</p>
+            <%= mail_to email, email, class: "link link-hover break-all text-sm" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <p class="mt-6 text-sm text-base-content/60">No contact details yet.</p>
+<% end %>

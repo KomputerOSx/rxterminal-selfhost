@@ -1,0 +1,14 @@
+We've received your message - RxTerminal
+
+Thanks for getting in touch<%= @name.present? ? ", #{@name.split.first}" : "" %>.
+We've received your message and will get back to you as soon as possible.
+
+Your details:
+Name: <%= @name %>
+Email: <%= @email %>
+Phone: <%= @phone.present? ? @phone : "-" %>
+
+Your message:
+<%= @message %>
+
+<%= mailer_powered_by_text %>

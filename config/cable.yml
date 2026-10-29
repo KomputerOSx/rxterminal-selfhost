@@ -1,0 +1,21 @@
+# Development uses solid_cable (not async) so kiosk and staff queue pages receive real-time
+# Turbo Stream updates even when served by different Puma workers or browser sessions.
+# connects_to :cable in database.yml must match the writing key below.
+development:
+  adapter: solid_cable
+  connects_to:
+    database:
+      writing: cable
+  polling_interval: 0.1.seconds
+  message_retention: 1.day
+
+test:
+  adapter: test
+
+production:
+  adapter: solid_cable
+  connects_to:
+    database:
+      writing: cable
+  polling_interval: 0.1.seconds
+  message_retention: 1.day

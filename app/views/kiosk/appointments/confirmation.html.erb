@@ -1,0 +1,34 @@
+<div class="kiosk-appointment-confirmed-page"
+     data-controller="kiosk-idle kiosk-home"
+     data-kiosk-idle-timeout-value="0"
+     data-kiosk-idle-countdown-value="30"
+     data-kiosk-idle-mode-value="auto-redirect"
+     data-kiosk-idle-interruptible-value="false"
+     data-kiosk-idle-redirect-url-value="<%= kiosk_root_path %>">
+
+  <div class="kiosk-appointment-confirmed-header">
+    <span class="material-symbols-outlined kiosk-confirmed-icon">check_circle</span>
+    <div>
+      <h1 class="m-0 text-4xl font-black">Appointment Booked!</h1>
+      <p class="m-0 mt-2 text-2xl opacity-90"><span class="keep-english"><%= @appointment.service.display_name %></span></p>
+      <p class="m-0 mt-1 text-xl opacity-80"><%= @appointment.formatted_date %> at <%= @appointment.formatted_time %></p>
+    </div>
+  </div>
+
+  <div class="kiosk-appointment-confirmed-ref-card">
+    <p class="kiosk-appointment-confirmed-ref-label">Your Booking Reference</p>
+    <div class="kiosk-appointment-confirmed-ref-number"><%= @appointment.booking_reference %></div>
+    <p class="kiosk-appointment-confirmed-ref-note">Show this at reception or check in at the kiosk on your arrival</p>
+  </div>
+
+  <%= link_to kiosk_root_path,
+        class: "kiosk-appointment-confirmed-home-btn",
+        data: { action: "pointerdown->kiosk-home#start", url: kiosk_root_path } do %>
+    <span class="material-symbols-outlined">home</span>
+    Main Screen
+  <% end %>
+
+  <p class="kiosk-confirmed-countdown" data-kiosk-idle-target="countdownText">
+    Returning to home screen in 30 seconds&hellip;
+  </p>
+</div>

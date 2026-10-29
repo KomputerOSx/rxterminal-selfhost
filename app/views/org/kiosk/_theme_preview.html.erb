@@ -1,0 +1,55 @@
+<% organization = local_assigns[:organization] %>
+<% featured_service = local_assigns[:featured_service] %>
+<% preview_service = featured_service %>
+<% preview_services = kiosk_preview_services(organization) %>
+
+<div class="kiosk-theme-preview space-y-4 p-4 pb-6">
+  <%= render layout: "kiosk/preview/frame", locals: { label: "Touch screen" } do %>
+    <%= render "kiosk/home/touch_start",
+          organization: organization,
+          preview: true,
+          scaled_preview: true %>
+  <% end %>
+
+  <%= render layout: "kiosk/preview/frame", locals: { label: "Home screen" } do %>
+    <%= render "kiosk/home/home_panel",
+          organization: organization,
+          featured_service: featured_service,
+          preview: true,
+          scaled_preview: true %>
+  <% end %>
+
+  <%= render layout: "kiosk/preview/frame", locals: { label: "Service list" } do %>
+    <%= render "kiosk/services/panel",
+          organization: organization,
+          services: preview_services,
+          preview: true %>
+  <% end %>
+
+  <% if preview_service.present? %>
+    <%= render layout: "kiosk/preview/frame", locals: { label: "Service choice" } do %>
+      <%= render "kiosk/services/choose_panel",
+            service: preview_service,
+            preview: true %>
+    <% end %>
+  <% end %>
+
+  <%= render layout: "kiosk/preview/frame", locals: { label: "Upsell screen" } do %>
+    <div class="kiosk-upsell-shell bg-base-100">
+      <%= render "kiosk/upsells/offer_panel",
+            preview: true,
+            title: preview_service ? "Add #{preview_service.display_name.downcase}?" : "Add a blood pressure check?",
+            description: preview_service&.description.presence || "Quick and easy while you wait.",
+            cta_text: "Yes, add it to my visit",
+            icon: preview_service&.icon.presence || "monitor_heart",
+            price: preview_service&.price,
+            currency_symbol: organization&.service_currency_symbol || "£",
+            duration: preview_service&.estimated_duration || 5,
+            requires_appointment: preview_service ? preview_service.requires_appointment? : true %>
+    </div>
+  <% end %>
+
+  <%= render layout: "kiosk/preview/frame", locals: { label: "Forms & controls" } do %>
+    <%= render "kiosk/forms/panel", service: preview_service %>
+  <% end %>
+</div>

@@ -1,0 +1,97 @@
+<!-- Mobile Sidebar Overlay -->
+<div class="fixed inset-0 z-[60] md:hidden hidden" data-sidebar-target="mobileSidebar">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/50 transition-opacity duration-300" data-sidebar-target="mobileBackdrop" data-action="click->sidebar#closeMobile"></div>
+
+  <!-- Sidebar Panel -->
+  <div class="absolute inset-y-0 left-0 flex w-64 flex-col border-r border-base-300 bg-base-100 transition-transform duration-300 ease-out" data-sidebar-target="mobilePanel">
+    <div class="flex h-14 shrink-0 items-center justify-between border-b border-base-300 px-4">
+      <%= render "shared/rx_terminal_brand" %>
+      <button class="btn btn-ghost btn-square btn-sm text-base-content/70" data-action="click->sidebar#closeMobile" aria-label="Close sidebar">
+        <span class="material-symbols-outlined !text-[20px]">close</span>
+      </button>
+    </div>
+
+    <div class="sidebar-scroll min-h-0 flex-1 overflow-y-auto">
+      <%= render "shared/sidebar_nav" %>
+    </div>
+
+    <!-- Footer: account menu -->
+    <div class="shrink-0 border-t border-base-300 p-3">
+      <% if authenticated? %>
+        <div class="dropdown dropdown-top w-full">
+          <div tabindex="0" role="button" class="flex w-full cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-base-200" aria-label="Account menu">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-xs font-semibold text-primary"><%= user_initials(current_user) %></div>
+            <span class="min-w-0 flex-1 truncate text-sm font-medium text-base-content/80"><%= current_user.email %></span>
+            <span class="material-symbols-outlined shrink-0 text-base-content/50 !text-[18px]">unfold_more</span>
+          </div>
+          <div tabindex="0" class="dropdown-content z-50 mb-2 w-full rounded-lg border border-base-300 bg-base-100 p-1">
+            <%= render "shared/sidebar_account_menu" %>
+          </div>
+        </div>
+      <% else %>
+        <!-- Login/Sign up for unauthenticated users -->
+        <div class="flex flex-col gap-2">
+          <%= link_to "Login", login_path, class: "btn btn-sm border-base-300 bg-base-200 text-base-content hover:border-base-content/20 hover:bg-base-200 w-full" %>
+          <%= link_to "Sign up", new_registration_path, class: "btn btn-primary btn-sm w-full" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!--
+  Desktop Sidebar
+  Open and collapsed states share the exact same markup; collapsing only toggles
+  [data-collapsed] which narrows the width and fades out labels. Icons sit in a
+  fixed-width slot with identical padding in both states, so nothing shifts.
+-->
+<aside class="group/sidebar bg-base-200 flex h-screen w-64 shrink-0 flex-col overflow-hidden border-r border-base-300 max-md:hidden data-[collapsed]:w-16 motion-safe:transition-[width] motion-safe:duration-300"
+       data-sidebar-target="desktopSidebar">
+  <!-- Header: brand on the left fades out; toggle button sits on the right -->
+  <div class="flex h-14 shrink-0 items-center border-b border-base-300 px-4">
+    <span class="min-w-0 flex-1 truncate transition-opacity duration-200 group-data-[collapsed]/sidebar:opacity-0">
+      <%= render "shared/rx_terminal_brand" %>
+    </span>
+    <button class="btn btn-ghost btn-square btn-sm shrink-0 text-base-content/70"
+            data-action="click->sidebar#toggle"
+            data-tooltip-content="Expand sidebar"
+            data-tooltip-placement-value="right"
+            data-tooltip-arrow="true"
+            data-tooltip-animation-value="fade origin"
+            data-tooltip-size-value="small"
+            aria-label="Toggle sidebar">
+      <span class="material-symbols-outlined !text-[22px]" data-sidebar-target="toggleIcon">left_panel_close</span>
+    </button>
+  </div>
+
+  <div class="sidebar-scroll min-h-0 flex-1 overflow-y-auto">
+    <%= render "shared/sidebar_nav" %>
+  </div>
+
+  <!-- Footer: account menu -->
+  <div class="shrink-0 border-t border-base-300 p-3 group-data-[collapsed]/sidebar:p-2">
+    <div class="dropdown dropdown-top w-full">
+      <%# data-controller="tooltip" is added/removed by sidebar_controller.js, so the
+          email tooltip only appears while the sidebar is collapsed (email hidden). %>
+      <div tabindex="0" role="button"
+           class="flex w-full cursor-pointer items-center gap-2 rounded-lg p-2 hover:bg-base-300 group-data-[collapsed]/sidebar:justify-center"
+           aria-label="Account menu"
+           data-tooltip-content="<%= current_user.email %>"
+           data-tooltip-placement-value="right"
+           data-tooltip-arrow="true"
+           data-tooltip-animation-value="fade origin"
+           data-tooltip-size-value="small">
+        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-primary/10 text-xs font-semibold text-primary"><%= user_initials(current_user) %></div>
+        <span class="min-w-0 flex-1 truncate text-sm font-medium text-base-content/80 group-data-[collapsed]/sidebar:hidden"><%= current_user.email %></span>
+        <span class="material-symbols-outlined shrink-0 text-base-content/50 !text-[18px] group-data-[collapsed]/sidebar:!hidden">unfold_more</span>
+      </div>
+      <%# When collapsed, the aside's overflow-hidden would clip a full-width panel;
+          fixed positioning escapes that clip (the aside has no transform), so the
+          menu keeps its full size next to the rail. %>
+      <div tabindex="0" class="dropdown-content z-50 mb-2 w-full rounded-lg border border-base-300 bg-base-100 p-1 group-data-[collapsed]/sidebar:fixed group-data-[collapsed]/sidebar:bottom-14 group-data-[collapsed]/sidebar:left-2 group-data-[collapsed]/sidebar:w-56">
+        <%= render "shared/sidebar_account_menu" %>
+      </div>
+    </div>
+  </div>
+</aside>

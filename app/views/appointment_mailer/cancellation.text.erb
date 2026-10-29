@@ -1,0 +1,26 @@
+Appointment Cancelled
+=====================
+
+Dear <%= @appointment.first_name %>,
+
+We're writing to confirm that your appointment at <%= @organization.name %> has been cancelled.
+
+CANCELLED APPOINTMENT DETAILS
+------------------------------
+Booking Reference: <%= @appointment.booking_reference %>
+Service:           <%= @service.display_name %>
+Date:              <%= @appointment.appointment_date.strftime("%A, %d %B %Y") %>
+Time:              <%= @appointment.formatted_time %>
+<% if @appointment.cancellation_reason.present? %>
+
+REASON FOR CANCELLATION
+-----------------------
+<%= @appointment.cancellation_reason %>
+<% end %>
+
+If you'd like to rebook or have any questions, please contact us directly.
+
+---
+<%= @organization.name %><% if @organization.full_address.present? %> · <%= @organization.full_address %><% end %><% if @organization.contact_phone.present? %> · <%= @organization.contact_phone %><% end %><% if @organization.contact_email.present? %> · <%= @organization.contact_email %><% end %>
+
+<%= mailer_powered_by_text %>

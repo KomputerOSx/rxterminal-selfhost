@@ -1,0 +1,359 @@
+<%
+  templates = rule.upsell_templates.presence || [ rule.upsell_templates.build ]
+  primary_template = templates.first
+  extra_templates = templates.drop(1)
+  service_options = services.map { |service| [ service.display_name, service.id ] }
+  dob_collected = Current.organization.kiosk_collect_dob?
+%>
+
+<%= form_with model: [:org, rule], class: "space-y-6" do |form| %>
+  <% if rule.errors.any? %>
+    <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <p class="font-medium">There were some problems with your upsell rule:</p>
+      <ul class="mt-2 list-inside list-disc">
+        <% rule.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if services.size < 2 %>
+    <div class="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm text-warning">
+      You need at least two active services to create an upsell rule (one trigger and one suggestion).
+      <%= link_to "Manage services", org_services_path, class: "font-medium underline" %>.
+    </div>
+  <% end %>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Rule</h2>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Rule name *</span></label>
+        <%= form.text_field :name,
+              class: error_class_for(rule, :name, "input-field w-full") %>
+        <%= field_errors(rule, :name) %>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2" data-controller="service-pair-select">
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Trigger service",
+                  tooltips: true,
+                  tip: "The service the customer already selected on the walk-in form.",
+                  required: true %>
+          </label>
+          <%= form.select :trigger_service_id,
+                options_for_select(service_options, rule.trigger_service_id),
+                { include_blank: true },
+                class: error_class_for(rule, :trigger_service_id, "select-field w-full"),
+                disabled: services.size < 2,
+                data: {
+                  service_pair_select_target: "trigger",
+                  action: "change->service-pair-select#sync"
+                } %>
+          <%= field_errors(rule, :trigger_service_id) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Suggested service",
+                  tooltips: true,
+                  tip: "The additional service offered during the upsell step.",
+                  required: true %>
+          </label>
+          <%= form.select :suggested_service_id,
+                options_for_select(service_options, rule.suggested_service_id),
+                { include_blank: true },
+                class: error_class_for(rule, :suggested_service_id, "select-field w-full"),
+                disabled: services.size < 2,
+                data: {
+                  service_pair_select_target: "suggested",
+                  action: "change->service-pair-select#sync"
+                } %>
+          <%= field_errors(rule, :suggested_service_id) %>
+        </div>
+      </div>
+
+      <% if dob_collected %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Visit type</span></label>
+          <%= form.select :visit_type,
+                options_for_select(
+                  UpsellRule::VISIT_TYPES.map { |type| [ upsell_visit_type_label(type), type ] },
+                  rule.visit_type
+                ),
+                {},
+                class: "select-field w-full" %>
+        </div>
+      <% end %>
+
+      <label class="flex cursor-pointer items-center gap-3">
+        <%= form.check_box :active, class: "checkbox-field" %>
+        <span class="text-sm font-medium">Active</span>
+      </label>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Frequency</h2>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-control">
+          <label class="label"><span class="label-text">Frequency type *</span></label>
+          <%= form.select :frequency_type,
+                options_for_select(
+                  [
+                    [ "Every Nth customer", "every_nth_customer" ],
+                    [ "Percentage of customers", "percentage_based" ]
+                  ],
+                  rule.frequency_type
+                ),
+                {},
+                class: "select-field w-full" %>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">Frequency value *</span></label>
+          <%= form.number_field :frequency_value,
+                class: error_class_for(rule, :frequency_value, "input-field w-full"),
+                min: 1, step: 1 %>
+          <%= field_errors(rule, :frequency_value) %>
+        </div>
+      </div>
+
+      <div class="form-control max-w-xs">
+        <label class="label">
+          <%= form_label_text "Cooldown (days)",
+                tooltips: true,
+                tip: "Minimum days before this upsell can be shown to the same customer again. 0 means no cooldown - it can be offered every time they're eligible." %>
+        </label>
+        <%= form.number_field :cooldown_days,
+              class: error_class_for(rule, :cooldown_days, "input-field w-full"),
+              min: 0, step: 1 %>
+        <%= field_errors(rule, :cooldown_days) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Targeting</h2>
+
+      <% if dob_collected %>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="form-control">
+            <label class="label">
+              <%= form_label_text "Minimum age",
+                    tooltips: true,
+                    tip: "Leave blank for any age." %>
+            </label>
+            <%= form.number_field :min_age,
+                  class: error_class_for(rule, :min_age, "input-field w-full"),
+                  min: 0, step: 1 %>
+            <%= field_errors(rule, :min_age) %>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <%= form_label_text "Maximum age",
+                    tooltips: true,
+                    tip: "Leave blank for any age." %>
+            </label>
+            <%= form.number_field :max_age,
+                  class: error_class_for(rule, :max_age, "input-field w-full"),
+                  min: 0, step: 1 %>
+            <%= field_errors(rule, :max_age) %>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Active from",
+                  tooltips: true,
+                  tip: "First date this rule can run. Leave blank for no start limit." %>
+          </label>
+          <%= form.date_field :active_from,
+                class: error_class_for(rule, :active_from, "input-field w-full") %>
+          <%= field_errors(rule, :active_from) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Active until",
+                  tooltips: true,
+                  tip: "Last date this rule can run. Leave blank for no end limit." %>
+          </label>
+          <%= form.date_field :active_until,
+                class: error_class_for(rule, :active_until, "input-field w-full") %>
+          <%= field_errors(rule, :active_until) %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Active hours start",
+                  tooltips: true,
+                  tip: "Hour of day (0-23) when the rule can start showing. Leave blank for any hour." %>
+          </label>
+          <%= form.number_field :active_hours_start,
+                class: error_class_for(rule, :active_hours_start, "input-field w-full"),
+                min: 0, max: 23, step: 1 %>
+          <%= field_errors(rule, :active_hours_start) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Active hours end",
+                  tooltips: true,
+                  tip: "Hour of day (0-23) when the rule stops showing. Leave blank for any hour." %>
+          </label>
+          <%= form.number_field :active_hours_end,
+                class: error_class_for(rule, :active_hours_end, "input-field w-full"),
+                min: 0, max: 23, step: 1 %>
+          <%= field_errors(rule, :active_hours_end) %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Daily conversion limit",
+                  tooltips: true,
+                  tip: "Maximum accepted upsells per day. Leave blank for unlimited." %>
+          </label>
+          <%= form.number_field :daily_limit,
+                class: error_class_for(rule, :daily_limit, "input-field w-full"),
+                min: 1, step: 1 %>
+          <%= field_errors(rule, :daily_limit) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <%= form_label_text "Hourly conversion limit",
+                  tooltips: true,
+                  tip: "Maximum accepted upsells per hour. Leave blank for unlimited." %>
+          </label>
+          <%= form.number_field :hourly_limit,
+                class: error_class_for(rule, :hourly_limit, "input-field w-full"),
+                min: 1, step: 1 %>
+          <%= field_errors(rule, :hourly_limit) %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div data-controller="upsell-variants">
+    <div class="card border border-base-300">
+      <div class="card-body gap-5">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold">Presentation</h2>
+            <p class="mt-1 text-sm text-base-content/60 hidden"
+               data-upsell-variants-target="abHint">
+              Best-performing variant is shown 90% of the time; others are used for testing.
+            </p>
+          </div>
+
+          <label class="flex cursor-pointer items-center gap-3">
+            <span class="text-sm font-medium">A/B testing</span>
+            <input type="checkbox"
+                   class="toggle toggle-primary toggle-sm"
+                   checked
+                   data-upsell-variants-target="toggle"
+                   data-action="change->upsell-variants#toggleAb">
+          </label>
+        </div>
+
+        <p class="text-sm font-medium text-base-content/70 hidden"
+           data-upsell-variants-target="primaryLabel">
+          Variant A
+        </p>
+
+        <%= form.fields_for :upsell_templates, primary_template do |template_form| %>
+          <%= template_form.hidden_field :id if primary_template.persisted? %>
+          <%= render "org/upsell_rules/variant_fields",
+                template_form: template_form,
+                template: primary_template,
+                show_errors: true %>
+        <% end %>
+      </div>
+    </div>
+
+    <template data-upsell-variants-target="blueprint">
+      <%= form.fields_for :upsell_templates, UpsellTemplate.new, child_index: "NEW_RECORD" do |template_form| %>
+        <div class="card border border-base-300" data-upsell-variants-target="variant">
+          <div class="card-body gap-5">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold" data-upsell-variants-target="label"></span>
+              <%= template_form.hidden_field :_destroy, value: false, data: { "upsell-variants-target": "destroyFlag" } %>
+              <button type="button"
+                      class="btn btn-ghost btn-xs text-error"
+                      data-action="upsell-variants#remove">
+                <span class="material-symbols-outlined !text-[16px]">delete</span>
+                Remove
+              </button>
+            </div>
+
+            <%= render "org/upsell_rules/variant_fields",
+                  template_form: template_form,
+                  template: UpsellTemplate.new,
+                  show_errors: false %>
+          </div>
+        </div>
+      <% end %>
+    </template>
+
+    <div class="mt-4 flex flex-col gap-4" data-upsell-variants-target="extraSection">
+      <div class="flex flex-col gap-4" data-upsell-variants-target="container">
+        <% extra_templates.each_with_index do |template, index| %>
+          <%= form.fields_for :upsell_templates, template do |template_form| %>
+            <%= template_form.hidden_field :id if template.persisted? %>
+
+            <div class="card border border-base-300" data-upsell-variants-target="variant">
+              <div class="card-body gap-5">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-semibold" data-upsell-variants-target="label">
+                    <%= upsell_variant_label(index + 1) %>
+                  </span>
+                  <%= template_form.hidden_field :_destroy, value: false, data: { "upsell-variants-target": "destroyFlag" } %>
+                  <button type="button"
+                          class="btn btn-ghost btn-xs text-error"
+                          data-action="upsell-variants#remove">
+                    <span class="material-symbols-outlined !text-[16px]">delete</span>
+                    Remove
+                  </button>
+                </div>
+
+                <%= render "org/upsell_rules/variant_fields",
+                      template_form: template_form,
+                      template: template,
+                      show_errors: true %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <button type="button"
+              class="btn btn-outline btn-sm gap-1 self-start"
+              data-upsell-variants-target="addButton"
+              data-action="upsell-variants#add">
+        <span class="material-symbols-outlined !text-[18px]">add</span>
+        Add variant
+      </button>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    <%= form.submit rule.persisted? ? "Save changes" : "Create rule",
+          class: "btn btn-primary",
+          disabled: services.size < 2 %>
+    <%= link_to "Cancel", org_upsell_rules_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

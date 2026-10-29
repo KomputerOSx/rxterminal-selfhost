@@ -1,0 +1,58 @@
+<% month_range = month_date.beginning_of_month..month_date.end_of_month %>
+<% bookable_dates = schedule.bookable_dates_in(month_range) %>
+<% closures = schedule.closures_in(month_range) %>
+<% can_go_prev = month_date.beginning_of_month > Date.current.beginning_of_month %>
+<% can_go_next = month_date.end_of_month < schedule.window.last %>
+<div class="mb-4 flex items-center justify-between">
+  <button data-action="pointerdown->kiosk-appointment#apptPrevMonth"
+          <%= "disabled" unless can_go_prev %>
+          class="btn btn-outline btn-circle h-12 min-h-0 w-12 text-2xl font-bold">
+    ‹
+  </button>
+  <div class="text-xl font-bold text-base-content"><%= month_date.strftime("%B %Y") %></div>
+  <button data-action="pointerdown->kiosk-appointment#apptNextMonth"
+          <%= "disabled" unless can_go_next %>
+          class="btn btn-outline btn-circle h-12 min-h-0 w-12 text-2xl font-bold">
+    ›
+  </button>
+</div>
+
+<div class="mb-1 grid grid-cols-7 gap-1">
+  <% %w[Mon Tue Wed Thu Fri Sat Sun].each do |day| %>
+    <div class="py-2 text-center text-xs font-bold uppercase tracking-widest text-base-content/60"><%= day %></div>
+  <% end %>
+</div>
+
+<div data-kiosk-appointment-target="apptCalGrid" class="grid grid-cols-7 gap-1">
+  <% first_day = month_date.beginning_of_month %>
+  <% offset = (first_day.wday + 6) % 7 %>
+  <% days_in_month = month_date.end_of_month.day %>
+  <% today = Date.current %>
+  <% cells = [] %>
+  <% offset.times { cells << nil } %>
+  <% (1..days_in_month).each { |day| cells << month_date.change(day: day) } %>
+  <% cells << nil while (cells.length % 7).positive? %>
+
+  <% cells.each do |date| %>
+    <% if date.nil? %>
+      <div></div>
+    <% else %>
+      <% disabled = !bookable_dates.include?(date) %>
+      <% closure = closures[date] %>
+      <% today_flag = date == today %>
+      <% selected = selected_date == date %>
+
+      <button data-date="<%= date.iso8601 %>"
+              data-disabled="<%= disabled %>"
+              data-selected="<%= selected %>"
+              <% if closure %>title="<%= "Closed: #{closure}" %>"<% end %>
+              <%= "disabled" if disabled %>
+              class="appt-day-btn btn btn-sm h-16 min-h-0 flex-col gap-0 rounded-xl border-base-300 font-bold data-[selected=true]:btn-primary data-[disabled=true]:btn-disabled">
+        <span class="text-xl"><%= date.day %></span>
+        <% if today_flag %>
+          <span class="text-[9px] font-bold uppercase tracking-wider opacity-70">Today</span>
+        <% end %>
+      </button>
+    <% end %>
+  <% end %>
+</div>

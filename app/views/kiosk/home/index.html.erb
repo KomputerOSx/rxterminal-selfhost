@@ -1,0 +1,15 @@
+<div data-controller="kiosk-flow" class="fixed inset-0 overflow-hidden bg-base-100">
+  <div data-kiosk-flow-target="touchPanel"
+       class="kiosk-flow-panel"
+       data-active="false">
+    <%= render "kiosk/home/touch_start", organization: @organization %>
+  </div>
+
+  <div data-kiosk-flow-target="homePanel"
+       class="kiosk-flow-panel"
+       data-active="false">
+    <%= render "kiosk/home/home_panel",
+          organization: @organization,
+          featured_service: @featured_service %>
+  </div>
+</div>

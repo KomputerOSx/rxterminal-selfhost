@@ -1,0 +1,77 @@
+<%
+  price = @rule.suggested_service.price
+  free_offer = price.nil? || price.zero?
+%>
+
+<div class="portal-upsell">
+  <div class="portal-upsell-header-in text-center">
+    <h1 class="text-2xl font-bold sm:text-3xl">One more thing&hellip;</h1>
+  </div>
+
+  <div class="portal-upsell-card-pop card mt-6 border-2 border-primary shadow-lg">
+    <div class="card-body items-center gap-6 p-6 text-center sm:p-8">
+      <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary text-primary-content sm:h-24 sm:w-24">
+        <%= material_icon(@rule.suggested_service.icon.presence || "medical_services", size: 40) %>
+      </div>
+
+      <div class="max-w-md space-y-3">
+        <h2 class="text-2xl font-black leading-tight sm:text-3xl"><%= @template.title %></h2>
+        <% if @template.description.present? %>
+          <p class="text-base leading-relaxed text-base-content/70 sm:text-lg"><%= @template.description %></p>
+        <% end %>
+      </div>
+
+      <div>
+        <% if free_offer %>
+          <span class="portal-upsell-badge portal-upsell-badge--free">
+            <%= material_icon("sell", size: 22) %>
+            Completely FREE
+          </span>
+        <% else %>
+          <span class="portal-upsell-badge portal-upsell-badge--price">
+            <%= material_icon("sell", size: 22) %>
+            Only <%= number_to_currency(price, unit: @rule.suggested_service.organization.service_currency_symbol) %>
+          </span>
+        <% end %>
+      </div>
+
+      <div class="portal-upsell-meta text-base-content/60">
+        <div class="flex items-center gap-2">
+          <%= material_icon("schedule", size: 18) %>
+          <span class="text-sm font-medium sm:text-base"><%= @rule.suggested_service.estimated_duration %> minutes</span>
+        </div>
+        <div class="portal-upsell-meta-divider bg-base-300"></div>
+        <div class="flex items-center gap-2">
+          <%= material_icon("location_on", size: 18) %>
+          <span class="text-sm font-medium sm:text-base">Same visit</span>
+        </div>
+      </div>
+
+      <div class="w-full max-w-sm space-y-3">
+        <%= button_to accept_portal_walk_in_upsell_path,
+              method: :post,
+              class: "btn btn-primary btn-md h-auto min-h-0 w-full rounded-xl border-0 py-4 text-base font-bold sm:text-lg" do %>
+          <%= material_icon("add_circle", size: 22) %>
+          <%= @template.cta_text %>
+        <% end %>
+
+        <% if @rule.suggested_service.requires_appointment? && @organization.online_appointment_booking_enabled? %>
+          <%= button_to book_later_portal_walk_in_upsell_path,
+                method: :post,
+                class: "btn btn-accent btn-md h-auto min-h-0 w-full rounded-xl border-0 py-4 text-base font-bold sm:text-lg" do %>
+            <%= material_icon("calendar_add_on", size: 22) %>
+            Book for a later appointment
+          <% end %>
+        <% end %>
+
+        <%= button_to decline_portal_walk_in_upsell_path,
+              method: :post,
+              class: "btn btn-outline btn-md mt-1 h-auto min-h-0 w-full rounded-xl bg-base-100 py-3 text-sm font-medium" do %>
+          No thanks, continue to my queue number
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <p class="portal-upsell-note">You can always say no and keep your place in the queue.</p>
+</div>

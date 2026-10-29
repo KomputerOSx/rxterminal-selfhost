@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <title><%= content_for?(:title) ? "#{yield(:title)} - RxTerminal" : "RxTerminal - All-in-One Self-Service Kiosk Platform" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= javascript_tag nonce: true do %>
+      document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "light");
+    <% end %>
+    <% if content_for?(:meta_description) %>
+      <meta name="description" content="<%= yield :meta_description %>">
+    <% else %>
+      <meta name="description" content="RxTerminal is an all-in-one self-service kiosk platform for UK businesses.">
+    <% end %>
+    <link rel="canonical" href="<%= request.base_url + request.path %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "landing", "data-turbo-track": "reload" %>
+    <%= yield :head %>
+    <%= javascript_importmap_tags %>
+    <%= render "shared/fonts" %>
+  </head>
+
+  <body class="landing-page min-h-screen antialiased">
+    <%= render "shared/public_header" %>
+
+    <main class="w-full">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

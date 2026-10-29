@@ -1,0 +1,19 @@
+Your RxTerminal security code is:
+
+<%= @code %>
+
+This code expires in <%= @expires_in_minutes %> minutes.
+
+Sign-in details:
+
+Account: <%= @user.email %>
+Time: <%= @requested_at.strftime("%d %b %Y, %H:%M %Z") %>
+IP address: <%= @request_details[:ip_address].presence || "Unknown" %>
+Browser/device: <%= @request_details[:user_agent].presence || "Unknown" %>
+
+This email was sent because the correct password was entered for an account on RxTerminal.
+RxTerminal will never ask you to share this code with anyone.
+
+If this was not you, do not use the code. Change your password or ask another admin to disable your account.
+
+<%= mailer_powered_by_text %>

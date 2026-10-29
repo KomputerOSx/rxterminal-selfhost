@@ -1,0 +1,17 @@
+Confirm RxTerminal owner demotion
+
+<% if @self_initiated %>
+You requested to step down from owner to admin in <%= @organization.name %>.
+<% else %>
+<%= @initiator.email %> requested to demote you from owner to admin in <%= @organization.name %>.
+<% end %>
+
+Your confirmation code is:
+
+<%= @code %>
+
+Enter this code to confirm the change. It expires in 30 minutes.
+
+If you didn't request this, ignore this email.
+
+<%= mailer_powered_by_text %>

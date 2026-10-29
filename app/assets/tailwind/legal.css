@@ -1,0 +1,48 @@
+/* Public legal pages (terms, privacy, cookies, GDPR). */
+
+/* Public legal pages (terms, privacy, cookies, GDPR) - shared partials in app/views/shared/legal
+   render plain semantic h2/h3/section/table tags, so style them here instead of repeating
+   utility classes on every heading in every partial. */
+.legal-content .legal-subtitle {
+  @apply mb-6 text-base text-base-content/60;
+}
+
+.legal-content section {
+  @apply mt-8 border-t border-base-300 pt-6 first:mt-0 first:border-t-0 first:pt-0;
+}
+
+.legal-content h2 {
+  @apply text-xl font-semibold text-base-content;
+}
+
+.legal-content h3 {
+  @apply mt-4 mb-1 text-base font-semibold text-base-content;
+}
+
+.legal-content p {
+  @apply mt-2;
+}
+
+.legal-content ul {
+  @apply mt-2 ml-5 list-disc space-y-1;
+}
+
+.legal-content table {
+  @apply mt-3 w-full border-collapse overflow-hidden rounded-lg border border-base-300 text-sm;
+}
+
+.legal-content th {
+  @apply border-b border-base-300 bg-base-200 px-3 py-2 text-left font-semibold;
+}
+
+.legal-content td {
+  @apply border-b border-base-300 px-3 py-2 align-top text-base-content/80;
+}
+
+.legal-content tr:last-child td {
+  @apply border-b-0;
+}
+
+.legal-content code {
+  @apply rounded bg-base-200 px-1.5 py-0.5 font-mono text-xs;
+}

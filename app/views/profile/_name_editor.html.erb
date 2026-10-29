@@ -1,0 +1,14 @@
+<div class="flex items-center justify-between px-8 py-4">
+  <div>
+    <dt class="text-xs text-base-content/60 uppercase tracking-wide">Name</dt>
+    <%= render "profile/name_display" %>
+  </div>
+  <div data-controller="modal">
+    <button data-action="click->modal#open" class="btn btn-ghost btn-xs btn-square" title="Edit name">
+      <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+    </button>
+    <dialog id="<%= dom_id(current_user, :dialog) %>" data-modal-target="dialog" class="modal">
+      <%= render "profile/name_dialog_content" %>
+    </dialog>
+  </div>
+</div>

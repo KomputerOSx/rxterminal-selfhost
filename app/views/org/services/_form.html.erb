@@ -1,0 +1,233 @@
+<%
+  req = service.eligibility_requirements.presence || {}
+  eligible_items = req["eligible"] || []
+  not_eligible_items = req["not_eligible"] || []
+  additional_items = req["additional"] || []
+%>
+
+<%= form_with model: [:org, service], class: "space-y-6" do |form| %>
+  <% if service.errors.any? %>
+    <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <p class="font-medium">There were some problems with your service:</p>
+      <ul class="mt-2 list-inside list-disc">
+        <% service.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Service information</h2>
+
+      <% if calendars.any? && Current.organization.calendars_enabled? %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Calendar</span></label>
+          <%= form.collection_select :calendar_id, calendars, :id, :name,
+                { selected: service.calendar_id || calendars.first&.id },
+                class: "select-field w-full",
+                data: calendar_select_data(option_count: calendars.size) %>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-control">
+          <label class="label"><span class="label-text">Display name *</span></label>
+          <%= form.text_field :display_name,
+                class: error_class_for(service, :display_name, "input-field w-full") %>
+          <%= field_errors(service, :display_name) %>
+        </div>
+
+        <div class="form-control md:col-span-2">
+          <label class="label">
+            <%= form_label_text "Internal name",
+                  tooltips: true,
+                  tip: "Used for system identification. Lowercase letters and underscores, e.g. prescription_collection.",
+                  required: true %>
+          </label>
+          <%= form.text_field :internal_name,
+                class: error_class_for(service, :internal_name, "input-field w-full") %>
+          <%= field_errors(service, :internal_name) %>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Description</span></label>
+        <%= form.text_area :description,
+              class: error_class_for(service, :description, "textarea-field w-full"),
+              rows: 3 %>
+        <%= field_errors(service, :description) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Configuration</h2>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="form-control">
+          <label class="label"><span class="label-text">Duration (minutes) *</span></label>
+          <%= form.number_field :estimated_duration,
+                class: error_class_for(service, :estimated_duration, "input-field w-full"),
+                min: 1, step: 1 %>
+          <%= field_errors(service, :estimated_duration) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label"><span class="label-text">Price (<%= Current.organization.service_currency_symbol %>)</span></label>
+          <%= form.number_field :price,
+                class: error_class_for(service, :price, "input-field w-full"),
+                min: 0, step: 0.01 %>
+          <%= field_errors(service, :price) %>
+        </div>
+      </div>
+
+      <%= render "shared/material_icon_picker", form: form, selected_icon: service.icon, required: true %>
+      <%= field_errors(service, :icon) %>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Service options</h2>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <label class="flex cursor-pointer items-center gap-3">
+          <%= form.check_box :active, class: "checkbox-field" %>
+          <%= form_option_label "Active service",
+                tooltips: true,
+                tip: "Available to staff and customers when enabled." %>
+        </label>
+
+        <label class="flex cursor-pointer items-center gap-3">
+          <%= form.check_box :allows_immediate, class: "checkbox-field" %>
+          <%= form_option_label "Allow walk-in request",
+                tooltips: true,
+                tip: "Customers can request this service immediately." %>
+        </label>
+
+        <% appointments_enabled = Current.organization.appointments_enabled? %>
+        <label class="flex cursor-pointer items-center gap-3 <%= "opacity-60" unless appointments_enabled %>">
+          <%= form.check_box :requires_appointment, class: "checkbox-field", disabled: !appointments_enabled %>
+          <%= form_option_label "Allow appointments",
+                tooltips: true,
+                tip: appointments_enabled ? "Customers can book an appointment for a later date." : plan_feature_upgrade_message("appointment booking") %>
+          <%= plan_gated_nav_badge unless appointments_enabled %>
+        </label>
+
+        <label class="flex cursor-pointer items-center gap-3">
+          <%= form.check_box :allows_private_consultation, class: "checkbox-field" %>
+          <%= form_option_label "Private consultation option",
+                tooltips: true,
+                tip: "Customer can request privacy during the consultation." %>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border border-base-300" data-controller="eligibility-requirements">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Eligibility requirements</h2>
+
+      <div class="flex flex-col gap-8">
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <span class="badge badge-success badge-xs"></span>
+            <span class="text-sm font-medium">Eligible if</span>
+          </div>
+          <div data-eligibility-requirements-target="eligibleList" class="space-y-2">
+            <% eligible_items.each do |item| %>
+              <div data-eligibility-row class="flex items-center gap-2">
+                <input type="text"
+                       name="service[eligibility_requirements][eligible][]"
+                       value="<%= item %>"
+                       class="input-field flex-1" />
+                <button type="button"
+                        data-action="eligibility-requirements#remove"
+                        class="btn btn-ghost btn-xs btn-square shrink-0 text-error"
+                        title="Remove">
+                  <span class="material-symbols-outlined" style="font-size:18px">close</span>
+                </button>
+              </div>
+            <% end %>
+          </div>
+          <button type="button"
+                  data-action="eligibility-requirements#addEligible"
+                  class="btn btn-outline btn-sm mt-2 w-full gap-1">
+            <span class="material-symbols-outlined !text-[16px]">add</span>
+            Add item
+          </button>
+        </div>
+
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <span class="badge badge-error badge-xs"></span>
+            <span class="text-sm font-medium">Not eligible if</span>
+          </div>
+          <div data-eligibility-requirements-target="notEligibleList" class="space-y-2">
+            <% not_eligible_items.each do |item| %>
+              <div data-eligibility-row class="flex items-center gap-2">
+                <input type="text"
+                       name="service[eligibility_requirements][not_eligible][]"
+                       value="<%= item %>"
+                       class="input-field flex-1" />
+                <button type="button"
+                        data-action="eligibility-requirements#remove"
+                        class="btn btn-ghost btn-xs btn-square shrink-0 text-error"
+                        title="Remove">
+                  <span class="material-symbols-outlined" style="font-size:18px">close</span>
+                </button>
+              </div>
+            <% end %>
+          </div>
+          <button type="button"
+                  data-action="eligibility-requirements#addNotEligible"
+                  class="btn btn-outline btn-sm mt-2 w-full gap-1">
+            <span class="material-symbols-outlined !text-[16px]">add</span>
+            Add item
+          </button>
+        </div>
+
+        <div>
+          <div class="mb-3 flex items-center gap-2">
+            <span class="badge badge-info badge-xs"></span>
+            <span class="text-sm font-medium">Additional information</span>
+          </div>
+          <div data-eligibility-requirements-target="additionalList" class="space-y-2">
+            <% additional_items.each do |item| %>
+              <div data-eligibility-row class="flex items-center gap-2">
+                <input type="text"
+                       name="service[eligibility_requirements][additional][]"
+                       value="<%= item %>"
+                       class="input-field flex-1" />
+                <button type="button"
+                        data-action="eligibility-requirements#remove"
+                        class="btn btn-ghost btn-xs btn-square shrink-0 text-error"
+                        title="Remove">
+                  <span class="material-symbols-outlined" style="font-size:18px">close</span>
+                </button>
+              </div>
+            <% end %>
+          </div>
+          <button type="button"
+                  data-action="eligibility-requirements#addAdditional"
+                  class="btn btn-outline btn-sm mt-2 w-full gap-1">
+            <span class="material-symbols-outlined !text-[16px]">add</span>
+            Add item
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <%= link_to service.persisted? ? org_service_path(service) : org_services_path,
+          class: "btn btn-outline btn-sm gap-1" do %>
+      <span class="material-symbols-outlined !text-[18px]">close</span>
+      Cancel
+    <% end %>
+    <%= form.submit service.persisted? ? "Save changes" : "Create service", class: "btn btn-primary btn-sm" %>
+  </div>
+<% end %>

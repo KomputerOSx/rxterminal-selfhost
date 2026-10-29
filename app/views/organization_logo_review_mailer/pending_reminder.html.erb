@@ -1,0 +1,14 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Logos awaiting review
+</h1>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Hi <%= @admin.first_name.presence || "there" %>, there <%= @pending_count == 1 ? "is" : "are" %>
+  <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @pending_count %> unverified <%= "organization logo".pluralize(@pending_count) %></strong>
+  waiting for review.
+</p>
+
+<p style="margin:0;">
+  <%= link_to "Review logos", admin_organization_logos_url(status: "pending"), style: "display:inline-block;padding:12px 20px;background:#{MailerTheme::PRIMARY};color:#{MailerTheme::PRIMARY_CONTENT};text-decoration:none;border-radius:8px;font-size:15px;font-weight:600;" %>
+</p>
+<%= render "shared/mailer/link_fallback", url: admin_organization_logos_url(status: "pending") %>

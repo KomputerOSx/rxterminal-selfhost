@@ -1,0 +1,35 @@
+<% if show_calendar_scope_field?(organization, record) %>
+  <% scope = record.effective_calendar_scope %>
+  <% selected_ids = record.target_calendar_ids %>
+  <div class="form-control sm:col-span-2" data-controller="calendar-scope">
+    <label class="label"><%= form_label_text "Calendars" %></label>
+    <div class="flex flex-wrap gap-6">
+      <% [ [ "all", "All calendars" ], [ "selected", "Selected calendars" ] ].each do |value, label| %>
+        <label class="flex cursor-pointer items-center gap-2">
+          <input type="radio"
+                 name="<%= scope_key %>[calendar_scope]"
+                 value="<%= value %>"
+                 class="radio-field"
+                 data-action="change->calendar-scope#change"
+                 <%= "checked" if scope == value %>>
+          <span class="text-sm font-medium"><%= label %></span>
+        </label>
+      <% end %>
+    </div>
+
+    <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2 <%= "hidden" unless scope == "selected" %>" data-calendar-scope-target="list">
+      <input type="hidden" name="<%= scope_key %>[calendar_ids][]" value="">
+      <% booking_calendars_for(organization, record).each do |calendar| %>
+        <label class="flex cursor-pointer items-center gap-2">
+          <input type="checkbox"
+                 name="<%= scope_key %>[calendar_ids][]"
+                 value="<%= calendar.id %>"
+                 class="checkbox-field"
+                 <%= "checked" if selected_ids.include?(calendar.id) %>>
+          <span class="text-sm font-medium"><%= calendar.archived? ? "#{calendar.name} (archived)" : calendar.name %></span>
+        </label>
+      <% end %>
+    </div>
+    <%= field_errors(record, :calendar_ids) %>
+  </div>
+<% end %>

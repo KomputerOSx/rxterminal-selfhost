@@ -1,0 +1,58 @@
+<% month_range = month_date.beginning_of_month..month_date.end_of_month %>
+<% bookable_dates = schedule.bookable_dates_in(month_range) %>
+<% closures = schedule.closures_in(month_range) %>
+<% can_go_prev = month_date.beginning_of_month > Date.current.beginning_of_month %>
+<% can_go_next = month_date.end_of_month < schedule.window.last %>
+<div class="flex items-center justify-between mb-3">
+  <button type="button"
+          data-action="public-appointment#prevMonth"
+          <%= "disabled" unless can_go_prev %>
+          class="btn btn-ghost btn-square btn-sm">
+    <%= material_icon("chevron_left", size: 20) %>
+  </button>
+  <span class="font-semibold"><%= month_date.strftime("%B %Y") %></span>
+  <button type="button"
+          data-action="public-appointment#nextMonth"
+          <%= "disabled" unless can_go_next %>
+          class="btn btn-ghost btn-square btn-sm">
+    <%= material_icon("chevron_right", size: 20) %>
+  </button>
+</div>
+
+<div class="mb-1 grid grid-cols-7 text-center">
+  <% %w[Mo Tu We Th Fr Sa Su].each do |day| %>
+    <div class="py-1 text-xs font-medium text-base-content/50"><%= day %></div>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-7 gap-y-1 text-center">
+  <% first_day = month_date.beginning_of_month %>
+  <% offset = (first_day.wday + 6) % 7 %>
+  <% today = Date.current %>
+  <% cells = [] %>
+  <% offset.times { cells << nil } %>
+  <% (1..month_date.end_of_month.day).each { |day| cells << month_date.change(day: day) } %>
+  <% cells << nil while (cells.length % 7).positive? %>
+
+  <% cells.each do |date| %>
+    <% if date.nil? %>
+      <div></div>
+    <% else %>
+      <% disabled = !bookable_dates.include?(date) %>
+      <% closure = closures[date] %>
+      <% is_today = date == today %>
+      <% is_selected = selected_date == date %>
+      <button type="button"
+              data-date="<%= date.iso8601 %>"
+              data-disabled="<%= disabled %>"
+              <% if closure %>title="<%= "Closed: #{closure}" %>"<% end %>
+              data-action="public-appointment#selectDate"
+              class="mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm transition
+                     <%= is_today ? 'ring-2 ring-primary font-semibold' : '' %>
+                     <%= disabled ? 'cursor-not-allowed text-base-content/25' : 'cursor-pointer hover:bg-base-200' %>
+                     <%= is_selected ? 'bg-primary font-bold text-primary-content hover:bg-primary' : '' %>">
+        <%= date.day %>
+      </button>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,70 @@
+<% show_calendars = organization.calendars.count > 1 %>
+<% openings = booking_table_page(organization.appointment_openings.upcoming.includes(:calendars), :openings_page) %>
+
+<div id="appointment_openings_section" class="mt-10">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <%= form_section_heading "Openings", tooltips: true,
+          tip: "Each opening has a start and end date and its own bookable windows. Customers can only book inside an opening. A calendar's own opening replaces All calendars openings on days it has bookable windows." %>
+    <%= link_to new_org_appointment_booking_opening_path, class: "btn btn-primary btn-sm gap-1" do %>
+      <span class="material-symbols-outlined !text-[18px]">add</span>
+      New opening
+    <% end %>
+  </div>
+
+  <%= turbo_frame_tag "appointment_openings_table", data: { turbo_action: "advance" } do %>
+  <% if openings.any? %>
+    <div class="card mt-4 border border-base-300">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table table-sm">
+            <thead class="bg-base-200 text-sm font-semibold text-base-content">
+              <tr class="border-b border-base-300">
+                <th>Name</th>
+                <th>Dates</th>
+                <% if show_calendars %>
+                  <th>Calendars</th>
+                <% end %>
+                <th>Bookable days</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% openings.each do |opening| %>
+                <tr id="<%= dom_id(opening) %>" class="hover:bg-base-200">
+                  <td class="font-medium"><%= opening.name.presence || "Opening" %></td>
+                  <td class="text-base-content/60"><%= booking_date_label(opening.start_date) %> to <%= booking_date_label(opening.end_date) %></td>
+                  <% if show_calendars %>
+                    <td class="text-base-content/60"><%= opening.calendar_label %></td>
+                  <% end %>
+                  <td class="text-base-content/60"><%= opening_days_label(opening) %></td>
+                  <td>
+                    <div class="flex justify-end gap-1">
+                      <%= link_to edit_org_appointment_booking_opening_path(opening), class: "btn btn-ghost btn-xs btn-square", title: "Edit",
+                            data: { turbo_frame: "_top" } do %>
+                        <span class="material-symbols-outlined" style="font-size:18px">edit</span>
+                      <% end %>
+                      <%= button_to org_appointment_booking_opening_path(opening, openings_page: openings.current_page), method: :delete,
+                            class: "btn btn-ghost btn-xs btn-square text-error",
+                            title: "Remove",
+                            data: {
+                              controller: "confirm-modal",
+                              action: "click->confirm-modal#confirm",
+                              confirm_modal_message_value: "Remove the opening #{opening.display_name}?"
+                            } do %>
+                        <span class="material-symbols-outlined" style="font-size:18px">delete</span>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <%= render "org/appointment_booking/table_pagination", records: openings, param_name: :openings_page, frame_id: "appointment_openings_table" %>
+  <% else %>
+    <p class="mt-4 text-sm text-base-content/60">No upcoming openings.</p>
+  <% end %>
+  <% end %>
+</div>

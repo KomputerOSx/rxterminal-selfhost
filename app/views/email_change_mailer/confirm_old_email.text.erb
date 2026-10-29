@@ -1,0 +1,14 @@
+Confirm your RxTerminal email change
+
+Someone requested to change the email address on this account from <%= @user.email %> to <%= @user.unconfirmed_email %>.
+
+Your confirmation code is:
+
+<%= @code %>
+
+Enter this code to approve the change. It expires in <%= @expires_in_minutes %> minutes.
+Both the old and new email addresses must confirm before the change takes effect.
+
+If you didn't request this, you can safely ignore this email.
+
+<%= mailer_powered_by_text %>

@@ -1,0 +1,51 @@
+# Recurring jobs for Solid Queue (Rails 8)
+# Documentation: https://github.com/basecamp/solid_queue#recurring-tasks
+
+default: &default
+  cleanup_expired_sessions:
+    class: CleanupExpiredSessionsJob
+    queue: default
+    schedule: every hour
+
+  data_retention:
+    class: DataRetentionJob
+    queue: default
+    schedule: every day at 2am
+
+  appointment_reminders:
+    class: AppointmentReminderJob
+    queue: default
+    schedule: every day at 9am
+
+  appointment_no_show:
+    class: AppointmentNoShowJob
+    queue: default
+    schedule: every day at 9am
+
+  trial_reminder:
+    class: TrialReminderJob
+    queue: default
+    schedule: every day at 9am
+
+  organization_logo_review_reminder:
+    class: OrganizationLogoReviewReminderJob
+    queue: default
+    schedule: every day at 9am
+
+  stripe_webhook_reconciliation:
+    class: Billing::ReconcileStripeEventsJob
+    queue: default
+    schedule: every hour
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+
+  clear_solid_queue_finished_jobs:
+    command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
+    schedule: every hour at minute 12

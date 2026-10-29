@@ -1,0 +1,5 @@
+<%# locals: (icon:, tone: "success") %>
+<% tone_class = tone == "warning" ? "bg-warning/15 text-warning" : (tone == "info" ? "bg-info/15 text-info" : "bg-success/15 text-success") %>
+<div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full <%= tone_class %>">
+  <%= material_icon(icon, size: 32) %>
+</div>

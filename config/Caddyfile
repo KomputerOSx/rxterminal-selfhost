@@ -1,0 +1,45 @@
+{
+	email {$ACME_EMAIL}
+	on_demand_tls {
+		# Ask via local rewriter so kamal-proxy gets Host: APP_HOST.
+		# Direct http://127.0.0.1:3000/... returns 404 (no matching Kamal host).
+		ask http://127.0.0.1:9090/internal/domain_validations
+	}
+}
+
+# Rewrites TLS-ask + app traffic onto the Kamal-deployed host name.
+# kamal-proxy routes by Host; Rails still sees the real domain via X-Forwarded-Host.
+(app_upstream) {
+	reverse_proxy 127.0.0.1:3000 {
+		header_up Host {$APP_HOST}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-Proto https
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+# Local-only ask endpoint: preserve path/query, force Host to APP_HOST.
+http://127.0.0.1:9090 {
+	reverse_proxy 127.0.0.1:3000 {
+		header_up Host {$APP_HOST}
+	}
+}
+
+# Never serve the app over plain HTTP - browsers must use HTTPS or CSRF
+# Origin (http) won't match Rails base_url (https) under assume_ssl.
+http:// {
+	redir https://{host}{uri} permanent
+}
+
+# Primary application host (managed Let's Encrypt cert).
+https://{$APP_HOST:localhost} {
+	import app_upstream
+}
+
+# Customer custom domains - on-demand TLS (ask endpoint gates issuance).
+https:// {
+	tls {
+		on_demand
+	}
+	import app_upstream
+}

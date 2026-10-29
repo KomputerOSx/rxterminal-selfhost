@@ -1,0 +1,33 @@
+<% content_for :title, "Confirm Email" %>
+<section class="mx-auto w-full max-w-md">
+  <div class="card bg-base-200 shadow-sm">
+    <div class="card-body">
+      <h1 class="card-title text-2xl font-bold">Confirm your email</h1>
+
+      <p class="text-sm text-base-content/70 mt-1">
+        Enter the 6-digit code we sent to <strong><%= @email %></strong>.
+      </p>
+
+      <div data-controller="two-factor" data-two-factor-autosubmit-value="true">
+        <%= form_with url: confirmations_path, method: :post, html: { class: "mt-4 space-y-4", data: { two_factor_target: "form" } } do %>
+          <div class="form-control">
+            <%= render "shared/otp_digits", error: @code_error.present? %>
+            <% if @code_error.present? %>
+              <p class="text-error text-xs mt-1 font-medium text-center"><%= @code_error %></p>
+            <% end %>
+          </div>
+
+          <div class="form-control mt-2">
+            <%= submit_tag "Confirm", class: "btn btn-primary w-full", data: { two_factor_target: "submitButton" } %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="text-sm text-center">
+        <%= link_to "Login", login_path, class: "link link-primary" %>
+      </div>
+    </div>
+  </div>
+</section>

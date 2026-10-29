@@ -1,0 +1,147 @@
+<section class="w-full max-w-lg">
+  <p class="text-sm font-medium text-base-content/60">Organization</p>
+  <h1 class="mt-3 text-2xl font-semibold">Create organization</h1>
+  <p class="mt-2 text-sm text-base-content/70">
+    Add another location under your account. Each organization has its own subscription.
+    <% if current_user.trial_available? %>
+      Your first organization includes a <%= Organization::TRIAL_DAYS %>-day trial; additional organizations require a paid plan.
+    <% else %>
+      Additional organizations require a paid plan before you can use them.
+    <% end %>
+  </p>
+
+  <div class="mt-6 card border border-base-300">
+    <div class="card-body">
+      <%= form_with model: @organization, url: org_organization_path, class: "space-y-4" do |form| %>
+        <% if @organization.errors.any? %>
+          <div class="alert alert-error text-sm">
+            <ul class="list-disc pl-4">
+              <% @organization.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form-control">
+          <%= form.label :name, class: "label" do %>
+            <span class="label-text">Organization name</span>
+          <% end %>
+          <%= form.text_field :name,
+                class: error_class_for(@organization, :name, "input-field w-full"),
+                required: true,
+                autofocus: true,
+                autocomplete: "organization" %>
+          <%= field_errors(@organization, :name) %>
+        </div>
+
+        <div class="form-control">
+          <%= form.label :slug, class: "label" do %>
+            <span class="label-text">Slug</span>
+          <% end %>
+          <%= form.text_field :slug,
+                class: error_class_for(@organization, :slug, "input-field w-full font-mono"),
+                autocomplete: "off",
+                spellcheck: false,
+                required: true %>
+          <%= field_errors(@organization, :slug) %>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="form-control">
+            <%= form.label :address_line1, class: "label" do %>
+              <span class="label-text">Address line 1</span>
+            <% end %>
+            <%= form.text_field :address_line1,
+                  class: error_class_for(@organization, :address_line1, "input-field w-full"),
+                  autocomplete: "address-line1",
+                  required: true %>
+            <%= field_errors(@organization, :address_line1) %>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :address_line2, class: "label" do %>
+              <span class="label-text">Address line 2</span>
+            <% end %>
+            <%= form.text_field :address_line2,
+                  class: error_class_for(@organization, :address_line2, "input-field w-full"),
+                  autocomplete: "address-line2" %>
+            <%= field_errors(@organization, :address_line2) %>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :address_city, class: "label" do %>
+              <span class="label-text">City</span>
+            <% end %>
+            <%= form.text_field :address_city,
+                  class: error_class_for(@organization, :address_city, "input-field w-full"),
+                  autocomplete: "address-level2",
+                  required: true %>
+            <%= field_errors(@organization, :address_city) %>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :address_state, class: "label" do %>
+              <span class="label-text">State / region</span>
+            <% end %>
+            <%= form.text_field :address_state,
+                  class: error_class_for(@organization, :address_state, "input-field w-full"),
+                  autocomplete: "address-level1" %>
+            <%= field_errors(@organization, :address_state) %>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :address_postal_code, class: "label" do %>
+              <span class="label-text">Postal code</span>
+            <% end %>
+            <%= form.text_field :address_postal_code,
+                  class: error_class_for(@organization, :address_postal_code, "input-field w-full"),
+                  autocomplete: "postal-code",
+                  required: true %>
+            <%= field_errors(@organization, :address_postal_code) %>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :address_country, class: "label" do %>
+              <span class="label-text">Country</span>
+            <% end %>
+            <%= form.text_field :address_country,
+                  class: error_class_for(@organization, :address_country, "input-field w-full"),
+                  autocomplete: "country-name",
+                  required: true %>
+            <%= field_errors(@organization, :address_country) %>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="form-control">
+            <%= form.label :contact_email, class: "label" do %>
+              <span class="label-text">Email</span>
+            <% end %>
+            <%= form.email_field :contact_email,
+                  class: error_class_for(@organization, :contact_email, "input-field w-full"),
+                  autocomplete: "email",
+                  required: true %>
+            <%= field_errors(@organization, :contact_email) %>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :contact_phone, class: "label" do %>
+              <span class="label-text">Contact number</span>
+            <% end %>
+            <%= form.text_field :contact_phone,
+                  class: error_class_for(@organization, :contact_phone, "input-field w-full"),
+                  autocomplete: "tel",
+                  required: true %>
+            <%= field_errors(@organization, :contact_phone) %>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-2">
+          <%= form.submit "Create organization", class: "btn btn-primary btn-sm" %>
+          <%= link_to "Cancel", dashboard_path, class: "btn btn-ghost btn-sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

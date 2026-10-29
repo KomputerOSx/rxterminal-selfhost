@@ -1,0 +1,13 @@
+<%= link_to profile_path, class: "flex h-9 w-full items-center gap-2 rounded-lg px-2 text-sm text-base-content hover:bg-base-200" do %>
+  <span class="flex w-6 shrink-0 items-center justify-center">
+    <span class="material-symbols-outlined !text-[20px]">person</span>
+  </span>
+  <span class="truncate">Profile</span>
+<% end %>
+<%= button_to session_path, method: :delete, form: { class: "w-full" }, title: "Logout",
+      class: "flex h-9 w-full items-center gap-2 rounded-lg px-2 text-sm text-error hover:bg-base-200" do %>
+  <span class="flex w-6 shrink-0 items-center justify-center">
+    <span class="material-symbols-outlined !text-[20px]">logout</span>
+  </span>
+  <span class="truncate">Logout</span>
+<% end %>

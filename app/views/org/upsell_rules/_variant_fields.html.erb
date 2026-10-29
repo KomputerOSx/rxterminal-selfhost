@@ -1,0 +1,25 @@
+<%# locals: (template_form:, template:, show_errors: true) %>
+<div class="form-control">
+  <label class="label"><span class="label-text">Title *</span></label>
+  <%= template_form.text_field :title,
+        class: show_errors ? error_class_for(template, :title, "input-field w-full") : "input-field w-full",
+        placeholder: "e.g. Protect your heart health" %>
+  <%= field_errors(template, :title) if show_errors %>
+</div>
+
+<div class="form-control mt-3">
+  <label class="label"><span class="label-text">Description</span></label>
+  <%= template_form.text_area :description,
+        class: show_errors ? error_class_for(template, :description, "textarea-field w-full") : "textarea-field w-full",
+        rows: 2,
+        placeholder: "e.g. Only takes 5 minutes." %>
+  <%= field_errors(template, :description) if show_errors %>
+</div>
+
+<div class="form-control mt-3">
+  <label class="label"><span class="label-text">Accept button text *</span></label>
+  <%= template_form.text_field :cta_text,
+        class: show_errors ? error_class_for(template, :cta_text, "input-field w-full") : "input-field w-full",
+        placeholder: "e.g. Add blood pressure check" %>
+  <%= field_errors(template, :cta_text) if show_errors %>
+</div>

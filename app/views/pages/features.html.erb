@@ -1,0 +1,414 @@
+<% content_for :title, "Features" %>
+<% content_for :meta_description, "Every way your customers arrive, one queue. Kiosk self check-in, mobile QR check-in, online booking, and a live staff queue - all in RxTerminal." %>
+
+<main class="wire">
+
+  <section class="sec feat-hero">
+    <h1 class="h-display h-display--lg-w"><span class="text-primary">One Platform</span><br>For All Your Needs</h1>
+    <p class="lead lead--mt">Kiosk, phone, or online booking. RxTerminal keeps the counter moving and the waiting room calm.</p>
+    <div class="hero__actions">
+      <%= link_to "Start your free trial", new_registration_path, class: "btn btn-primary" %>
+      <%= link_to "Talk to us", contact_path, class: "btn btn-outline" %>
+    </div>
+  </section>
+
+  <section class="sec">
+
+    <%# 1. Mobile check-in %>
+    <div class="feat-row">
+      <div class="feat-row__copy">
+        <h2 class="h-display h-display--md">Scan, and you are in line</h2>
+        <p>Customers point their camera at the QR code by the door. No app to install, no form to fight with, and they get a live queue position.</p>
+        <ul class="feat-check-list">
+          <li><%= material_icon("check_circle", size: 20) %> Works in any phone browser</li>
+          <li><%= material_icon("check_circle", size: 20) %> Live position and wait estimate</li>
+          <li><%= material_icon("check_circle", size: 20) %> Appeal to younger customers</li>
+
+        </ul>
+      </div>
+      <div class="feat-row__illo rx-illo">
+        <svg viewBox="0 0 460 300" role="img" aria-label="Mobile flow: scan the QR code, join in the browser, track your place">
+                <rect x="20" y="35" width="100" height="200" rx="18" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <rect x="56" y="44" width="28" height="5" rx="2.5" fill="var(--color-base-300)"/>
+                <rect x="32" y="70" width="76" height="76" rx="6" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                <g fill="var(--color-base-content)" transform="translate(44,82) scale(0.7)">
+                  <rect width="20" height="20"/><rect x="54" width="20" height="20"/><rect y="54" width="20" height="20"/>
+                  <rect x="5" y="5" width="10" height="10" fill="var(--color-base-200)"/><rect x="59" y="5" width="10" height="10" fill="var(--color-base-200)"/><rect x="5" y="59" width="10" height="10" fill="var(--color-base-200)"/>
+                  <rect x="28" y="8" width="8" height="8"/><rect x="40" y="24" width="8" height="8"/><rect x="28" y="40" width="8" height="8"/><rect x="54" y="32" width="8" height="8"/><rect x="62" y="54" width="12" height="8"/><rect x="28" y="60" width="8" height="14"/><rect x="44" y="48" width="8" height="8"/>
+                </g>
+                <path d="M32 78 v-8 h8 M108 78 v-8 h-8 M32 138 v8 h8 M108 138 v8 h-8" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="36" y1="76" x2="104" y2="76" stroke="var(--color-primary)" stroke-width="2" opacity=".9" class="rx-anim-scanline"/>
+                <text x="70" y="172" font-size="8" text-anchor="middle" fill="var(--color-base-content)" opacity=".6" font-family="Roboto">Point your camera</text>
+                <text x="70" y="184" font-size="8" text-anchor="middle" fill="var(--color-base-content)" opacity=".6" font-family="Roboto">at the code</text>
+                <rect x="180" y="35" width="100" height="200" rx="18" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <rect x="216" y="44" width="28" height="5" rx="2.5" fill="var(--color-base-300)"/>
+                <text x="230" y="76" font-size="10" font-weight="700" text-anchor="middle" fill="var(--color-base-content)" font-family="Roboto">Join the queue</text>
+                <rect x="192" y="88" width="76" height="22" rx="6" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                <text x="199" y="102" font-size="9" fill="var(--color-base-content)" font-family="Roboto">Alex</text>
+                <rect x="221" y="92" width="1.4" height="14" fill="var(--color-primary)" class="rx-anim-blink"/>
+                <rect x="192" y="116" width="76" height="22" rx="6" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                <text x="199" y="130" font-size="8" fill="var(--color-base-content)" opacity=".7" font-family="Roboto">Prescriptions</text>
+                <rect x="192" y="152" width="76" height="26" rx="13" fill="var(--color-primary)"/>
+                <text x="230" y="169" font-size="9" font-weight="700" text-anchor="middle" fill="var(--color-primary-content)" font-family="Roboto">Join queue</text>
+                <circle cx="256" cy="172" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                  <animate attributeName="r" values="6;15" dur="1.9s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values=".8;0" dur="1.9s" repeatCount="indefinite"/>
+                </circle>
+                <g class="rx-anim-tapdot" style="transform-origin:256px 172px">
+                  <circle cx="256" cy="172" r="6" fill="var(--color-base-content)" opacity=".85"/>
+                  <circle cx="256" cy="172" r="6" fill="none" stroke="var(--color-base-100)" stroke-width="2"/>
+                </g>
+                <text x="230" y="204" font-size="8" text-anchor="middle" fill="var(--color-base-content)" opacity=".55" font-family="Roboto">No app needed</text>
+                <rect x="340" y="35" width="100" height="200" rx="18" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <rect x="376" y="44" width="28" height="5" rx="2.5" fill="var(--color-base-300)"/>
+                <circle cx="390" cy="72" r="11" fill="none" stroke="var(--color-success)" stroke-width="2"/>
+                <path d="M385 72 l3.5 3.5 l7 -8" fill="none" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/>
+                <text x="390" y="99" font-size="10" font-weight="700" text-anchor="middle" fill="var(--color-base-content)" font-family="Roboto">You're in line</text>
+                <g class="rx-anim-floaty">
+                  <rect x="352" y="110" width="76" height="62" rx="10" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                  <text x="390" y="126" font-size="7" text-anchor="middle" fill="var(--color-base-content)" opacity=".6" font-family="Roboto">YOUR NUMBER</text>
+                  <text x="390" y="158" font-size="26" font-weight="900" text-anchor="middle" fill="var(--color-primary)" font-family="Roboto">08</text>
+                </g>
+                <text x="390" y="206" font-size="7" text-anchor="middle" fill="var(--color-base-content)" opacity=".55" font-family="Roboto">We'll text you when</text>
+                <text x="390" y="216" font-size="7" text-anchor="middle" fill="var(--color-base-content)" opacity=".55" font-family="Roboto">it's your turn</text>
+                <path d="M132 140 h18 m-6 -5 l6 5 l-6 5" fill="none" stroke="var(--color-base-content)" stroke-width="2" opacity=".5" stroke-linecap="round"/>
+                <path d="M292 140 h18 m-6 -5 l6 5 l-6 5" fill="none" stroke="var(--color-base-content)" stroke-width="2" opacity=".5" stroke-linecap="round"/>
+                <g font-family="Roboto" font-size="9" text-anchor="middle" fill="var(--color-base-content)" opacity=".55">
+                  <text x="70" y="264">Scan at the door</text>
+                  <text x="230" y="264">Join in the browser</text>
+                  <text x="390" y="264">Track your place</text>
+                </g>
+              </svg>
+      </div>
+    </div>
+
+    <%# 2. Self-service kiosk %>
+    <div class="feat-row feat-row--reverse">
+      <div class="feat-row__illo rx-illo">
+        <svg viewBox="0 0 460 300" role="img" aria-label="Kiosk flow: touch to start, pick a service, get a queue number">
+                <rect x="14" y="40" width="124" height="210" rx="14" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <text x="76" y="72" font-size="10" font-weight="700" text-anchor="middle" font-family="Roboto"><tspan fill="var(--color-primary)">Rx</tspan><tspan fill="var(--color-base-content)">Terminal</tspan></text>
+                <circle cx="76" cy="128" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                  <animate attributeName="r" values="26;40" dur="2.2s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values=".7;0" dur="2.2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="76" cy="128" r="26" fill="var(--color-primary)"/>
+                <text x="76" y="128" font-size="26" text-anchor="middle" dominant-baseline="central" font-family="Material Symbols Outlined" fill="var(--color-primary-content)">touch_app</text>
+                <text x="76" y="180" font-size="9" text-anchor="middle" fill="var(--color-base-content)" opacity=".7" font-family="Roboto">Touch anywhere</text>
+                <text x="76" y="193" font-size="9" text-anchor="middle" fill="var(--color-base-content)" opacity=".7" font-family="Roboto">to begin</text>
+                <rect x="24" y="226" width="50" height="14" rx="7" fill="var(--color-base-200)"/>
+                <text x="49" y="236" font-size="7" text-anchor="middle" fill="var(--color-base-content)" opacity=".55" font-family="Roboto">Privacy</text>
+                <rect x="168" y="40" width="124" height="210" rx="14" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <text x="230" y="68" font-size="10" font-weight="700" text-anchor="middle" fill="var(--color-base-content)" font-family="Roboto">How can we help?</text>
+                <rect x="180" y="80" width="100" height="46" rx="10" fill="var(--color-primary)"/>
+                <text x="230" y="103" font-size="9" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="var(--color-primary-content)" font-family="Roboto">Featured service</text>
+                <rect x="180" y="134" width="100" height="46" rx="10" fill="var(--color-success)"/>
+                <text x="230" y="157" font-size="9" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="white" font-family="Roboto">Browse services</text>
+                <rect x="180" y="188" width="100" height="46" rx="10" fill="var(--color-warning)"/>
+                <text x="230" y="205" font-size="9" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="white" font-family="Roboto">Appointment</text>
+                <text x="230" y="217" font-size="9" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="white" font-family="Roboto">check-in</text>
+                <circle cx="264" cy="116" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                  <animate attributeName="r" values="7;18" dur="1.9s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values=".8;0" dur="1.9s" repeatCount="indefinite"/>
+                </circle>
+                <g class="rx-anim-tapdot" style="transform-origin:264px 116px">
+                  <circle cx="264" cy="116" r="7" fill="var(--color-base-content)" opacity=".85"/>
+                  <circle cx="264" cy="116" r="7" fill="none" stroke="var(--color-base-100)" stroke-width="2"/>
+                </g>
+                <rect x="322" y="40" width="124" height="210" rx="14" fill="#16a34a" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <circle cx="384" cy="82" r="17" fill="none" stroke="white" stroke-width="2.5"/>
+                <path d="M376 82 l5.5 5.5 l10.5 -12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                <text x="384" y="122" font-size="11" font-weight="700" text-anchor="middle" fill="white" font-family="Roboto">You're all set!</text>
+                <g class="rx-anim-floaty">
+                  <rect x="336" y="134" width="96" height="72" rx="10" fill="white"/>
+                  <text x="384" y="152" font-size="8" text-anchor="middle" fill="#16a34a" opacity=".8" font-family="Roboto">Prescriptions</text>
+                  <text x="384" y="192" font-size="32" font-weight="900" text-anchor="middle" fill="#16a34a" font-family="Roboto">07</text>
+                </g>
+                <rect x="352" y="218" width="64" height="16" rx="8" fill="white" opacity=".25"/>
+                <text x="384" y="229" font-size="7" font-weight="700" text-anchor="middle" fill="white" font-family="Roboto">Main screen</text>
+                <path d="M144 145 h18 m-6 -5 l6 5 l-6 5" fill="none" stroke="var(--color-base-content)" stroke-width="2" opacity=".5" stroke-linecap="round"/>
+                <path d="M298 145 h18 m-6 -5 l6 5 l-6 5" fill="none" stroke="var(--color-base-content)" stroke-width="2" opacity=".5" stroke-linecap="round"/>
+                <g font-family="Roboto" font-size="9" text-anchor="middle" fill="var(--color-base-content)" opacity=".55">
+                  <text x="76" y="274">Tap to start</text>
+                  <text x="230" y="274">Pick a service</text>
+                  <text x="384" y="274">Get a number</text>
+                </g>
+              </svg>
+      </div>
+      <div class="feat-row__copy">
+        <h2 class="h-display h-display--md">A front desk that never has a line</h2>
+        <p>A touchscreen at the door walks customers from tap to ticket: pick a service, type a name, get a queue number. Big targets, guided steps, nothing crammed.</p>
+        <ul class="feat-check-list">
+          <li><%= material_icon("check_circle", size: 20) %> Guided intake with big touch targets</li>
+          <li><%= material_icon("check_circle", size: 20) %> Eight theme presets or fully custom branding</li>
+          <li><%= material_icon("check_circle", size: 20) %> Always-green confirmation, whatever the theme</li>
+        </ul>
+      </div>
+    </div>
+
+    <%# 3. Online booking portal %>
+    <div class="feat-row">
+      <div class="feat-row__copy">
+        <h2 class="h-display h-display--md">Bookings while you sleep</h2>
+        <p>A public booking page for your business. Customers pick a service and a slot; confirmations and reminders go out automatically.</p>
+        <ul class="feat-check-list">
+          <li><%= material_icon("check_circle", size: 20) %> Live availability, no double booking</li>
+          <li><%= material_icon("check_circle", size: 20) %> Automatic confirmation and reminder emails</li>
+          <li><%= material_icon("check_circle", size: 20) %> Cancel or reschedule without a phone call</li>
+        </ul>
+      </div>
+      <div class="feat-row__illo rx-illo">
+        <svg viewBox="0 0 380 270" role="img" aria-label="Browser window with service cards being selected">
+                <rect x="30" y="20" width="320" height="230" rx="10" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <line x1="30" y1="54" x2="350" y2="54" stroke="var(--color-base-300)" stroke-width="2"/>
+                <circle cx="52" cy="37" r="5" fill="var(--color-base-300)"/><circle cx="68" cy="37" r="5" fill="var(--color-base-300)"/><circle cx="84" cy="37" r="5" fill="var(--color-base-300)"/>
+                <rect x="110" y="29" width="180" height="16" rx="8" fill="var(--color-base-200)"/>
+                <text x="200" y="41" font-size="10" text-anchor="middle" fill="var(--color-base-content)" opacity=".6" font-family="Roboto">yourclinic.rxterminal.com</text>
+                <text x="54" y="86" font-size="14" font-weight="700" fill="var(--color-base-content)" font-family="Roboto">Choose a service</text>
+                <rect x="54" y="100" width="86" height="70" rx="8" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                <rect x="150" y="100" width="86" height="70" rx="8" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                <g class="rx-anim-floaty">
+                  <rect x="246" y="100" width="86" height="70" rx="8" fill="var(--color-primary)"/>
+                  <rect x="258" y="114" width="40" height="7" rx="3" fill="var(--color-primary-content)" opacity=".9"/>
+                  <rect x="258" y="128" width="56" height="6" rx="3" fill="var(--color-primary-content)" opacity=".5"/>
+                  <rect x="258" y="146" width="34" height="12" rx="6" fill="var(--color-primary-content)" opacity=".9"/>
+                </g>
+                <rect x="66" y="114" width="40" height="7" rx="3" fill="var(--color-base-300)"/><rect x="66" y="128" width="56" height="6" rx="3" fill="var(--color-base-300)" opacity=".7"/>
+                <rect x="162" y="114" width="40" height="7" rx="3" fill="var(--color-base-300)"/><rect x="162" y="128" width="56" height="6" rx="3" fill="var(--color-base-300)" opacity=".7"/>
+                <g>
+                  <rect x="54" y="186" width="278" height="44" rx="8" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                  <text x="70" y="212" font-size="11" fill="var(--color-base-content)" opacity=".7" font-family="Roboto">Tue 10:30</text>
+                  <rect x="134" y="196" width="58" height="24" rx="12" fill="var(--color-base-100)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                  <text x="163" y="212" font-size="11" text-anchor="middle" fill="var(--color-base-content)" opacity=".7" font-family="Roboto">11:00</text>
+                  <rect x="200" y="196" width="58" height="24" rx="12" fill="var(--color-success)"/>
+                  <text x="229" y="212" font-size="11" font-weight="700" text-anchor="middle" fill="white" font-family="Roboto">11:30</text>
+                  <rect x="266" y="196" width="58" height="24" rx="12" fill="var(--color-base-100)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                  <text x="295" y="212" font-size="11" text-anchor="middle" fill="var(--color-base-content)" opacity=".7" font-family="Roboto">12:00</text>
+                </g>
+              </svg>
+      </div>
+    </div>
+
+    <%# 4. Live queue %>
+    <div class="feat-row feat-row--reverse">
+      <div class="feat-row__illo rx-illo">
+        <svg viewBox="0 0 420 300" role="img" aria-label="Staff queue screen with waiting and in-progress columns">
+                <rect x="20" y="16" width="380" height="268" rx="10" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <text x="38" y="44" font-size="14" font-weight="700" fill="var(--color-base-content)" font-family="Roboto">Queue</text>
+                <rect x="92" y="28" width="78" height="20" rx="10" fill="none" stroke="var(--color-success)" stroke-width="1.5"/>
+                <circle cx="105" cy="38" r="3" fill="var(--color-success)"/>
+                <text x="113" y="42" font-size="9" fill="var(--color-success)" font-family="Roboto">Connected</text>
+                <rect x="38" y="58" width="92" height="26" rx="8" fill="var(--color-primary)"/>
+                <text x="84" y="75" font-size="11" font-weight="700" text-anchor="middle" fill="var(--color-primary-content)" font-family="Roboto">Call next</text>
+                <g font-family="Roboto">
+                  <rect x="216" y="56" width="54" height="30" rx="6" fill="var(--color-base-200)"/>
+                  <text x="243" y="70" font-size="11" font-weight="700" text-anchor="middle" fill="var(--color-base-content)">4</text>
+                  <text x="243" y="81" font-size="7" text-anchor="middle" fill="var(--color-base-content)" opacity=".55">WAITING</text>
+                  <rect x="274" y="56" width="54" height="30" rx="6" fill="var(--color-base-200)"/>
+                  <text x="301" y="70" font-size="11" font-weight="700" text-anchor="middle" fill="var(--color-base-content)">2</text>
+                  <text x="301" y="81" font-size="7" text-anchor="middle" fill="var(--color-base-content)" opacity=".55">SERVING</text>
+                  <rect x="332" y="56" width="54" height="30" rx="6" fill="var(--color-base-200)"/>
+                  <text x="359" y="70" font-size="11" font-weight="700" text-anchor="middle" fill="var(--color-base-content)">12m</text>
+                  <text x="359" y="81" font-size="7" text-anchor="middle" fill="var(--color-base-content)" opacity=".55">AVG WAIT</text>
+                </g>
+                <line x1="20" y1="96" x2="400" y2="96" stroke="var(--color-base-300)" stroke-width="2"/>
+                <text x="38" y="116" font-size="9" font-weight="700" fill="var(--color-base-content)" opacity=".5" font-family="Roboto">WAITING</text>
+                <text x="222" y="116" font-size="9" font-weight="700" fill="var(--color-base-content)" opacity=".5" font-family="Roboto">IN PROGRESS</text>
+                <g font-family="Roboto">
+                  <rect x="38" y="124" width="170" height="44" rx="8" fill="var(--color-base-200)"/>
+                  <text x="52" y="152" font-size="18" font-weight="900" fill="var(--color-primary)">07</text>
+                  <rect x="82" y="134" width="56" height="6" rx="3" fill="var(--color-base-300)"/>
+                  <rect x="82" y="146" width="40" height="5" rx="2.5" fill="var(--color-base-300)" opacity=".6"/>
+                  <rect x="158" y="134" width="40" height="20" rx="10" fill="var(--color-primary)"/>
+                  <text x="178" y="147" font-size="9" font-weight="700" text-anchor="middle" fill="var(--color-primary-content)">Call</text>
+                  <circle cx="178" cy="144" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                    <animate attributeName="r" values="8;20" dur="1.9s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values=".8;0" dur="1.9s" repeatCount="indefinite"/>
+                  </circle>
+                  <rect x="38" y="176" width="170" height="44" rx="8" fill="var(--color-base-200)"/>
+                  <text x="52" y="204" font-size="18" font-weight="900" fill="var(--color-base-content)" opacity=".8">08</text>
+                  <rect x="82" y="186" width="56" height="6" rx="3" fill="var(--color-base-300)"/>
+                  <rect x="82" y="198" width="40" height="5" rx="2.5" fill="var(--color-base-300)" opacity=".6"/>
+                  <rect x="38" y="228" width="170" height="44" rx="8" fill="var(--color-base-200)"/>
+                  <text x="52" y="256" font-size="18" font-weight="900" fill="var(--color-base-content)" opacity=".8">09</text>
+                  <rect x="82" y="238" width="56" height="6" rx="3" fill="var(--color-base-300)"/>
+                  <rect x="82" y="250" width="40" height="5" rx="2.5" fill="var(--color-base-300)" opacity=".6"/>
+                  <rect x="222" y="124" width="160" height="44" rx="8" fill="var(--color-base-200)"/>
+                  <text x="236" y="152" font-size="18" font-weight="900" fill="var(--color-secondary)">06</text>
+                  <rect x="266" y="134" width="48" height="6" rx="3" fill="var(--color-base-300)"/>
+                  <rect x="266" y="146" width="36" height="5" rx="2.5" fill="var(--color-base-300)" opacity=".6"/>
+                  <rect x="326" y="134" width="46" height="20" rx="10" fill="var(--color-success)"/>
+                  <text x="349" y="147" font-size="9" font-weight="700" text-anchor="middle" fill="white">Done</text>
+                  <rect x="222" y="176" width="160" height="44" rx="8" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-dasharray="6 5" class="rx-anim-dashmove-slow"/>
+                  <text x="302" y="202" font-size="9" text-anchor="middle" fill="var(--color-primary)" opacity=".8">Calling 07</text>
+                </g>
+              </svg>
+      </div>
+      <div class="feat-row__copy">
+        <h2 class="h-display h-display--md">The queue, at a glance</h2>
+        <p>Waiting on the left, in progress on the right, big ticket numbers readable across the counter. Call next moves the line in one click.</p>
+        <ul class="feat-check-list">
+          <li><%= material_icon("check_circle", size: 20) %> Call, complete, or return in one click</li>
+          <li><%= material_icon("check_circle", size: 20) %> Voice announcements and a waiting-room display</li>
+          <li><%= material_icon("check_circle", size: 20) %> Live wait times and daily totals</li>
+        </ul>
+      </div>
+    </div>
+
+    <%# 5. Appointments day-sheet %>
+    <div class="feat-row">
+      <div class="feat-row__copy">
+        <h2 class="h-display h-display--md">Every booking in one place</h2>
+        <p>A tidy, printable table of the day. Search by name or reference, flip between days, and check people in as they arrive.</p>
+        <ul class="feat-check-list">
+          <li><%= material_icon("check_circle", size: 20) %> Status badges for booked, checked in, no-show</li>
+          <li><%= material_icon("check_circle", size: 20) %> One-tap check-in sends them to the queue</li>
+          <li><%= material_icon("check_circle", size: 20) %> Print the day for the counter</li>
+        </ul>
+      </div>
+      <div class="feat-row__illo rx-illo">
+        <svg viewBox="0 0 420 280" role="img" aria-label="Appointments day-sheet table with a one-tap check-in">
+                <rect x="20" y="14" width="380" height="252" rx="10" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <text x="38" y="42" font-size="14" font-weight="700" fill="var(--color-base-content)" font-family="Roboto">Appointments</text>
+                <rect x="284" y="26" width="98" height="22" rx="8" fill="var(--color-primary)"/>
+                <text x="333" y="40" font-size="9" font-weight="700" text-anchor="middle" fill="var(--color-primary-content)" font-family="Roboto">New appointment</text>
+                <rect x="38" y="54" width="80" height="20" rx="10" fill="var(--color-base-200)"/>
+                <text x="50" y="67" font-size="9" fill="var(--color-base-content)" opacity=".5" font-family="Roboto">Search</text>
+                <text x="146" y="68" font-size="11" fill="var(--color-base-content)" opacity=".6" font-family="Roboto">&#8249;</text>
+                <rect x="156" y="54" width="96" height="20" rx="6" fill="var(--color-base-200)"/>
+                <text x="204" y="67" font-size="9" text-anchor="middle" fill="var(--color-base-content)" opacity=".8" font-family="Roboto">Tue, Jul 28</text>
+                <text x="260" y="68" font-size="11" fill="var(--color-base-content)" opacity=".6" font-family="Roboto">&#8250;</text>
+                <text x="382" y="67" font-size="9" text-anchor="end" fill="var(--color-base-content)" opacity=".55" font-family="Roboto">5 today &#183; 3 booked</text>
+                <line x1="20" y1="84" x2="400" y2="84" stroke="var(--color-base-300)" stroke-width="2"/>
+                <g font-family="Roboto" font-size="8" font-weight="700" fill="var(--color-base-content)" opacity=".45">
+                  <text x="40" y="98">TIME</text><text x="96" y="98">NAME</text><text x="204" y="98">REF</text><text x="282" y="98">STATUS</text>
+                </g>
+                <g stroke="var(--color-base-300)" stroke-width="1"><line x1="20" y1="140" x2="400" y2="140"/><line x1="20" y1="176" x2="400" y2="176"/><line x1="20" y1="212" x2="400" y2="212"/></g>
+                <g font-family="Roboto" font-size="10" fill="var(--color-base-content)">
+                  <text x="40" y="126">09:00</text><text x="96" y="126">A. Osei</text>
+                  <text x="204" y="126" font-family="ui-monospace, monospace" font-size="9" opacity=".6">7F2K4</text>
+                  <rect x="278" y="110" width="66" height="18" rx="9" fill="var(--color-success)" opacity=".15"/>
+                  <rect x="278" y="110" width="66" height="18" rx="9" fill="none" stroke="var(--color-success)" opacity=".4"/>
+                  <text x="311" y="122" font-size="8" font-weight="700" text-anchor="middle" fill="var(--color-success)">Checked in</text>
+                  <text x="40" y="162">09:30</text><text x="96" y="162">M. Reyes</text>
+                  <text x="204" y="162" font-family="ui-monospace, monospace" font-size="9" opacity=".6">9C1D8</text>
+                  <rect x="278" y="146" width="66" height="18" rx="9" fill="var(--color-info)" opacity=".15"/>
+                  <rect x="278" y="146" width="66" height="18" rx="9" fill="none" stroke="var(--color-info)" opacity=".4"/>
+                  <text x="311" y="158" font-size="8" font-weight="700" text-anchor="middle" fill="var(--color-info)">Booked</text>
+                  <rect x="22" y="180" width="376" height="32" fill="var(--color-primary)" opacity=".07"/>
+                  <text x="40" y="198">10:00</text><text x="96" y="198">J. Park</text>
+                  <text x="204" y="198" font-family="ui-monospace, monospace" font-size="9" opacity=".6">4B7Q2</text>
+                  <rect x="278" y="182" width="66" height="18" rx="9" fill="var(--color-info)" opacity=".15"/>
+                  <rect x="278" y="182" width="66" height="18" rx="9" fill="none" stroke="var(--color-info)" opacity=".4"/>
+                  <text x="311" y="194" font-size="8" font-weight="700" text-anchor="middle" fill="var(--color-info)">Booked</text>
+                  <rect x="350" y="182" width="46" height="18" rx="9" fill="var(--color-primary)"/>
+                  <text x="373" y="194" font-size="8" font-weight="700" text-anchor="middle" fill="var(--color-primary-content)">Check in</text>
+                  <circle cx="373" cy="191" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                    <animate attributeName="r" values="10;14" dur="1.9s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values=".8;0" dur="1.9s" repeatCount="indefinite"/>
+                  </circle>
+                  <text x="40" y="234">10:30</text><text x="96" y="234">T. Silva</text>
+                  <text x="204" y="234" font-family="ui-monospace, monospace" font-size="9" opacity=".6">2N9X1</text>
+                  <rect x="278" y="218" width="66" height="18" rx="9" fill="var(--color-error)" opacity=".15"/>
+                  <rect x="278" y="218" width="66" height="18" rx="9" fill="none" stroke="var(--color-error)" opacity=".4"/>
+                  <text x="311" y="230" font-size="8" font-weight="700" text-anchor="middle" fill="var(--color-error)">No-show</text>
+                </g>
+              </svg>
+      </div>
+    </div>
+
+    <%# 6. Smart upsell engine %>
+    <div class="feat-row feat-row--reverse">
+      <div class="feat-row__illo rx-illo">
+        <svg viewBox="0 0 380 260" role="img" aria-label="Checked-in screen with an add-on offer and the rule behind it">
+                <rect x="30" y="20" width="200" height="220" rx="14" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <rect x="44" y="34" width="172" height="52" rx="10" fill="var(--color-success)"/>
+                <circle cx="68" cy="60" r="12" fill="none" stroke="white" stroke-width="2"/>
+                <path d="M62.5 60 l4 4 l7.5 -8.5" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <text x="88" y="57" font-size="13" font-weight="700" fill="white" font-family="Roboto">Checked in</text>
+                <text x="88" y="72" font-size="10" fill="white" opacity=".85" font-family="Roboto">Prescription pick up</text>
+                <rect x="44" y="98" width="120" height="8" rx="4" fill="var(--color-base-300)"/>
+                <rect x="44" y="114" width="90" height="8" rx="4" fill="var(--color-base-300)" opacity=".6"/>
+                <g class="rx-anim-floaty">
+                  <rect x="44" y="140" width="172" height="86" rx="12" fill="var(--color-base-100)" stroke="var(--color-warning)" stroke-width="2"/>
+                  <rect x="118" y="146" width="24" height="4" rx="2" fill="var(--color-base-300)"/>
+                  <text x="58" y="168" font-size="12" font-weight="700" fill="var(--color-base-content)" font-family="Roboto">Flu shot today?</text>
+                  <text x="58" y="184" font-size="10" fill="var(--color-base-content)" opacity=".6" font-family="Roboto">Adds ~5 min &#183; $24</text>
+                  <rect x="58" y="194" width="64" height="22" rx="11" fill="var(--color-success)"/>
+                  <text x="90" y="209" font-size="10" font-weight="700" text-anchor="middle" fill="white" font-family="Roboto">Add it</text>
+                  <rect x="130" y="194" width="64" height="22" rx="11" fill="none" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                  <text x="162" y="209" font-size="10" text-anchor="middle" fill="var(--color-base-content)" opacity=".7" font-family="Roboto">No thanks</text>
+                </g>
+                <text x="300" y="52" font-size="10" font-weight="700" text-anchor="middle" fill="var(--color-base-content)" opacity=".5" font-family="Roboto">YOUR RULE</text>
+                <rect x="252" y="62" width="96" height="28" rx="14" fill="var(--color-base-200)" stroke="var(--color-base-300)" stroke-width="1.5"/>
+                <text x="300" y="80" font-size="10" text-anchor="middle" fill="var(--color-base-content)" font-family="Roboto">Prescription</text>
+                <path d="M300 96 L300 126" stroke="var(--color-warning)" stroke-width="2" stroke-dasharray="5 5" class="rx-anim-dashmove"/>
+                <path d="M294 122 l6 9 l6 -9" fill="none" stroke="var(--color-warning)" stroke-width="2"/>
+                <path d="M330 100 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3 z" fill="var(--color-warning)"/>
+                <rect x="252" y="138" width="96" height="28" rx="14" fill="var(--color-base-100)" stroke="var(--color-warning)" stroke-width="2"/>
+                <text x="300" y="156" font-size="10" font-weight="700" text-anchor="middle" fill="var(--color-warning)" font-family="Roboto">Flu shot</text>
+                <text x="300" y="190" font-size="10" text-anchor="middle" fill="var(--color-base-content)" opacity=".55" font-family="Roboto">31% say yes</text>
+              </svg>
+      </div>
+      <div class="feat-row__copy">
+        <h2 class="h-display h-display--md">The right offer, at the right moment</h2>
+        <p>When a customer checks in, RxTerminal can suggest one relevant add-on based on the service they picked. One tap to accept, one tap to decline. No pressure, no pop-up storm.</p>
+        <ul class="feat-check-list">
+          <li><%= material_icon("check_circle", size: 20) %> Rules you define per service</li>
+          <li><%= material_icon("check_circle", size: 20) %> Shown once, at check-in only</li>
+          <li><%= material_icon("check_circle", size: 20) %> Acceptance rate in your analytics</li>
+        </ul>
+      </div>
+    </div>
+
+    <%# 7. Custom domain %>
+    <div class="feat-row">
+      <div class="feat-row__copy">
+        <h2 class="h-display h-display--md">Your booking page, your address</h2>
+        <p>Point book.yourclinic.com at RxTerminal and the whole portal lives on your domain, with your branding. SSL is handled automatically.</p>
+        <ul class="feat-check-list">
+          <li><%= material_icon("check_circle", size: 20) %> One CNAME record, verified in minutes</li>
+          <li><%= material_icon("check_circle", size: 20) %> Automatic SSL certificates</li>
+          <li><%= material_icon("check_circle", size: 20) %> RxTerminal stays invisible to your customers</li>
+        </ul>
+      </div>
+      <div class="feat-row__illo rx-illo">
+        <svg viewBox="0 0 380 230" role="img" aria-label="Browser address bar typing a custom domain">
+                <rect x="30" y="40" width="320" height="150" rx="10" fill="var(--color-base-100)" stroke="var(--color-base-content)" stroke-width="2.5"/>
+                <line x1="30" y1="78" x2="350" y2="78" stroke="var(--color-base-300)" stroke-width="2"/>
+                <circle cx="46" cy="59" r="4" fill="var(--color-base-300)"/><circle cx="59" cy="59" r="4" fill="var(--color-base-300)"/><circle cx="72" cy="59" r="4" fill="var(--color-base-300)"/>
+                <rect x="88" y="46" width="204" height="26" rx="13" fill="var(--color-base-200)"/>
+                <g transform="translate(99,55)">
+                  <rect width="10" height="10" y="0" rx="2" fill="none" stroke="var(--color-success)" stroke-width="1.6"/>
+                  <path d="M2.5 5 l2 2 l3.5 -4.5" fill="none" stroke="var(--color-success)" stroke-width="1.5"/>
+                </g>
+                <g>
+                  <clipPath id="typeclip"><rect x="118" y="46" height="26" width="128" class="rx-anim-typedomain"/></clipPath>
+                  <text x="120" y="64" font-size="13" font-weight="700" fill="var(--color-base-content)" font-family="Roboto" clip-path="url(#typeclip)">book.yourclinic.com</text>
+                  <rect x="120" y="51" width="1.6" height="16" fill="var(--color-primary)" class="rx-anim-typecursor"/>
+                </g>
+                <rect x="54" y="96" width="120" height="14" rx="7" fill="var(--color-base-300)"/>
+                <rect x="54" y="120" width="272" height="8" rx="4" fill="var(--color-base-300)" opacity=".6"/>
+                <rect x="54" y="136" width="220" height="8" rx="4" fill="var(--color-base-300)" opacity=".6"/>
+                <rect x="54" y="158" width="80" height="20" rx="10" fill="var(--color-primary)"/>
+              </svg>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="sec" id="get-started">
+    <div class="final-cta">
+      <div>
+        <h2>Put your counter on autopilot</h2>
+        <p>Free to start. No card required.</p>
+      </div>
+      <div class="final-cta__actions">
+        <%= link_to "Start your free trial", new_registration_path, class: "btn btn-primary" %>
+      </div>
+    </div>
+  </section>
+
+  <%= render "shared/public_footer" %>
+
+</main>

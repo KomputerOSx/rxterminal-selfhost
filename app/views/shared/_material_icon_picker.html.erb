@@ -1,0 +1,57 @@
+<div class="relative"
+     data-controller="material-icon-picker"
+     data-material-icon-picker-icons-value="<%= material_icon_groups.to_json %>"
+     data-material-icon-picker-selected-value="<%= selected_icon.to_s %>">
+  <label class="label">
+    <span class="label-text inline-flex items-center gap-1">
+      Icon<%= " *" if local_assigns[:required] %>
+      <% if local_assigns[:tooltip].present? %>
+        <%= render "shared/form_field_tooltip", text: tooltip %>
+      <% end %>
+    </span>
+  </label>
+
+  <%= form.hidden_field local_assigns.fetch(:field, :icon), data: { "material-icon-picker-target": "hidden" } %>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button"
+            class="btn btn-outline btn-sm gap-2"
+            data-action="click->material-icon-picker#toggle">
+      <span class="material-symbols-outlined !text-[20px]"
+            data-material-icon-picker-target="triggerIcon"><%= selected_icon.presence || "add_photo_alternate" %></span>
+      <span data-material-icon-picker-target="triggerLabel">
+        <%= selected_icon.present? ? selected_icon.tr("_", " ") : "Choose icon" %>
+      </span>
+      <span class="material-symbols-outlined !text-[16px] text-base-content/50">unfold_more</span>
+    </button>
+
+    <% if selected_icon.present? && !local_assigns[:required] %>
+      <button type="button"
+              class="btn btn-ghost btn-sm"
+              data-action="click->material-icon-picker#clear">
+        Clear
+      </button>
+    <% end %>
+  </div>
+
+  <div data-material-icon-picker-target="popover"
+       class="absolute left-0 top-full z-40 mt-2 hidden w-full max-w-xl">
+    <div class="card border border-base-300 bg-base-100">
+      <div class="card-body gap-3 p-4">
+        <input type="search"
+               class="input-field w-full"
+               data-material-icon-picker-target="search"
+               data-action="input->material-icon-picker#filter" />
+
+        <div data-material-icon-picker-target="grid"
+             class="max-h-80 space-y-4 overflow-y-auto">
+        </div>
+
+        <p data-material-icon-picker-target="empty"
+           class="hidden text-sm text-base-content/60">
+          No icons match your search.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

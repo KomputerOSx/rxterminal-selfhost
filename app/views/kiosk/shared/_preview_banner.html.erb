@@ -1,0 +1,23 @@
+<% if kiosk_preview_mode? %>
+  <div class="fixed inset-x-0 top-0 z-[60] border-b border-warning/40 bg-warning/15 backdrop-blur">
+    <div class="mx-auto flex max-w-[1100px] items-center justify-between gap-4 px-4 py-3 md:px-8">
+      <div class="flex min-w-0 items-center gap-3">
+        <span class="material-symbols-outlined shrink-0 text-warning !text-[24px]">visibility</span>
+        <div class="min-w-0">
+          <p class="truncate text-sm font-semibold text-base-content">Kiosk preview</p>
+          <p class="truncate text-xs text-base-content/70">
+            Nothing is saved to the queue or appointments.
+          </p>
+        </div>
+      </div>
+
+      <%= button_to exit_preview_org_kiosk_path,
+            method: :delete,
+            class: "btn btn-warning btn-sm shrink-0 gap-1",
+            form: { data: { turbo: false } } do %>
+        <span class="material-symbols-outlined !text-[18px]">close</span>
+        Exit preview
+      <% end %>
+    </div>
+  </div>
+<% end %>

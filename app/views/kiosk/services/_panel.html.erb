@@ -1,0 +1,50 @@
+<% organization = local_assigns[:organization] %>
+<% services = local_assigns[:services] %>
+<% preview = local_assigns.fetch(:preview, false) %>
+
+<div class="<%= preview ? "" : "kiosk-services-shell" %> flex flex-col bg-base-100">
+  <div class="kiosk-services-topbar shrink-0">
+    <div class="mx-auto flex max-w-[1100px] items-center justify-between">
+      <% if preview %>
+        <span class="kiosk-services-back-btn">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back
+        </span>
+      <% else %>
+        <%= link_to kiosk_home_path,
+              class: "kiosk-services-back-btn",
+              data: { action: "pointerdown->kiosk-services#press", kiosk_nav: "back" } do %>
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back
+        <% end %>
+      <% end %>
+
+      <div class="text-center">
+        <div class="kiosk-services-title"><%= organization.name %></div>
+        <div class="kiosk-services-subtitle">Select a service to get started</div>
+      </div>
+
+      <div class="w-[120px]" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="mx-auto w-full max-w-[1100px] px-10 py-9">
+    <% if services.any? %>
+      <div class="grid grid-cols-2 gap-6">
+        <%= render partial: "kiosk/services/service_card",
+              collection: services,
+              as: :service,
+              locals: { preview: preview } %>
+      </div>
+    <% else %>
+      <div class="py-20 text-center">
+        <div class="kiosk-services-empty-title mb-2">No services available</div>
+        <div class="kiosk-services-empty-copy">Please speak to a member of staff.</div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% unless preview %>
+  <%= render "kiosk/shared/idle_timer", timeout: 30_000, countdown: 5 %>
+<% end %>

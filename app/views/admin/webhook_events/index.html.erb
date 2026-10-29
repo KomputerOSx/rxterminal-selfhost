@@ -1,0 +1,101 @@
+<section class="w-full max-w-7xl">
+  <div class="flex items-start justify-between">
+    <h1 class="text-4xl font-semibold tracking-normal">Webhook Events</h1>
+  </div>
+
+  <%= form_with url: admin_webhook_events_path, method: :get, class: "mt-6" do %>
+    <div class="card border border-base-300">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold">Filters</h2>
+        <div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div class="form-control">
+            <label class="label"><span class="label-text text-xs">Status</span></label>
+            <select name="status" class="select-field">
+              <option value="">All statuses</option>
+              <option value="processed" <%= "selected" if @filter_params[:status] == "processed" %>>Processed</option>
+              <option value="pending" <%= "selected" if @filter_params[:status] == "pending" %>>Pending / failed</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label class="label"><span class="label-text text-xs">Event type</span></label>
+            <select name="event_type" class="select-field">
+              <option value="">All event types</option>
+              <% @event_types.each do |event_type| %>
+                <option value="<%= event_type %>" <%= "selected" if @filter_params[:event_type] == event_type %>><%= event_type %></option>
+              <% end %>
+            </select>
+          </div>
+          <%= render "audit_logs/datetime_filter_field",
+                name: :date_from,
+                value: @filter_params[:date_from],
+                label: "From" %>
+          <%= render "audit_logs/datetime_filter_field",
+                name: :date_to,
+                value: @filter_params[:date_to],
+                label: "To" %>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <%= submit_tag "Apply filters", class: "btn btn-primary btn-sm" %>
+          <% if @filters_applied %>
+            <%= link_to "Clear", admin_webhook_events_path, class: "btn btn-ghost btn-sm" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card mt-4 border border-base-300">
+    <div class="card-body p-0">
+      <div class="overflow-x-auto">
+        <table class="table table-sm">
+          <thead class="bg-base-200 text-sm font-semibold text-base-content">
+            <tr class="border-b border-base-300">
+              <th>ID</th>
+              <th>Event type</th>
+              <th>Stripe event ID</th>
+              <th>Status</th>
+              <th>Received</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @webhook_events.each do |webhook_event| %>
+              <% pay_webhook_id = @pending_pay_webhook_ids[webhook_event.stripe_event_id] %>
+              <tr class="hover:bg-base-200">
+                <td class="font-medium">#<%= webhook_event.id %></td>
+                <td class="font-mono text-xs"><%= webhook_event.event_type %></td>
+                <td class="font-mono text-xs"><%= webhook_event.stripe_event_id %></td>
+                <td>
+                  <% if pay_webhook_id %>
+                    <span class="badge badge-warning badge-sm">Pending / failed</span>
+                  <% else %>
+                    <span class="badge badge-success badge-sm">Processed</span>
+                  <% end %>
+                </td>
+                <td class="text-base-content/60"><%= webhook_event.received_at.strftime("%Y-%m-%d %H:%M:%S %Z") %></td>
+                <td>
+                  <div class="flex justify-end">
+                    <% if pay_webhook_id %>
+                      <%= link_to "View", admin_webhook_event_path(pay_webhook_id), class: "link link-primary" %>
+                    <% else %>
+                      <span class="text-base-content/40">-</span>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <% if @webhook_events.none? %>
+          <p class="px-8 py-6 text-sm text-base-content/60">No webhook events match your filters.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if @webhook_events.respond_to?(:total_pages) && @webhook_events.total_pages > 1 %>
+    <nav class="mt-4" aria-label="Pagination">
+      <%= paginate @webhook_events %>
+    </nav>
+  <% end %>
+</section>

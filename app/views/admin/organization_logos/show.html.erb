@@ -1,0 +1,70 @@
+<section class="w-full max-w-3xl">
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="text-sm font-medium text-base-content/60">
+        <%= link_to "Organization logos", admin_organization_logos_path, class: "hover:text-base-content" %>
+        <span class="mx-1">/</span>
+        <span><%= @organization_logo.organization.name %></span>
+      </p>
+      <h1 class="mt-3 text-2xl font-semibold"><%= @organization_logo.organization.name %></h1>
+    </div>
+    <%= link_to "Back", admin_organization_logos_path, class: "btn btn-outline btn-sm shrink-0" %>
+  </div>
+
+  <div class="mt-6 card border border-base-300">
+    <div class="card-body">
+      <div class="flex min-h-48 items-center justify-center rounded-lg border border-base-300 bg-base-200/30 p-6">
+        <%= image_tag @organization_logo.image, class: "max-h-64 w-auto max-w-full object-contain", alt: "Logo submission" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8 card border border-base-300">
+    <div class="card-body p-0">
+      <dl class="divide-y divide-base-300">
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Organization</dt>
+          <dd class="font-medium"><%= @organization_logo.organization.name %></dd>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Uploaded by</dt>
+          <dd class="font-medium"><%= @organization_logo.uploaded_by.email %></dd>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Submitted</dt>
+          <dd class="font-medium">
+            <%= @organization_logo.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+            <span class="text-base-content/60">(<%= time_ago_in_words(@organization_logo.created_at) %> ago)</span>
+          </dd>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Status</dt>
+          <%= render "admin/organization_logos/status_badge", organization_logo: @organization_logo %>
+        </div>
+        <% if @organization_logo.reviewed_by.present? %>
+          <div class="flex items-center justify-between px-8 py-4">
+            <dt class="text-xs text-base-content/60 uppercase tracking-wide">Reviewed by</dt>
+            <dd class="font-medium">
+              <%= @organization_logo.reviewed_by.email %>
+              <span class="text-base-content/60">(<%= time_ago_in_words(@organization_logo.reviewed_at) %> ago)</span>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+  </div>
+
+  <div class="mt-10">
+    <h2 class="text-lg font-semibold">Review</h2>
+
+    <div class="card mt-4 border <%= @organization_logo.declined? ? "border-error" : "border-base-300" %>">
+      <div class="card-body p-0" data-controller="modal">
+        <%= render "admin/organization_logos/review_panel", organization_logo: @organization_logo %>
+
+        <dialog id="<%= dom_id(@organization_logo, :decline_dialog) %>" data-modal-target="dialog" class="modal">
+          <%= render "admin/organization_logos/decline_dialog_content", organization_logo: @organization_logo %>
+        </dialog>
+      </div>
+    </div>
+  </div>
+</section>

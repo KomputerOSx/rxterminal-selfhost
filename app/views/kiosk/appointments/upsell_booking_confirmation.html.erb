@@ -1,0 +1,49 @@
+<div class="kiosk-confirmed-page"
+     data-controller="kiosk-idle kiosk-home"
+     data-kiosk-idle-timeout-value="0"
+     data-kiosk-idle-countdown-value="30"
+     data-kiosk-idle-mode-value="auto-redirect"
+     data-kiosk-idle-interruptible-value="false"
+     data-kiosk-idle-redirect-url-value="<%= kiosk_root_path %>">
+
+  <div class="kiosk-confirmed-header-row">
+    <span class="material-symbols-outlined kiosk-confirmed-icon">check_circle</span>
+    <div>
+      <h1 class="kiosk-confirmed-heading">Queue Saved and Appointment Booked!</h1>
+      <p class="kiosk-confirmed-subtext">You are still in today&apos;s queue and your later booking is confirmed</p>
+      <p class="kiosk-confirmed-subtext kiosk-confirmed-subtext-muted">Please keep your queue number and booking reference</p>
+    </div>
+  </div>
+
+  <div class="kiosk-upsell-booking-grid">
+    <div class="kiosk-confirmed-number-card kiosk-upsell-booking-queue-card">
+      <p class="kiosk-confirmed-service-label">Your Queue Number</p>
+      <div class="kiosk-confirmed-queue-list">
+        <div class="kiosk-confirmed-queue-item">
+          <div class="kiosk-confirmed-service-name">
+            <span class="keep-english"><%= @original_service_name.presence || @appointment.service.display_name %></span>
+          </div>
+          <div class="kiosk-confirmed-queue-num"><%= @queue_number %></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kiosk-upsell-booking-ref-card">
+      <p class="kiosk-upsell-booking-ref-label">Booking Reference</p>
+      <div class="kiosk-upsell-booking-ref-number"><%= @appointment.booking_reference %></div>
+      <p class="kiosk-upsell-booking-ref-service"><span class="keep-english"><%= @appointment.service.display_name %></span></p>
+      <p class="kiosk-upsell-booking-ref-when"><%= @appointment.formatted_date %> at <%= @appointment.formatted_time %></p>
+    </div>
+  </div>
+
+  <%= link_to kiosk_root_path,
+        class: "kiosk-confirmed-home-btn",
+        data: { action: "pointerdown->kiosk-home#start", url: kiosk_root_path } do %>
+    <span class="material-symbols-outlined">home</span>
+    Main Screen
+  <% end %>
+
+  <p class="kiosk-confirmed-countdown" data-kiosk-idle-target="countdownText">
+    Returning to home screen in 30 seconds&hellip;
+  </p>
+</div>

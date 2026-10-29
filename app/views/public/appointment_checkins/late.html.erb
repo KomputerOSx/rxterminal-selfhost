@@ -1,0 +1,20 @@
+<div class="text-center">
+  <%= render "public/shared/status_icon", icon: "warning", tone: "warning" %>
+  <h1 class="text-2xl font-semibold">You may have missed your slot</h1>
+</div>
+
+<% if @appointment_date %>
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body items-center text-center">
+      <p class="text-sm text-base-content/60">Your appointment was</p>
+      <p class="mt-1 text-lg font-semibold"><%= @appointment_date.strftime("%A, %-d %B %Y") %></p>
+      <% if @appointment_time.present? %>
+        <p class="mt-1 text-sm text-base-content/60">at <%= @appointment_time %></p>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div class="mt-8 text-center">
+  <%= link_to "Back", portal_arrive_path, class: "btn btn-outline btn-sm" %>
+</div>

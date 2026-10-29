@@ -1,0 +1,5 @@
+Your <%= @trial_plan.name %> trial for <%= @organization.name %> ends on <%= @trial_ends_at.to_date.to_fs(:long) %>.
+
+Add a payment method on Billing before then to keep access:
+
+<%= billing_url %>

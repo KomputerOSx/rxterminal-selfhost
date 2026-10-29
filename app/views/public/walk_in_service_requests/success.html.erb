@@ -1,0 +1,14 @@
+<div class="text-center">
+  <%= render "public/shared/status_icon", icon: "check_circle", tone: "success" %>
+  <h1 class="text-2xl font-semibold">You are in the queue</h1>
+</div>
+
+<div class="mt-6">
+  <%= render "public/shared/queue_banner",
+        number: @queue_number,
+        subtitle: @service_name %>
+</div>
+
+<div class="mt-8 text-center">
+  <%= link_to "Back", portal_arrive_path, class: "btn btn-outline btn-sm" %>
+</div>

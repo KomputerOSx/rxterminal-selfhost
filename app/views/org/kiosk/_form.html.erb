@@ -1,0 +1,56 @@
+<% if Current.organization.errors.any? %>
+  <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+    <p class="font-medium">There were some problems with your kiosk settings:</p>
+    <ul class="mt-2 list-inside list-disc">
+      <% Current.organization.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= render "appearance_form", form: form %>
+
+<div class="card border border-base-300">
+  <div class="card-body gap-5">
+    <h2 class="text-lg font-semibold">Home screen buttons</h2>
+
+    <div class="space-y-4">
+      <label class="flex cursor-pointer items-center gap-3">
+        <%= form.hidden_field :kiosk_show_featured_service, value: "0" %>
+        <%= form.check_box :kiosk_show_featured_service,
+              class: "toggle toggle-primary toggle-sm",
+              data: {
+                kiosk_form_target: "featuredToggle",
+                action: "change->kiosk-form#toggleFeatured"
+              } %>
+        <span class="text-sm font-medium">Featured service</span>
+      </label>
+
+      <div class="form-control max-w-md pl-7"
+           data-kiosk-form-target="featuredPicker">
+        <%= form.select :kiosk_featured_service_id,
+              options_for_select(
+                @services.map { |service| [ service.display_name, service.id ] },
+                Current.organization.kiosk_featured_service_id
+              ),
+              { include_blank: "Select a service" },
+              class: error_class_for(Current.organization, :kiosk_featured_service_id, "select-field w-full"),
+              data: { kiosk_form_target: "featuredSelect" } %>
+        <%= field_errors(Current.organization, :kiosk_featured_service_id) %>
+      </div>
+
+      <label class="flex cursor-pointer items-center gap-3">
+        <%= form.hidden_field :kiosk_show_services, value: "0" %>
+        <%= form.check_box :kiosk_show_services, class: "toggle toggle-primary toggle-sm" %>
+        <span class="text-sm font-medium">Browse services</span>
+      </label>
+
+      <label class="flex cursor-pointer items-center gap-3">
+        <%= form.hidden_field :kiosk_show_appointments, value: "0" %>
+        <%= form.check_box :kiosk_show_appointments, class: "toggle toggle-primary toggle-sm" %>
+        <span class="text-sm font-medium">Check in for appointment</span>
+      </label>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<footer class="site-footer">
+  <div class="site-footer__top">
+    <div class="site-footer__brand">
+      <%= link_to root_path, class: "site-footer__logo" do %><span class="rx">Rx</span>Terminal<% end %>
+      <p class="site-footer__tagline">Queue management &amp; self-service kiosk platform.</p>
+      <p class="site-footer__company">By <strong>Strixon Ltd</strong> &middot; ICO registered</p>
+    </div>
+    <div class="site-footer__cols">
+      <div class="site-footer__col">
+        <div class="site-footer__col-title">Explore</div>
+        <%= link_to "Overview", root_path(anchor: "overview") %>
+        <%= link_to "Features", features_path %>
+        <%= link_to "Security", security_path %>
+        <%= link_to "Pricing", pricing_path %>
+        <%= link_to "Contact", contact_path %>
+        <a href="https://docs.rxterminal.co.uk" target="_blank" rel="noopener">Docs</a>
+        <a href="https://stats.uptimerobot.com/oeX4VW2KHF" target="_blank" rel="noopener">Uptime</a>
+      </div>
+      <div class="site-footer__col">
+        <div class="site-footer__col-title">Legal</div>
+        <%= link_to "Terms and Conditions", legal_terms_path %>
+        <%= link_to "Privacy Policy", legal_privacy_policy_path %>
+        <%= link_to "Cookies Policy", legal_cookies_path %>
+        <%= link_to "GDPR Statement", legal_gdpr_path %>
+      </div>
+      <div class="site-footer__col">
+        <div class="site-footer__col-title">Get started</div>
+        <%= link_to "Start free trial", new_registration_path %>
+        <%= link_to "Log in", login_path %>
+      </div>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>&copy; <%= Date.current.year %> Strixon Ltd. All rights reserved.</span>
+  </div>
+</footer>

@@ -1,0 +1,11 @@
+<%# locals: (name:, value:, label:, min_date: nil, max_date: nil) %>
+<div class="form-control">
+  <label class="label py-1"><span class="label-text text-xs"><%= label %></span></label>
+  <%= datetime_local_field_tag name,
+        audit_log_filter_datetime_value(value),
+        class: "input-field w-full",
+        lang: "en-GB",
+        min: (min_date ? min_date.beginning_of_day.strftime("%Y-%m-%dT%H:%M") : nil),
+        max: (max_date ? max_date.end_of_day.strftime("%Y-%m-%dT%H:%M") : nil),
+        autocomplete: "off" %>
+</div>

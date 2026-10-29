@@ -1,0 +1,7 @@
+User-agent: *
+<% @disallowed_paths.each do |path| -%>
+Disallow: <%= path %>
+<% end -%>
+Allow: /
+
+Sitemap: <%= sitemap_url %>

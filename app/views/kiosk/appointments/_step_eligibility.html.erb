@@ -1,0 +1,65 @@
+<% service = local_assigns[:service]
+   req              = service&.eligibility_requirements || {}
+   eligible_items   = req["eligible"]&.reject(&:blank?)     || []
+   not_elig_items   = req["not_eligible"]&.reject(&:blank?) || []
+   additional_items = req["additional"]&.reject(&:blank?)   || []
+   sections = [
+     { items: eligible_items,   label: "Eligible if:",            type: :eligible     },
+     { items: not_elig_items,   label: "Not Eligible if:",        type: :not_eligible },
+     { items: additional_items, label: "Additional Information:", type: :additional   },
+   ].select { |s| s[:items].any? }
+
+   section_styles = {
+     eligible:     { card: "bg-success/10 border-success",  dot: "bg-success",  label: "text-success"  },
+     not_eligible: { card: "bg-error/10 border-error",      dot: "bg-error",    label: "text-error"    },
+     additional:   { card: "bg-info/10 border-info",        dot: "bg-info",     label: "text-info"     },
+   }
+%>
+
+<div class="flex min-h-full flex-col items-center justify-center gap-6 p-5">
+
+  <div class="w-full max-w-[1100px] text-center">
+    <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Eligibility Requirements</div>
+    <div class="text-xl text-base-content/70">
+      <span class="keep-english"><%= service&.display_name %></span>
+      &middot; Please read carefully before continuing
+    </div>
+  </div>
+
+  <div class="card w-full max-w-[1100px] border border-base-300 bg-base-200">
+    <div class="card-body p-10 pb-9">
+
+      <% grid_cols = { 1 => "grid-cols-1", 2 => "grid-cols-2", 3 => "grid-cols-3" }[sections.size] || "grid-cols-1" %>
+      <div class="mb-8 grid gap-5 <%= grid_cols %>">
+        <% sections.each do |s| %>
+          <% st = section_styles[s[:type]] %>
+          <div class="rounded-2xl border-2 p-6 <%= st[:card] %>">
+            <div class="mb-3.5 flex items-center gap-2">
+              <div class="h-2.5 w-2.5 shrink-0 rounded-full <%= st[:dot] %>"></div>
+              <span class="text-xs font-bold uppercase tracking-widest <%= st[:label] %>"><%= s[:label] %></span>
+            </div>
+            <ul class="list-disc space-y-1 pl-5 text-base leading-relaxed text-base-content">
+              <% s[:items].each do |item| %>
+                <li><%= item %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="flex flex-col gap-3.5">
+        <button data-action="pointerdown->kiosk-appointment#eligibilityAccept"
+                class="btn btn-primary h-[74px] min-h-0 w-full gap-2.5 rounded-2xl border-0 text-lg font-bold">
+          <span class="material-symbols-outlined">check_circle</span>
+          I meet these requirements - Continue
+        </button>
+        <button data-action="pointerdown->kiosk-appointment#eligibilityDecline"
+                class="btn btn-outline btn-error h-[58px] min-h-0 w-full gap-2.5 rounded-2xl text-base font-bold">
+          <span class="material-symbols-outlined">cancel</span>
+          I don't meet these requirements
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

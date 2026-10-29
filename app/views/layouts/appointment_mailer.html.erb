@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body style="margin:0;padding:0;">
+    <% max_width = @mailer_max_width || MailerTheme::MAX_WIDTH %>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="<%= max_width %>" cellpadding="0" cellspacing="0" border="0"
+                 style="width:100%;max-width:<%= max_width %>px;">
+            <tr>
+              <td style="padding:24px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;">
+                <%= yield %>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:8px 24px 24px;text-align:center;font-family:Arial,Helvetica,sans-serif;">
+                <%= render "shared/mailer/powered_by" %>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

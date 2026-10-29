@@ -1,0 +1,60 @@
+<%# Step 4: Confirm Details %>
+<% service          = local_assigns[:service] %>
+<% collect_dob      = local_assigns.fetch(:collect_dob, true) %>
+<% collect_postcode = local_assigns.fetch(:collect_postcode, true) %>
+<% postcode_region  = local_assigns.fetch(:postcode_region, "uk") %>
+<% postcode_label   = { "uk" => "Postcode", "us" => "ZIP Code", "ca" => "Postal Code", "au" => "Postcode" }.fetch(postcode_region, "Postcode") %>
+
+<div class="flex min-h-full flex-col items-center justify-center gap-6 p-5">
+
+  <div class="flex w-full max-w-3xl items-center gap-4">
+    <button data-action="pointerdown->kiosk-service-request#confirmBack"
+            class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="flex-1 text-center">
+      <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Confirm Details</div>
+      <div class="text-xl text-base-content/70">
+        <span class="keep-english"><%= service&.display_name %></span> &middot; Step 4 of 4
+      </div>
+    </div>
+    <div class="h-[54px] w-[70px] shrink-0" aria-hidden="true"></div>
+  </div>
+
+  <div class="flex w-full max-w-3xl flex-col gap-6">
+
+    <div class="card overflow-hidden rounded-[20px] border border-base-300 bg-base-200">
+
+      <div class="flex items-center gap-4 border-b border-base-300 bg-primary/10 px-6 py-4">
+        <% if service&.icon.present? %>
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-base-100">
+            <span class="material-symbols-outlined text-primary"><%= service.icon %></span>
+          </div>
+        <% end %>
+        <div class="text-3xl font-bold text-primary"><span class="keep-english"><%= service&.display_name %></span></div>
+      </div>
+
+      <% rows = [
+        { label: "First Name",    target: "confirmFirstName" },
+        { label: "Last Name",     target: "confirmLastName"  },
+      ]
+      rows << { label: "Date of Birth", target: "confirmDob" } if collect_dob
+      rows << { label: postcode_label, target: "confirmPostcode" } if collect_postcode
+      rows << { label: "Consultation", target: "confirmPrivacy" } if service&.allows_private_consultation?
+      rows.each do |row| %>
+        <div class="flex items-center border-b border-base-300 px-6 py-4 last:border-b-0">
+          <span class="w-36 shrink-0 text-lg font-medium text-base-content/70"><%= row[:label] %></span>
+          <span data-kiosk-service-request-target="<%= row[:target] %>"
+                class="text-3xl font-bold text-base-content"></span>
+        </div>
+      <% end %>
+
+    </div>
+
+    <button data-kiosk-service-request-target="submitBtn"
+            data-action="pointerdown->kiosk-service-request#confirmSubmit"
+            class="btn btn-primary h-[76px] min-h-0 w-full gap-3 rounded-2xl border-0 text-xl font-bold">
+      Confirm &amp; Join Queue
+    </button>
+  </div>
+</div>

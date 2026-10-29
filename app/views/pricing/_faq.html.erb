@@ -1,0 +1,25 @@
+<section class="sec pricing-faq">
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-item__q">Is there a free trial?</div>
+      <p class="faq-item__a">Yes. Your account's first organization gets a <%= Organization::TRIAL_DAYS %>-day free trial on Starter or Business — no card required. When the trial ends, subscribe to keep using RxTerminal.</p>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-item__q">Is there a minimum contract length?</div>
+      <p class="faq-item__a">No. RxTerminal is billed monthly with no long-term commitment. You can cancel at any time with 30 days&rsquo; notice.</p>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-item__q">Can I run multiple branches?</div>
+      <p class="faq-item__a">Yes. Each branch is a separate organization. Business includes custom domains and oversight for teams managing multiple sites.</p>
+    </div>
+
+    <% if billing_collect_vat? %>
+    <div class="faq-item">
+      <div class="faq-item__q">Are prices VAT inclusive?</div>
+      <p class="faq-item__a">All prices shown are exclusive of VAT. UK VAT at the standard rate will be added to your invoice.</p>
+    </div>
+    <% end %>
+  </div>
+</section>

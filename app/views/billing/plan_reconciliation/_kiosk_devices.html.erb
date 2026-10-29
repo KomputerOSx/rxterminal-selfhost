@@ -1,0 +1,13 @@
+<h2 class="text-lg font-semibold">Kiosk devices</h2>
+
+<%= form_with url: billing_plan_reconciliation_path, method: :patch, class: "mt-4" do %>
+  <%= hidden_field_tag :step, :kiosk_devices %>
+  <p class="mb-4 text-sm text-base-content/60">
+    All <%= organization.billable_kiosk_devices_count %> registered device<%= organization.billable_kiosk_devices_count == 1 ? "" : "s" %>
+    will be deactivated on Starter.
+  </p>
+  <%= render "billing/plan_reconciliation/step_actions",
+        wizard: wizard,
+        step: step,
+        continue: button_tag("Continue", class: "btn btn-primary btn-sm") %>
+<% end %>

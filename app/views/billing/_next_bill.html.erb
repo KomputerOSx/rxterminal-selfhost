@@ -1,0 +1,27 @@
+<div id="next_bill">
+  <% organization = Current.organization %>
+  <% subscription = organization.payment_processor&.subscription %>
+  <% if subscription&.active? && !subscription.on_grace_period? && !organization.pending_price_cents && !(organization.on_trial? && !organization.subscribed?) %>
+    <% breakdown = organization.upcoming_invoice_breakdown %>
+    <% next_date = subscription.current_period_end&.to_date&.to_fs(:long) %>
+    <% amount = breakdown&.dig(:total) || organization.current_plan&.formatted_price(organization.billing_currency) %>
+
+    <% if amount.present? %>
+      <p class="mt-4 text-sm text-base-content">
+        <span class="font-medium">Next bill</span><% if next_date %><span class="text-base-content/60"> · <%= next_date %></span><% end %>
+        · <strong class="tabular-nums"><%= amount %></strong><span class="text-base-content/60"><%= billing_next_bill_suffix(has_breakdown: breakdown.present?) %></span>
+      </p>
+
+      <% if billing_collect_vat? && breakdown&.dig(:lines)&.many? %>
+        <div class="mt-3">
+          <%= render "billing/invoice_breakdown",
+                lines: breakdown[:lines],
+                total: breakdown[:total],
+                total_label: breakdown[:total_label],
+                footnote: breakdown[:footnote],
+                heading: "Price breakdown" %>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

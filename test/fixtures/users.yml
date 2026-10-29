@@ -1,0 +1,11 @@
+one:
+  email: one@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  confirmed_at: <%= Time.current %>
+  onboarding_completed_at: <%= Time.current %>
+
+two:
+  email: two@example.com
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  confirmed_at: <%= Time.current %>
+  onboarding_completed_at: <%= Time.current %>

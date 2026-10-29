@@ -1,0 +1,158 @@
+<%
+  req = @service.eligibility_requirements || {}
+  eligible_items = req["eligible"]&.reject(&:blank?) || []
+  not_eligible_items = req["not_eligible"]&.reject(&:blank?) || []
+  additional_items = req["additional"]&.reject(&:blank?) || []
+  eligibility_sections = [
+    { items: eligible_items, label: "Eligible if", variant: "success" },
+    { items: not_eligible_items, label: "Not eligible if", variant: "error" },
+    { items: additional_items, label: "Additional information", variant: "info" }
+  ].select { |section| section[:items].any? }
+%>
+
+<section class="w-full max-w-4xl">
+  <p class="text-sm font-medium text-base-content/60">
+    <%= link_to "Services", org_services_path, class: "hover:text-base-content" %>
+    <span class="mx-1">/</span>
+    <span><%= @service.display_name %></span>
+  </p>
+
+  <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
+    <div class="flex items-start gap-4">
+      <%= service_icon_tag(@service.icon, size: 36, extra_class: "text-primary shrink-0") %>
+      <div>
+        <h1 class="text-2xl font-semibold"><%= @service.display_name %></h1>
+        <p class="mt-1 font-mono text-sm text-base-content/50"><%= @service.internal_name %></p>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <% if @service.active? %>
+            <span class="badge badge-success badge-sm">Active</span>
+          <% else %>
+            <span class="badge badge-error badge-sm">Inactive</span>
+          <% end %>
+          <% if @service.allows_immediate? %>
+            <span class="badge badge-outline badge-sm">Walk-in</span>
+          <% end %>
+          <% if @service.requires_appointment? %>
+            <span class="badge badge-outline badge-sm">Appointments</span>
+          <% end %>
+          <% if @service.allows_private_consultation? %>
+            <span class="badge badge-outline badge-sm">Private option</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <%= link_to edit_org_service_path(@service), class: "btn btn-primary btn-sm gap-1" do %>
+        <span class="material-symbols-outlined !text-[18px]">edit</span>
+        Edit
+      <% end %>
+      <%= link_to "Back", org_services_path, class: "btn btn-outline btn-sm" %>
+    </div>
+  </div>
+
+  <% if @service.description.present? %>
+    <div class="card mt-6 border border-base-300">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold">Description</h2>
+        <p class="mt-2 text-sm text-base-content/80"><%= simple_format(@service.description) %></p>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold">Configuration</h2>
+      <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <dt class="text-sm text-base-content/60">Duration</dt>
+          <dd class="mt-1 font-medium"><%= @service.estimated_duration %> minutes</dd>
+        </div>
+        <div>
+          <dt class="text-sm text-base-content/60">Price</dt>
+          <dd class="mt-1 font-medium"><%= service_price_label(@service) %></dd>
+        </div>
+        <% if @service.icon.present? %>
+          <div>
+            <dt class="text-sm text-base-content/60">Icon</dt>
+            <dd class="mt-1 flex items-center gap-2">
+              <%= service_icon_tag(@service.icon, size: 22, extra_class: "text-primary") %>
+              <span class="font-mono text-sm text-base-content/60"><%= @service.icon %></span>
+            </dd>
+          </div>
+        <% end %>
+        <% if @service.calendar %>
+          <div>
+            <dt class="text-sm text-base-content/60">Calendar</dt>
+            <dd class="mt-1 font-medium"><%= @service.calendar.name %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+  </div>
+
+  <% if eligibility_sections.any? %>
+    <div class="card mt-6 border border-base-300">
+      <div class="card-body">
+        <h2 class="text-lg font-semibold">Eligibility requirements</h2>
+        <div class="space-y-4">
+          <% eligibility_sections.each do |section| %>
+            <div class="rounded-lg border border-base-300 bg-base-200/40 p-4">
+              <div class="mb-3 flex items-center gap-2">
+                <span class="badge badge-<%= section[:variant] %> badge-xs"></span>
+                <span class="text-sm text-<%= section[:variant] %> font-medium"><%= section[:label] %></span>
+              </div>
+              <ul class="list-inside list-disc space-y-1 text-sm text-base-content/80">
+                <% section[:items].each do |item| %>
+                  <li><%= item %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body">
+      <h2 class="text-lg font-semibold">Usage</h2>
+      <dl class="mt-4 space-y-3">
+        <div class="flex items-center justify-between gap-4 text-sm">
+          <dt class="text-base-content/60">Service requests today</dt>
+          <dd class="font-medium">
+            <%= @service.service_requests.where(created_at: Time.zone.today.all_day).count %>
+          </dd>
+        </div>
+        <div class="flex items-center justify-between gap-4 text-sm">
+          <dt class="text-base-content/60">Total requests</dt>
+          <dd class="font-medium"><%= @service.service_requests.count %></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="mt-10">
+    <div class="card border border-error">
+      <div class="card-body p-0">
+        <div class="flex items-center justify-between px-8 py-4">
+          <div>
+            <p class="font-medium text-error">Delete service</p>
+            <p class="mt-0.5 text-sm text-base-content/60">
+              Permanently removes <%= @service.display_name %> from your organization. This cannot be undone.
+            </p>
+          </div>
+          <%= button_to org_service_path(@service), method: :delete,
+                data: {
+                  controller: "confirm-modal",
+                  action: "click->confirm-modal#confirm",
+                  confirm_modal_message_value: "Delete this service? This cannot be undone."
+                },
+                class: "btn btn-error btn-outline btn-sm shrink-0" do %>
+            Delete service
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,9 @@
+<%# locals: (name:, value:, label:) %>
+<div class="form-control">
+  <label class="label py-1"><span class="label-text text-xs"><%= label %></span></label>
+  <%= datetime_local_field_tag name,
+        audit_log_filter_datetime_value(value),
+        class: "input-field w-full",
+        lang: "en-GB",
+        autocomplete: "off" %>
+</div>

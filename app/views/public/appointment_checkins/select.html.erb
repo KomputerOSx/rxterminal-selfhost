@@ -1,0 +1,22 @@
+<%= render "public/shared/page_header",
+      title: "Select appointment",
+      back_path: new_portal_appointment_checkin_path %>
+
+<div class="mt-6 text-center">
+  <p class="text-sm text-base-content/60">
+    Please choose your appointment time.
+  </p>
+</div>
+
+<div class="mt-6 flex flex-col gap-3">
+  <% @candidates.each do |appointment| %>
+    <%= button_to portal_appointment_checkin_confirm_path(appointment_id: appointment.id), method: :post,
+          class: "card w-full border border-base-300 text-left hover:border-primary" do %>
+      <div class="card-body flex-row items-center gap-4 py-5">
+        <div class="text-3xl font-bold tabular-nums leading-none"><%= appointment.formatted_time %></div>
+        <div class="flex-1 text-sm text-base-content/70"><%= appointment.formatted_date %></div>
+        <%= material_icon("chevron_right", size: 22, class: "text-base-content/40") %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

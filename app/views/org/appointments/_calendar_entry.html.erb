@@ -1,0 +1,13 @@
+<% inactive = appointment_inactive?(appointment) %>
+<%= link_to org_appointment_path(appointment, appointment_calendar_return_params),
+      title: [ appointment_customer_name(appointment), appointment.service.display_name, appointment.booking_reference, appointment_status_label(appointment.status) ].join(" - "),
+      class: "flex min-w-0 items-start gap-2 rounded-lg px-2 py-1 text-xs hover:bg-base-200 #{'opacity-50' if inactive}" do %>
+  <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-current <%= appointment_status_color(appointment.status) %>"></span>
+  <span class="min-w-0 flex-1">
+    <span class="flex items-baseline gap-1">
+      <span class="shrink-0 font-medium"><%= appointment.formatted_time %></span>
+      <span class="truncate text-base-content/60"><%= appointment.service.display_name %></span>
+    </span>
+    <span class="block truncate <%= 'line-through' if inactive %>"><%= appointment_customer_name(appointment) %></span>
+  </span>
+<% end %>

@@ -1,0 +1,40 @@
+<section class="w-full max-w-5xl">
+  <p class="text-sm font-medium text-base-content/60">Admin</p>
+  <h1 class="mt-3 text-4xl font-semibold tracking-normal">Subject access request export</h1>
+
+  <%= form_with model: @search, url: admin_subject_access_requests_path, method: :post, scope: :customer_pii_search, data: { turbo: false } do |f| %>
+    <div class="mt-8">
+      <%= form_section_heading "Search",
+            tooltips: true,
+            tip: "Find appointments and queue records by first name and last name. Add a date of birth and postcode to narrow results further." %>
+
+      <div class="mt-4">
+        <%= render "admin/customer_pii/search_form_fields", f: f, search: @search %>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <%= form_section_heading "Organizations",
+            tooltips: true,
+            tip: "Limit the search to one or more workspaces. Required when no date of birth is given - organization names are not unique, so use slug, ID, address, contact details, owner email, and custom domain to pick the right ones. Optional (searches all organizations) when a date of birth is provided." %>
+
+      <%= render "admin/customer_pii/organization_selection",
+            organizations: @organizations,
+            selected_ids: @search.organization_ids %>
+    </div>
+
+    <%= f.submit "Search", class: "btn btn-primary btn-sm mt-4" %>
+
+    <% if defined?(@results) && @results %>
+      <%= render "admin/customer_pii/results",
+            results: @results,
+            show_selection: false,
+            searched: true %>
+
+      <%= render "admin/customer_pii/report_delivery",
+            export_token: nil,
+            recipient_email: params[:recipient_email],
+            results: @results %>
+    <% end %>
+  <% end %>
+</section>

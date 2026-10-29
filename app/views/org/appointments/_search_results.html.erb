@@ -1,0 +1,21 @@
+<% if results.any? %>
+  <% results.each do |appointment| %>
+    <%= link_to org_appointment_path(appointment, return_params),
+          class: "flex flex-col gap-1 rounded-lg px-2 py-2 hover:bg-base-200",
+          data: { action: "click->appointment-search#close" } do %>
+      <div class="flex min-w-0 items-center justify-between gap-2">
+        <span class="truncate text-sm font-medium"><%= appointment_customer_name(appointment) %></span>
+        <%= appointment_status_badge(appointment) %>
+      </div>
+      <div class="flex min-w-0 items-center justify-between gap-2 text-xs text-base-content/60">
+        <span class="truncate">
+          <%= appointment.appointment_date&.strftime("%a, %d %b %Y") %> at <%= appointment.formatted_time %>
+          - <%= appointment.service.display_name %>
+        </span>
+        <span class="shrink-0 font-mono text-base-content/50"><%= appointment.booking_reference %></span>
+      </div>
+    <% end %>
+  <% end %>
+<% elsif query.length >= 2 %>
+  <p class="px-2 py-2 text-sm text-base-content/60">No matching appointments found.</p>
+<% end %>

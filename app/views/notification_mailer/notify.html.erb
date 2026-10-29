@@ -1,0 +1,25 @@
+<h1 style="margin:0 0 8px;font-size:24px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  <%= @title %>
+</h1>
+
+<p style="margin:0 0 20px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Hi <%= @user.first_name.presence || @user.email %>,
+</p>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  <%= @body %>
+</p>
+
+<%= render "shared/mailer/details_list", rows: @details if @details.present? %>
+
+<p style="margin:0 0 24px;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  You can review this and manage your account by signing in to RxTerminal at <%= mailer_website_domain %>.
+</p>
+
+<p style="margin:0 0 8px;font-size:13px;color:<%= MailerTheme::LIGHT_MUTED %>;">
+  Notification settings can be modified inside the RxTerminal application.
+</p>
+
+<p style="margin:0;font-size:13px;color:<%= MailerTheme::LIGHT_MUTED %>;">
+  If you run into problems, contact support at <%= mailer_contact_email %>. Please do not reply directly to this email.
+</p>

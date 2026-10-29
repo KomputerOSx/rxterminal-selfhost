@@ -1,0 +1,187 @@
+<% organization = local_assigns[:organization] %>
+<% featured_service = local_assigns[:featured_service] %>
+
+<% show_featured = organization.kiosk_show_featured_service? && featured_service.present? %>
+<% show_services = organization.kiosk_show_services? %>
+<% show_appointments = organization.kiosk_show_appointments? %>
+<% preview_mode = local_assigns.fetch(:preview, false) %>
+<% preview_fullscreen = local_assigns.fetch(:preview_fullscreen, false) %>
+<% compact = local_assigns.fetch(:compact, false) %>
+<% scaled_preview = local_assigns.fetch(:scaled_preview, false) %>
+<% use_compact = compact && !scaled_preview %>
+<% panel_layout_class = if preview_fullscreen
+  "flex h-full"
+elsif use_compact
+  "flex w-full"
+elsif preview_mode || scaled_preview
+  "flex min-h-0"
+else
+  "flex h-full"
+end %>
+<% visible_count = [ show_featured, show_services, show_appointments ].count(true) %>
+<% grid_class = if use_compact
+  case visible_count
+  when 1 then "flex justify-center"
+  when 2 then "grid grid-cols-2 gap-2"
+  else "grid grid-cols-3 gap-2"
+  end
+else
+  kiosk_home_grid_class(organization, featured_service: featured_service)
+end %>
+
+<div class="<%= panel_layout_class %> w-full items-center justify-center <%= use_compact ? "p-3" : "p-8 md:p-12" %>"
+     <%= tag.attributes(data: { controller: ("kiosk-home" unless preview_mode) }.compact) %>>
+  <div class="w-full <%= use_compact ? "" : "max-w-[1100px]" %>">
+    <div class="<%= use_compact ? "mb-3 text-center" : "mb-12 text-center" %>">
+      <div class="<%= use_compact ? "mb-1 flex justify-center" : "mb-5 flex justify-center" %>">
+        <%= render "kiosk/shared/logo_mark",
+              organization: organization,
+              variant: use_compact ? :preview : :home,
+              theme_preview: use_compact || scaled_preview %>
+      </div>
+      <h1 class="<%= use_compact ? "mb-0.5 text-xs font-extrabold tracking-tight" : "mb-3 text-4xl font-extrabold tracking-tight md:text-5xl" %>">
+        <%= organization.name %>
+      </h1>
+      <p class="<%= use_compact ? "text-[10px] text-base-content/70" : "text-2xl text-base-content/70 md:text-3xl" %>">
+        How can we help?
+      </p>
+    </div>
+
+    <% if visible_count.positive? %>
+      <div class="<%= grid_class %>">
+        <% if show_featured %>
+          <% featured_url = kiosk_new_service_request_path(service_id: featured_service.id) %>
+          <% featured_classes = if use_compact
+            "card min-h-0 w-full border-0 bg-primary px-2 py-2.5 text-primary-content shadow-none"
+          else
+            "card min-h-[280px] w-full max-w-sm border-0 bg-primary text-primary-content shadow-none transition-transform duration-150"
+          end %>
+          <% if preview_mode %>
+            <div class="<%= featured_classes %>">
+              <div class="<%= use_compact ? "text-center" : "card-body items-center justify-center gap-4 text-center" %>">
+                <span class="material-symbols-outlined <%= use_compact ? "!text-xl" : "!text-[128px]" %>"><%= featured_service.icon.presence || "star" %></span>
+                <div>
+                  <div class="<%= use_compact ? "mt-1 text-[9px] font-bold leading-tight" : "text-3xl font-extrabold tracking-tight" %>">
+                    <%= featured_service.display_name %>
+                  </div>
+                  <% if !use_compact && featured_service.description.present? %>
+                    <div class="mt-2 text-lg font-normal opacity-90"><%= featured_service.description %></div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <%= link_to featured_url,
+                  class: featured_classes,
+                  data: {
+                    action: "pointerdown->kiosk-home#start",
+                    url: featured_url,
+                    turbo_preload: true,
+                    turbo_prefetch: false
+                  } do %>
+              <div class="card-body items-center justify-center gap-4 text-center">
+                <span class="material-symbols-outlined !text-[128px]"><%= featured_service.icon.presence || "star" %></span>
+                <div>
+                  <div class="text-3xl font-extrabold tracking-tight"><%= featured_service.display_name %></div>
+                  <% if featured_service.description.present? %>
+                    <div class="mt-2 text-lg font-normal opacity-90"><%= featured_service.description %></div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if show_services %>
+          <% services_classes = if use_compact
+            "card min-h-0 w-full border-0 bg-success px-2 py-2.5 text-success-content shadow-none"
+          else
+            "card min-h-[280px] w-full max-w-sm border-0 bg-success text-success-content shadow-none transition-transform duration-150"
+          end %>
+          <% if preview_mode %>
+            <div class="<%= services_classes %>">
+              <div class="<%= use_compact ? "text-center" : "card-body items-center justify-center gap-4 text-center" %>">
+                <span class="material-symbols-outlined <%= use_compact ? "!text-xl" : "!text-[128px]" %>">medical_services</span>
+                <div>
+                  <div class="<%= use_compact ? "mt-1 text-[9px] font-bold leading-tight" : "text-3xl font-extrabold tracking-tight" %>">
+                    Browse Services
+                  </div>
+                  <% unless use_compact %>
+                    <div class="mt-2 text-lg font-normal opacity-90">Find the service you need</div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <%= link_to kiosk_services_path,
+                  class: services_classes,
+                  data: {
+                    action: "pointerdown->kiosk-home#start",
+                    url: kiosk_services_path,
+                    turbo_preload: true,
+                    turbo_prefetch: false
+                  } do %>
+              <div class="card-body items-center justify-center gap-4 text-center">
+                <span class="material-symbols-outlined !text-[128px]">medical_services</span>
+                <div>
+                  <div class="text-3xl font-extrabold tracking-tight">Browse Services</div>
+                  <div class="mt-2 text-lg font-normal opacity-90">Find the service you need</div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if show_appointments %>
+          <% checkin_classes = if use_compact
+            "card min-h-0 w-full border-0 bg-warning px-2 py-2.5 text-warning-content shadow-none"
+          else
+            "card min-h-[280px] w-full max-w-sm border-0 bg-warning text-warning-content shadow-none transition-transform duration-150"
+          end %>
+          <% checkin_label = use_compact ? "Check In" : "Check In for Appointment" %>
+          <% if preview_mode %>
+            <div class="<%= checkin_classes %>">
+              <div class="<%= use_compact ? "text-center" : "card-body items-center justify-center gap-4 text-center" %>">
+                <span class="material-symbols-outlined <%= use_compact ? "!text-xl" : "!text-[128px]" %>">event_available</span>
+                <div>
+                  <div class="<%= use_compact ? "mt-1 text-[9px] font-bold leading-tight" : "text-3xl font-extrabold tracking-tight" %>">
+                    <%= checkin_label %>
+                  </div>
+                  <% unless use_compact %>
+                    <div class="mt-2 text-lg font-normal opacity-90">I have a booking reference</div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <%= link_to kiosk_check_in_appointments_path,
+                  class: checkin_classes,
+                  data: {
+                    action: "pointerdown->kiosk-home#start",
+                    url: kiosk_check_in_appointments_path,
+                    turbo_preload: true,
+                    turbo_prefetch: false
+                  } do %>
+              <div class="card-body items-center justify-center gap-4 text-center">
+                <span class="material-symbols-outlined !text-[128px]">event_available</span>
+                <div>
+                  <div class="text-3xl font-extrabold tracking-tight">Check In for Appointment</div>
+                  <div class="mt-2 text-lg font-normal opacity-90">I have a booking reference</div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% unless use_compact %>
+      <div class="mt-10 text-center">
+        <p class="flex items-center justify-center gap-2 text-xl text-base-content/60">
+          <span class="material-symbols-outlined !text-2xl">info</span>
+          Please speak to a member of staff if you need assistance
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div>

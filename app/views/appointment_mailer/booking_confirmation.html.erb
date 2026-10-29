@@ -1,0 +1,53 @@
+<h2 style="margin:0 0 4px;font-size:22px;">Appointment Confirmed</h2>
+<p style="margin:0 0 20px;">Your appointment has been booked successfully.</p>
+
+<p style="margin:0 0 12px;">Dear <%= @appointment.first_name %>,</p>
+<p style="margin:0 0 20px;">We're pleased to confirm your appointment at <strong><%= @organization.name %></strong>.</p>
+
+<table style="width:100%;border-collapse:collapse;margin:0 0 24px;">
+  <tr>
+    <td style="padding:6px 0;">Booking Reference</td>
+    <td style="padding:6px 0;font-weight:bold;font-size:20px;letter-spacing:2px;"><%= @appointment.booking_reference %></td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;width:40%;">Service</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @service.display_name %></td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;">Date</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @appointment.appointment_date.strftime("%A, %d %B %Y") %></td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;">Time</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @appointment.formatted_time %></td>
+  </tr>
+  <% if @organization.full_address.present? %>
+  <tr>
+    <td style="padding:6px 0;">Location</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @organization.full_address %></td>
+  </tr>
+  <% end %>
+  <% if @organization.contact_phone.present? %>
+  <tr>
+    <td style="padding:6px 0;">Phone</td>
+    <td style="padding:6px 0;font-weight:bold;"><%= @organization.contact_phone %></td>
+  </tr>
+  <% end %>
+</table>
+
+<%= simple_format(h(@organization.appointment_email_message_text), style: "margin:0 0 12px;font-size:14px;") %>
+
+<p style="margin:0 0 12px;font-size:14px;">
+  A calendar file is attached so you can add this appointment to your calendar.
+</p>
+
+<% if @appointment.notes.present? %>
+  <p style="margin:0 0 12px;font-size:14px;"><strong>Notes:</strong> <%= @appointment.notes %></p>
+<% end %>
+
+<hr style="margin:24px 0;">
+<p style="margin:0;font-size:12px;">
+  <%= @organization.name %><% if @organization.full_address.present? %> · <%= @organization.full_address %><% end %>
+  <% if @organization.contact_phone.present? %> · <%= @organization.contact_phone %><% end %>
+  <% if @organization.contact_email.present? %> · <%= @organization.contact_email %><% end %>
+</p>

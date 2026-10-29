@@ -1,0 +1,10 @@
+<% label = local_assigns.fetch(:label) %>
+
+<section class="kiosk-theme-preview-section">
+  <p class="kiosk-theme-preview-label"><%= label %></p>
+  <div class="kiosk-theme-preview-frame" data-kiosk-theme-preview-frame>
+    <div class="kiosk-theme-preview-canvas" data-kiosk-theme-preview-canvas>
+      <%= yield %>
+    </div>
+  </div>
+</section>

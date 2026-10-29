@@ -1,0 +1,60 @@
+<% organization = local_assigns[:organization] || @organization %>
+<% preview_mode = local_assigns.fetch(:preview, false) %>
+<% compact = local_assigns.fetch(:compact, false) %>
+<% scaled_preview = local_assigns.fetch(:scaled_preview, false) %>
+<% use_compact = compact && !scaled_preview %>
+
+<div <%= tag.attributes(
+      class: [
+        "relative flex w-full flex-col items-center justify-center text-center",
+        if scaled_preview
+          "kiosk-preview-touch min-h-[620px] px-8 py-16"
+        elsif use_compact
+          "min-h-[140px] px-4 py-5"
+        else
+          "h-full px-8"
+        end
+      ],
+      data: (use_compact || scaled_preview || preview_mode ? {} : { action: "pointerdown->kiosk-flow#start" })
+    ) %>>
+
+  <%= render "kiosk/shared/logo_mark",
+        organization: organization,
+        variant: (use_compact || scaled_preview) ? :touch : :touch,
+        theme_preview: use_compact || scaled_preview %>
+
+  <h1 class="<%= use_compact ? "mb-1 text-sm font-extrabold tracking-tight" : "mb-2 text-5xl font-extrabold tracking-tight md:text-6xl" %>">
+    <%= organization.name %>
+  </h1>
+  <p class="<%= use_compact ? "mb-3 text-[10px] text-base-content/70" : "mb-16 text-xl text-base-content/70" %>">
+    Self Service Kiosk Screen
+  </p>
+
+  <div class="flex flex-col items-center <%= use_compact ? "gap-1.5" : "gap-4" %>">
+    <div class="<%= use_compact ? "flex h-9 w-9" : "flex h-[72px] w-[72px]" %> items-center justify-center rounded-full border-2 border-primary/40">
+      <span class="material-symbols-outlined text-primary <%= use_compact ? "!text-lg" : "!text-4xl" %>">touch_app</span>
+    </div>
+    <span class="<%= use_compact ? "text-[10px] font-semibold tracking-wide" : "text-2xl font-semibold tracking-wide" %>">
+      Touch anywhere to begin
+    </span>
+  </div>
+
+  <% if use_compact %>
+    <span class="btn btn-accent btn-xs absolute bottom-2 left-2 gap-1">
+      <span class="material-symbols-outlined !text-sm">shield</span>
+      Privacy
+    </span>
+  <% elsif scaled_preview %>
+    <span class="btn btn-accent btn-sm absolute bottom-8 left-8 gap-2">
+      <span class="material-symbols-outlined !text-xl">shield</span>
+      Privacy Policy
+    </span>
+  <% else %>
+    <%= link_to kiosk_privacy_path,
+          class: "btn btn-accent btn-sm absolute bottom-8 left-8 gap-2",
+          data: { action: "pointerdown->kiosk-flow#ignoreStart", turbo_prefetch: false } do %>
+      <span class="material-symbols-outlined !text-xl">shield</span>
+      Privacy Policy
+    <% end unless preview_mode %>
+  <% end %>
+</div>

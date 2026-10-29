@@ -1,0 +1,36 @@
+<div class="mx-auto w-full max-w-2xl text-center">
+  <div class="mb-8">
+    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/10">
+      <span class="material-symbols-outlined text-4xl text-success">check_circle</span>
+    </div>
+    <h1 class="text-3xl font-semibold">Hand to customer</h1>
+    <p class="mt-2 text-base-content/60">
+      <%= @queue_numbers.size == 1 ? "Show this number to the customer." : "Show these numbers to the customer." %>
+    </p>
+  </div>
+
+  <div class="mb-8 flex flex-col justify-center gap-4 sm:flex-row">
+    <% @queue_numbers.each_with_index do |number, index| %>
+      <div class="card flex-1 border border-base-300">
+        <div class="card-body items-center gap-2 py-10 text-center">
+          <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+            <%= @service_names[index] || "Service" %>
+          </p>
+          <p class="text-sm text-base-content/60">Queue number</p>
+          <div class="text-8xl font-black leading-none text-primary sm:text-9xl"><%= number %></div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex flex-col justify-center gap-3 sm:flex-row">
+    <%= link_to org_new_walk_in_path, class: "btn btn-primary btn-sm gap-1" do %>
+      <span class="material-symbols-outlined !text-[18px]">person_add</span>
+      New walk-in
+    <% end %>
+    <%= link_to org_queue_path, class: "btn btn-outline btn-sm gap-1" do %>
+      <span class="material-symbols-outlined !text-[18px]">groups</span>
+      View queue
+    <% end %>
+  </div>
+</div>

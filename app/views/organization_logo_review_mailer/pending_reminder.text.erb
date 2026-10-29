@@ -1,0 +1,5 @@
+Hi <%= @admin.first_name.presence || "there" %>, there <%= @pending_count == 1 ? "is" : "are" %> <%= @pending_count %> unverified <%= "organization logo".pluralize(@pending_count) %> waiting for review.
+
+Review them here:
+
+<%= admin_organization_logos_url(status: "pending") %>

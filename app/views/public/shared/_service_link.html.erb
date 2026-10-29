@@ -1,0 +1,31 @@
+<%# locals: (service:, url:, searchable: false) %>
+<%= link_to url,
+      class: "card border border-base-300 block",
+      data: searchable ? { portal_search_target: "item", name: service.display_name } : {} do %>
+  <div class="card-body flex-row items-center gap-4 p-5">
+    <% if service.icon.present? %>
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <%= material_icon(service.icon, size: 22) %>
+      </div>
+    <% end %>
+
+    <div class="min-w-0 flex-1">
+      <p class="font-medium"><%= service.display_name %></p>
+      <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/60">
+        <span class="inline-flex items-center gap-1">
+          <%= material_icon("schedule", size: 14) %>
+          <%= service.estimated_duration %> min
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <%= material_icon("sell", size: 14) %>
+          <%= portal_service_price_label(service) %>
+        </span>
+      </div>
+      <% if service.description.present? %>
+        <p class="mt-1 text-sm text-base-content/50"><%= truncate(service.description, length: 140) %></p>
+      <% end %>
+    </div>
+
+    <%= material_icon("chevron_right", size: 20, class: "shrink-0 text-base-content/40") %>
+  </div>
+<% end %>

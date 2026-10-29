@@ -1,0 +1,22 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Confirm your email change
+</h1>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Someone requested to change the email address on this account from
+  <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @user.email %></strong>
+  to <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @user.unconfirmed_email %></strong>.
+</p>
+
+<div style="margin-bottom:24px;">
+  <%= render "shared/mailer/code_card", code: @code, label: "Confirmation code", expires_in_minutes: @expires_in_minutes %>
+</div>
+
+<p style="margin:0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Enter this code to approve the change.
+  <strong style="color:<%= MailerTheme::HEADING_TEXT %>;">Both</strong> the old and new email addresses must confirm before the change takes effect.
+</p>
+
+<p style="margin:16px 0 0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  If you didn't request this, you can safely ignore this email.
+</p>
