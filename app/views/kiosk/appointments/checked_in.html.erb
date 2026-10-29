@@ -1,0 +1,31 @@
+<div class="checkin-result checkin-result--success"
+     data-controller="kiosk-idle"
+     data-kiosk-idle-timeout-value="0"
+     data-kiosk-idle-countdown-value="15"
+     data-kiosk-idle-mode-value="auto-redirect"
+     data-kiosk-idle-interruptible-value="false"
+     data-kiosk-idle-redirect-url-value="<%= kiosk_root_path %>">
+
+  <div class="checkin-slide checkin-result-header">
+    <span class="material-symbols-outlined checkin-result-icon">check_circle</span>
+    <div>
+      <h1 class="checkin-result-title">You're Checked In!</h1>
+    </div>
+  </div>
+
+  <div class="queue-card checkin-pop-1">
+    <p class="queue-label">Your Queue Number</p>
+    <div class="queue-number"><%= @queue_number %></div>
+  </div>
+
+  <p class="checkin-result-note">Please take a seat and wait to be called</p>
+
+  <%= link_to kiosk_root_path, class: "checkin-pulse checkin-home-btn checkin-pop-2", data: { turbo_action: "replace" } do %>
+    <span class="material-symbols-outlined">home</span>
+    Main Screen
+  <% end %>
+
+  <p class="checkin-countdown-text" data-kiosk-idle-target="countdownText">
+    Returning to home screen in 15 seconds&hellip;
+  </p>
+</div>

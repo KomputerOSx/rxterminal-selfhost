@@ -1,0 +1,146 @@
+class Rack::Attack
+  throttle("logins/email", limit: 5, period: 20.minutes) do |req|
+    req.params["email"].to_s.downcase.presence if req.path == "/login" && req.post?
+  end
+
+  throttle("logins/ip", limit: 10, period: 20.minutes) do |req|
+    req.ip if req.path == "/login" && req.post?
+  end
+
+  throttle("password_resets/ip", limit: 5, period: 10.minutes) do |req|
+    req.ip if req.path == "/password_resets" && req.post?
+  end
+
+  throttle("password_resets/email", limit: 3, period: 10.minutes) do |req|
+    req.params["email"].to_s.downcase.presence if req.path == "/password_resets" && req.post?
+  end
+
+  # Key on IP - req.session is not decrypted at Rack middleware level so user_id is never present there
+  throttle("password_changes/ip", limit: 5, period: 15.minutes) do |req|
+    req.ip if req.path == "/password" && req.patch?
+  end
+
+  # Registration: bounds both mass account-creation attempts and email-bombing a single address.
+  throttle("registrations/ip", limit: 5, period: 20.minutes) do |req|
+    req.ip if req.path == "/registration" && req.post?
+  end
+
+  throttle("registrations/email", limit: 3, period: 20.minutes) do |req|
+    req.params.dig("user", "email").to_s.downcase.presence if req.path == "/registration" && req.post?
+  end
+
+  # Confirmation codes are only 6 digits - throttling by IP is the primary defense against
+  # brute-forcing one within its expiry window (no per-record attempt lockout is kept).
+  throttle("confirmations/ip", limit: 10, period: 10.minutes) do |req|
+    req.ip if req.path == "/confirmations" && req.post?
+  end
+
+  throttle("email_change_confirm/ip", limit: 10, period: 10.minutes) do |req|
+    req.ip if req.path.start_with?("/profile/email_change/confirm") && req.post?
+  end
+
+  # 2FA: the challenge is already locked out after 5 wrong attempts (see SessionsController),
+  # but this bounds brute-forcing across MULTIPLE challenges from the same IP too.
+  throttle("two_factor_verify/ip", limit: 10, period: 10.minutes) do |req|
+    req.ip if req.path == "/login/two_factor" && req.post?
+  end
+
+  # Resend/fallback both send an email - throttle to stop email-bombing an account.
+  throttle("two_factor_resend/ip", limit: 5, period: 10.minutes) do |req|
+    req.ip if req.path == "/login/two_factor/resend" && req.post?
+  end
+
+  throttle("two_factor_email_fallback/ip", limit: 5, period: 10.minutes) do |req|
+    req.ip if req.path == "/login/two_factor/email_fallback" && req.post?
+  end
+
+  throttle("portal/appointments/post/ip", limit: 3, period: 10.minutes) do |req|
+    req.ip if req.path.match?(%r{\A/[a-z0-9][a-z0-9\-]*/appointments\z}) && req.post?
+  end
+
+  throttle("portal/calendar/ip", limit: 60, period: 1.minute) do |req|
+    req.ip if req.path.match?(%r{\A/[a-z0-9][a-z0-9\-]*/appointments/(calendar|slots|\d+/calendar\.ics)}) && req.get?
+  end
+
+  # Public walk-in queue joins. Matched on a path *suffix* (not a `/:slug/` prefix, unlike
+  # portal/appointments/post/ip above) so this covers both the multi-tenant `/:slug/walk-in`
+  # route and the root-mounted custom-domain `/walk-in` route (config/routes/public_portal_
+  # custom_domain.rb).
+  throttle("portal/walk_in/post/ip", limit: 5, period: 10.minutes) do |req|
+    req.ip if req.path.end_with?("/walk-in") && req.post?
+  end
+
+  # Catches distributed abuse of a single organization's queue spread across many IPs. Only
+  # matches the slugged path shape - root-mounted custom-domain requests have no slug segment
+  # to key on, and still get the per-IP throttle above.
+  throttle("portal/walk_in/post/org", limit: 20, period: 10.minutes) do |req|
+    if req.post? && (match = req.path.match(%r{\A/([a-z0-9][a-z0-9\-]*)/walk-in\z}))
+      match[1]
+    end
+  end
+
+  # The printed portal QR's token never expires, and the staff waiting display's token only
+  # rotates hourly (see PortalQrCode), so this bounds automated replay/spam of a captured QR
+  # URL per-IP even though the request is a cheap GET.
+  throttle("portal/arrive/ip", limit: 30, period: 10.minutes) do |req|
+    req.ip if req.path.end_with?("/arrive") && req.get?
+  end
+
+  # Appointment check-in "by name + DOB" (Public::AppointmentCheckinsController) is a
+  # guessable-identity oracle - a common surname plus one of ~36,500 DOB values, with no other
+  # lockout - so this is the primary defense against brute-forcing it. Booking-reference
+  # check-in shares the same POST path and gets the same limit.
+  throttle("portal/appointment_checkin/post/ip", limit: 5, period: 10.minutes) do |req|
+    req.ip if req.path.end_with?("/appointment-checkin") && req.post?
+  end
+
+  # The candidate-selection step (after a successful name+DOB match) - slightly more headroom
+  # since it's one POST per already-found candidate, not a search itself.
+  throttle("portal/appointment_checkin/confirm/ip", limit: 10, period: 10.minutes) do |req|
+    req.ip if req.path.end_with?("/appointment-checkin/select") && req.post?
+  end
+
+  self.throttled_responder = lambda do |req|
+    match_data = req.env["rack.attack.match_data"]
+    now = match_data[:epoch_time]
+    reset_time = now + (match_data[:period] - now % match_data[:period])
+    retry_after_seconds = reset_time - now
+    retry_after_minutes = (retry_after_seconds / 60.0).ceil
+
+    headers = {
+      "Content-Type" => "application/json",
+      "RateLimit-Limit" => match_data[:limit].to_s,
+      "RateLimit-Remaining" => "0",
+      "RateLimit-Reset" => reset_time.to_s,
+      "Retry-After" => retry_after_seconds.to_s
+    }
+
+    body = {
+      error: "Too many requests",
+      message: "You've exceeded the maximum number of attempts. Please try again in #{retry_after_minutes} minutes.",
+      retry_after_minutes: retry_after_minutes,
+      retry_after_seconds: retry_after_seconds,
+      reset_at: Time.at(reset_time).iso8601
+    }.to_json
+
+    [ 429, headers, [ body ] ]
+  end
+end
+
+ActiveSupport::Notifications.subscribe("rack.attack") do |_name, _start, _finish, _id, payload|
+  req        = payload[:request]
+  match_type = req.env["rack.attack.match_type"]
+  next unless match_type == :throttle
+
+  matched    = req.env["rack.attack.matched"]
+  match_data = req.env["rack.attack.match_data"] || {}
+
+  Rails.logger.warn("[SECURITY] rate_limit_triggered | rule=#{matched} | ip=#{req.ip} | path=#{req.path} | ua=#{req.env['HTTP_USER_AGENT']}")
+
+  AuditLog.create!(
+    user: nil, event_type: :rate_limit_triggered, ip_address: req.ip, user_agent: req.env["HTTP_USER_AGENT"],
+    metadata: { rule: matched, path: req.path, method: req.request_method, limit: match_data[:limit], count: match_data[:count], period: match_data[:period] }.compact
+  )
+rescue => e
+  Rails.logger.error "[AuditLog] rack.attack subscriber failed: #{e.class}: #{e.message}"
+end

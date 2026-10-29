@@ -1,0 +1,82 @@
+<%
+  setup_page = controller_path == "kiosk/setup"
+  home_root = controller_path == "kiosk/home" && action_name == "index"
+  show_chrome = !setup_page && !home_root
+  kiosk_theme = kiosk_theme_for(@organization)
+  kiosk_theme_style = @organization&.kiosk_theme_inline_style
+%>
+<!DOCTYPE html>
+<html <%= tag.attributes(
+      data: {
+        theme: kiosk_theme
+      },
+      style: kiosk_theme_style.presence
+    ) %>>
+  <head>
+    <title><%= content_for(:title) || @organization&.name || "Kiosk" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <% unless setup_page %>
+      <meta name="turbo-view-transition" content="true">
+      <meta name="turbo-cache-control" content="no-cache">
+    <% end %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= render "shared/fonts" %>
+  </head>
+
+  <body class="min-h-screen select-none bg-base-100 text-base-content antialiased"
+        <%= tag.attributes(
+              data: {
+                kiosk_app: setup_page ? nil : "true",
+                kiosk_preview: (!setup_page && kiosk_preview_mode?) ? "true" : nil,
+                controller: setup_page ? nil : "kiosk-page-transition"
+              }.compact
+            ) %>>
+    <%= render "kiosk/shared/preview_banner" unless setup_page %>
+
+    <main id="kiosk-main" class="<%= setup_page ? "flex min-h-screen flex-col items-center justify-center p-6" : "relative min-h-screen" %><%= " pt-16" if kiosk_preview_mode? && !setup_page %>">
+      <% if setup_page %>
+        <div id="flash_messages" class="mb-4 w-full max-w-md"><%= render "shared/flash" %></div>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <% if show_chrome %>
+      <%= link_to kiosk_search_services_path,
+            class: "btn btn-primary btn-circle fixed bottom-6 right-6 z-40 h-16 w-16 shadow-lg",
+            data: { turbo_prefetch: false } do %>
+        <span class="material-symbols-outlined !text-3xl">search</span>
+      <% end %>
+
+      <div id="idle-countdown-overlay"
+           class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-black/70">
+        <div class="p-12 text-center text-white">
+          <p class="mb-4 text-4xl font-semibold">Returning to home screen in</p>
+          <div id="idle-countdown-number" class="my-4 text-[10rem] font-black leading-none text-white">5</div>
+          <button type="button"
+                  data-controller="dispatch-event"
+                  data-dispatch-event-name-value="idle:cancel"
+                  data-action="click->dispatch-event#dispatch"
+                  class="btn btn-primary btn-lg mt-8 rounded-2xl px-12 py-5 text-xl font-bold">
+            Stay on this page
+          </button>
+        </div>
+      </div>
+    <% end %>
+
+    <%= render "shared/toast_container" %>
+    <%= render "shared/confirm_modal" %>
+  </body>
+</html>

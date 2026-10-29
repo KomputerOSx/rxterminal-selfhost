@@ -1,0 +1,13 @@
+You've been invited to join <%= @invitation.organization.name %>
+
+<%= @invitation.invited_by&.email || "Someone" %> invited you to join <%= @invitation.organization.name %>.
+
+Accept your invitation:
+
+<%= invitation_url(@raw_token) %>
+
+This invitation will expire in <%= @expires_in_days %> days.
+
+If you weren't expecting this, you can safely ignore this email.
+
+<%= mailer_powered_by_text %>

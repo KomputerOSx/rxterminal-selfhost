@@ -1,0 +1,20 @@
+<%= turbo_stream.replace "waiting-cards" do %>
+  <%= render partial: "org/queue/waiting_cards_container", locals: { waiting: @waiting } %>
+<% end %>
+
+<%= turbo_stream.replace "in-progress-cards" do %>
+  <%= render partial: "org/queue/in_progress_cards_container", locals: { in_progress: @in_progress } %>
+<% end %>
+
+<%= turbo_stream.replace "completed-cards" do %>
+  <%= render partial: "org/queue/completed_cards_container", locals: { completed_today: @completed_today } %>
+<% end %>
+
+<%= turbo_stream.update "stat-waiting", @queue_stats[:waiting].to_s %>
+<%= turbo_stream.update "stat-in-progress", @queue_stats[:in_progress].to_s %>
+<%= turbo_stream.update "stat-completed", @queue_stats[:completed_today].to_s %>
+<%= turbo_stream.update "stat-total", @queue_stats[:total_today].to_s %>
+
+<% if Current.organization.waiting_time_enabled? %>
+  <%= turbo_stream.update "stat-avg-wait", @queue_stats[:avg_wait].to_s %>
+<% end %>

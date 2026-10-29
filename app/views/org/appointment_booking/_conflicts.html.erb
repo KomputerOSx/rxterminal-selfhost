@@ -1,0 +1,46 @@
+<div id="appointment_booking_conflicts">
+  <% if appointments.any? %>
+    <div class="mt-6">
+      <%= form_section_heading "Appointments to review", tooltips: true,
+            tip: "These booked appointments fall on dates or times that are no longer bookable. They have not been cancelled. Reschedule or cancel them if needed." %>
+
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body p-0">
+          <div class="overflow-x-auto">
+            <table class="table table-sm">
+              <thead class="bg-base-200 text-sm font-semibold text-base-content">
+                <tr class="border-b border-base-300">
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Service</th>
+                  <th>Reference</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% appointments.first(20).each do |appointment| %>
+                  <tr class="hover:bg-base-200">
+                    <td class="font-medium"><%= booking_date_label(appointment.appointment_date) %></td>
+                    <td class="text-base-content/60"><%= appointment.appointment_time.strftime("%H:%M") %></td>
+                    <td class="text-base-content/60"><%= appointment.service.display_name %></td>
+                    <td class="text-base-content/60"><%= appointment.booking_reference %></td>
+                    <td>
+                      <div class="flex justify-end gap-1">
+                        <%= link_to org_appointment_path(appointment), class: "btn btn-ghost btn-xs btn-square", title: "View appointment" do %>
+                          <span class="material-symbols-outlined" style="font-size:18px">open_in_new</span>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <% if appointments.size > 20 %>
+        <p class="mt-2 text-sm text-base-content/60">Showing 20 of <%= appointments.size %>.</p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

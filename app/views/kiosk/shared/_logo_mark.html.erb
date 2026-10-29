@@ -1,0 +1,40 @@
+<%# Kiosk logo or default heart icon — touch start, home header, settings preview %>
+<% organization = local_assigns[:organization] %>
+<% variant = local_assigns.fetch(:variant, :touch) %>
+<% theme_preview = local_assigns.fetch(:theme_preview, false) %>
+
+<% image_class = case variant
+     when :preview then "mx-auto max-h-12 w-auto max-w-32 object-contain"
+     when :home then "max-h-24 w-auto max-w-[320px] object-contain"
+     else "max-h-28 w-auto max-w-[360px] object-contain"
+   end %>
+<% icon_class = case variant
+     when :preview then "material-symbols-outlined text-primary !text-3xl"
+     when :home then "material-symbols-outlined text-primary !text-[96px]"
+     else "material-symbols-outlined mb-8 text-primary !text-[110px]"
+   end %>
+<% wrapper_class = variant == :touch ? "mb-6 flex items-center justify-center" : "flex items-center justify-center" %>
+<% fallback_icon = organization&.kiosk_fallback_icon.presence || "favorite" %>
+
+<% if theme_preview %>
+  <div class="<%= wrapper_class %>"
+       data-kiosk-theme-preview-logo-slot
+       data-kiosk-theme-preview-logo-variant="<%= variant %>">
+    <% if organization.kiosk_logo.attached? %>
+      <%= image_tag organization.kiosk_logo,
+            class: image_class,
+            alt: "#{organization.name} logo",
+            data: { kiosk_theme_preview_logo: true } %>
+    <% else %>
+      <span class="<%= icon_class %>" data-kiosk-theme-preview-logo-fallback><%= fallback_icon %></span>
+    <% end %>
+  </div>
+<% elsif organization.kiosk_logo.attached? %>
+  <div class="<%= wrapper_class %>">
+    <%= image_tag organization.kiosk_logo,
+          class: image_class,
+          alt: "#{organization.name} logo" %>
+  </div>
+<% else %>
+  <span class="<%= icon_class %>"><%= fallback_icon %></span>
+<% end %>

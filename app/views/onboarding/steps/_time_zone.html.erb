@@ -1,0 +1,18 @@
+<div class="form-control"
+     data-controller="timezone-detect"
+     data-timezone-detect-mapping-value="<%= ActiveSupport::TimeZone::MAPPING.to_json %>"
+     data-timezone-detect-auto-value="true">
+  <%= label_tag "organization[time_zone]", class: "label" do %>
+    <span class="label-text">Time zone</span>
+  <% end %>
+  <%= time_zone_select "organization", :time_zone,
+        nil,
+        { default: @organization&.time_zone },
+        id: "onboarding_organization_time_zone",
+        class: error_class_for(@organization, :time_zone, "select-field w-full"),
+        data: { timezone_detect_target: "select" } %>
+  <%= field_errors(@organization, :time_zone) %>
+  <label class="label pt-1">
+    <span class="label-text-alt text-base-content/50">Detected automatically from your browser - change it if it's wrong.</span>
+  </label>
+</div>

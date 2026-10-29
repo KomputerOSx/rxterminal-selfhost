@@ -1,0 +1,37 @@
+<%= form_with model: [:org, calendar], class: "space-y-6" do |form| %>
+  <% if calendar.errors.any? %>
+    <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <p class="font-medium">There were some problems with your calendar:</p>
+      <ul class="mt-2 list-inside list-disc">
+        <% calendar.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Calendar details</h2>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Name *</span></label>
+        <%= form.text_field :name,
+              class: error_class_for(calendar, :name, "input-field w-full") %>
+        <%= field_errors(calendar, :name) %>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Colour</span></label>
+        <%= form.color_field :color,
+              class: "h-10 w-14 cursor-pointer rounded-lg border border-base-300 bg-base-100 p-1" %>
+        <%= field_errors(calendar, :color) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <%= link_to "Cancel", org_calendars_path, class: "btn btn-outline btn-sm" %>
+    <%= form.submit calendar.persisted? ? "Save changes" : "Create calendar", class: "btn btn-primary btn-sm" %>
+  </div>
+<% end %>

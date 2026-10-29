@@ -1,0 +1,56 @@
+<tr>
+  <td><span class="font-mono text-sm"><%= device.device_id %></span></td>
+  <td>
+    <% if device.name.present? %>
+      <%= device.name %>
+    <% else %>
+      <span class="text-base-content/40">No name</span>
+    <% end %>
+  </td>
+  <td><%= device_status_badge(device) %></td>
+  <td>
+    <% if device.registered_ip.present? %>
+      <span class="font-mono text-sm"><%= device.registered_ip %></span>
+    <% else %>
+      <span class="text-base-content/40">Not set</span>
+    <% end %>
+  </td>
+  <td>
+    <% if device.last_seen_at %>
+      <span class="text-sm"><%= time_ago_in_words(device.last_seen_at) %> ago</span>
+    <% else %>
+      <span class="text-base-content/40">Never</span>
+    <% end %>
+  </td>
+  <td>
+    <div class="flex justify-end gap-1">
+      <%= link_to org_device_path(device), class: "btn btn-ghost btn-xs btn-square", title: "View" do %>
+        <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
+      <% end %>
+      <%= link_to edit_org_device_path(device), class: "btn btn-ghost btn-xs btn-square", title: "Edit" do %>
+        <span class="material-symbols-outlined" style="font-size:18px">edit</span>
+      <% end %>
+      <% if device.active? %>
+        <%= button_to set_status_org_device_path(device, status: "inactive"), method: :patch,
+              class: "btn btn-ghost btn-xs",
+              data: {
+                controller: "confirm-modal",
+                action: "click->confirm-modal#confirm",
+                confirm_modal_message_value: "Deactivate #{device.device_id}?"
+              } do %>
+          Deactivate
+        <% end %>
+      <% elsif device.status == "inactive" %>
+        <%= button_to set_status_org_device_path(device, status: "active"), method: :patch,
+              class: "btn btn-ghost btn-xs",
+              data: {
+                controller: "confirm-modal",
+                action: "click->confirm-modal#confirm",
+                confirm_modal_message_value: "Activate #{device.device_id}?"
+              } do %>
+          Activate
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+</tr>

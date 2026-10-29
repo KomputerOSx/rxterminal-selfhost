@@ -1,0 +1,19 @@
+<% if records.total_pages > 1 %>
+  <nav class="mt-4 flex items-center justify-between gap-4" aria-label="Pagination">
+    <p class="text-sm text-base-content/60">Page <%= records.current_page %> of <%= records.total_pages %></p>
+    <div class="flex gap-2">
+      <% if records.first_page? %>
+        <span class="btn btn-outline btn-sm btn-disabled">Previous</span>
+      <% else %>
+        <%= link_to "Previous", booking_table_page_path(param_name, records.prev_page),
+              class: "btn btn-outline btn-sm", data: { turbo_frame: frame_id }, rel: "prev" %>
+      <% end %>
+      <% if records.last_page? %>
+        <span class="btn btn-outline btn-sm btn-disabled">Next</span>
+      <% else %>
+        <%= link_to "Next", booking_table_page_path(param_name, records.next_page),
+              class: "btn btn-outline btn-sm", data: { turbo_frame: frame_id }, rel: "next" %>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

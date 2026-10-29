@@ -1,0 +1,130 @@
+<% starter = @plans.find { |plan| plan.key == "starter" } %>
+<% business = @plans.find { |plan| plan.key == "business" } %>
+
+<section class="sec pricing-roi">
+  <h2 class="h-display h-display--md">See what <span class="rx-terminal-brand"><span class="rx">Rx</span>Terminal</span> saves your team.</h2>
+  <p class="lead lead--mt">Adjust the sliders to match your branch. Estimates assume 22 working days per month.</p>
+
+  <div class="roi-calc"
+       data-controller="roi-calculator"
+       data-action="input->roi-calculator#update change->roi-calculator#update"
+       data-roi-calculator-starter-cost-value="<%= starter.price_cents(@currency) %>"
+       data-roi-calculator-business-cost-value="<%= business.price_cents(@currency) %>">
+    <div class="roi-calc__plan-row">
+      <div class="roi-calc__field">
+        <label class="roi-calc__label" for="roi-plan">Compare against plan</label>
+        <div class="roi-calc__select-wrap">
+          <select id="roi-plan"
+                  class="roi-calc__select"
+                  data-roi-calculator-target="planSelect"
+                  data-action="change->roi-calculator#update">
+            <option value="starter"><%= starter.name %> · <%= starter.formatted_price(@currency) %>/mo</option>
+            <option value="business" selected><%= business.name %> · <%= business.formatted_price(@currency) %>/mo</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="roi-calc__inputs">
+      <div class="roi-calc__field">
+        <div class="roi-calc__slider-header">
+          <label class="roi-calc__label" for="roi-bookings">Walk-ins / bookings per day</label>
+          <output class="roi-calc__slider-val" data-roi-calculator-target="bookingsValue" for="roi-bookings">60</output>
+        </div>
+        <input id="roi-bookings"
+               type="range"
+               class="roi-calc__slider"
+               min="10"
+               max="200"
+               step="5"
+               value="60"
+               data-roi-calculator-target="bookingsSlider">
+        <div class="roi-calc__slider-ticks" aria-hidden="true">
+          <span>10</span>
+          <span>200</span>
+        </div>
+      </div>
+
+      <div class="roi-calc__field">
+        <div class="roi-calc__slider-header">
+          <label class="roi-calc__label" for="roi-minutes">Staff minutes saved per booking</label>
+          <output class="roi-calc__slider-val" data-roi-calculator-target="minutesValue" for="roi-minutes">5</output>
+        </div>
+        <input id="roi-minutes"
+               type="range"
+               class="roi-calc__slider"
+               min="1"
+               max="15"
+               step="1"
+               value="5"
+               data-roi-calculator-target="minutesSlider">
+        <div class="roi-calc__slider-ticks" aria-hidden="true">
+          <span>1</span>
+          <span>15</span>
+        </div>
+      </div>
+
+      <div class="roi-calc__field">
+        <div class="roi-calc__slider-header">
+          <label class="roi-calc__label" for="roi-wage">Average staff wage</label>
+          <output class="roi-calc__slider-val" data-roi-calculator-target="wageValue" for="roi-wage">£18/hr</output>
+        </div>
+        <input id="roi-wage"
+               type="range"
+               class="roi-calc__slider"
+               min="12"
+               max="35"
+               step="1"
+               value="18"
+               data-roi-calculator-target="wageSlider">
+        <div class="roi-calc__slider-ticks" aria-hidden="true">
+          <span>£12</span>
+          <span>£35</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roi-calc__stats" aria-live="polite">
+      <div class="roi-calc__stat">
+        <div class="roi-calc__stat-num" data-roi-calculator-target="dailyTime">5 hrs</div>
+        <div class="roi-calc__stat-label">Daily time saved</div>
+      </div>
+      <div class="roi-calc__stat">
+        <div class="roi-calc__stat-num" data-roi-calculator-target="monthlyTime">110 hrs</div>
+        <div class="roi-calc__stat-label">Monthly time saved (~22 days)</div>
+      </div>
+      <div class="roi-calc__stat">
+        <div class="roi-calc__stat-num" data-roi-calculator-target="monthlySavings">£1,980</div>
+        <div class="roi-calc__stat-label">Monthly labor savings</div>
+      </div>
+      <div class="roi-calc__stat">
+        <div class="roi-calc__stat-num" data-roi-calculator-target="roi">66.0×</div>
+        <div class="roi-calc__stat-label">Return on subscription</div>
+      </div>
+    </div>
+
+    <div class="roi-calc__bar-wrap">
+      <p class="roi-calc__note">Subscription cost vs. estimated monthly labor savings.</p>
+      <div class="roi-calc__bar-track" aria-hidden="true">
+        <div class="roi-calc__bar-fill" data-roi-calculator-target="barFill" style="width: 1.5%"></div>
+      </div>
+      <div class="roi-calc__bar-labels">
+        <span>Plan <span data-roi-calculator-target="barPlanLabel"><%= business.formatted_price(@currency) %></span></span>
+        <span>Savings <span data-roi-calculator-target="barSavingsLabel">£1,980</span></span>
+      </div>
+    </div>
+
+    <div class="roi-calc__callout">
+      <div class="roi-calc__callout-left">
+        <div class="roi-calc__callout-label">Net monthly savings</div>
+        <div class="roi-calc__callout-scenario" data-roi-calculator-target="calloutScenario">
+          60 bookings/day · 5 min saved · £18/hr · Business
+        </div>
+      </div>
+      <div class="roi-calc__callout-right">
+        <div class="roi-calc__callout-num" data-roi-calculator-target="calloutValue">£1,950</div>
+        <div class="roi-calc__callout-unit">/ mo</div>
+      </div>
+    </div>
+  </div>
+</section>

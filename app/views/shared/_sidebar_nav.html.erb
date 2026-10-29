@@ -1,0 +1,151 @@
+<%
+  # Single source of truth for sidebar navigation. Rendered in both the desktop
+  # sidebar (collapsible via [data-collapsed] on the group/sidebar container)
+  # and the mobile overlay panel (always expanded - no group/sidebar ancestor).
+  sections = []
+
+  if Current.organization && current_membership&.roles&.any?
+    product_items = []
+    product_items << { icon: "space_dashboard", label: "Dashboard", path: root_path }
+    product_items << { icon: "groups", label: "Queue", path: org_queue_path, permission: "app.queue.view" }
+    product_items << { icon: "person_add", label: "Walk-in", path: org_new_walk_in_path, permission: "app.queue.manage" }
+    product_items << { icon: "event", label: "Appointments", path: org_appointments_path, permission: "app.appointments.view", plan_feature: :appointments }
+    product_items << { icon: "medical_services", label: "Services", path: org_services_path, permission: "app.services.manage" }
+    product_items << { icon: "sell", label: "Upsells", path: org_upsell_rules_path, permission: "app.upsells.manage" }
+    product_items << { icon: "tablet", label: "Kiosk", path: org_kiosk_path, permission: "app.kiosk.configure", plan_feature: :kiosk }
+    product_items << { icon: "schedule", label: "Opening hours", path: org_opening_hours_path, permission: "app.portal.configure" }
+    product_items << { icon: "palette", label: "Portal appearance", path: org_portal_appearance_path, permission: "app.portal.configure" }
+    product_items << { icon: "event_available", label: "Appointment booking", path: org_appointment_booking_path, permission: "app.portal.configure", plan_feature: :appointments }
+    product_items << { icon: "bar_chart", label: "Analytics", path: org_analytics_path, permission: "app.analytics.view" }
+
+    visible_product_items = product_items.select do |item|
+      item[:permission].blank? || current_user.has_permission?(item[:permission], organization: Current.organization)
+    end
+
+    if visible_product_items.any?
+      sections << {
+        items: visible_product_items.map { |item| item.except(:permission) }
+      }
+    end
+
+    organization_items = [
+      { icon: "group", label: "Members", path: org_members_path },
+      { icon: "calendar_month", label: "Calendars", path: org_calendars_path, permission: "app.calendars.manage", plan_feature: :calendars },
+      { icon: "devices", label: "Devices", path: org_devices_path, permission: "app.devices.manage", plan_feature: :kiosk }
+    ]
+    organization_items << { icon: "language", label: "Custom domain", path: org_custom_domain_path, plan_feature: :custom_domain }
+    organization_items += [
+      { icon: "toggle_on", label: "Features", path: org_features_path },
+      { icon: "history", label: "Audit logs", path: org_audit_logs_path, permission: "app.audit_logs.view" },
+      { icon: "credit_card", label: "Billing", path: billing_path, permission: "app.billing.manage" },
+      { icon: "hub", label: "Settings", path: org_settings_path }
+    ]
+
+    sections << {
+      title: "Organization",
+      items: organization_items.select do |item|
+        item[:permission].blank? || current_user.has_permission?(item[:permission], organization: Current.organization)
+      end.map { |item| item.except(:permission) }
+    }
+  else
+    sections << {
+      items: [{ icon: "space_dashboard", label: "Dashboard", path: root_path }]
+    }
+  end
+
+  if authenticated? && current_user.system_operator?
+    admin_items = [ { icon: "space_dashboard", label: "Dashboard", path: admin_root_path } ]
+    admin_items << { icon: "group",         label: "Users",       path: admin_users_path }       if current_user.has_permission?("system.users.manage")
+    admin_items << { icon: "shield_person", label: "Roles",       path: admin_roles_path }       if current_user.has_permission?("system.roles.manage")
+    admin_items << { icon: "key",           label: "Permissions", path: admin_permissions_path } if current_user.has_permission?("system.roles.manage")
+    admin_items << { icon: "toggle_on",     label: "Features",    path: admin_features_path }
+    admin_items << { icon: "image",         label: "Organization logos", path: admin_organization_logos_path } if current_user.has_permission?("system.organization_logos.manage")
+    admin_items << { icon: "history",       label: "Audit Logs",  path: admin_audit_logs_path }  if current_user.has_permission?("system.audit_logs.view")
+    admin_items << { icon: "payments",      label: "Price Migrations", path: new_admin_price_migration_path } if current_user.has_permission?("system.billing.manage")
+    admin_items << { icon: "webhook",       label: "Webhook Events", path: admin_webhook_events_path } if current_user.has_permission?("system.billing.manage")
+    admin_items << { icon: "work_history",  label: "Job Inspector", path: "/admin/jobs" } if current_user.has_permission?("system.billing.manage")
+    admin_items << { icon: "campaign",      label: "Notifications", path: admin_notifications_path }
+    admin_items << { icon: "mail",          label: "Email Campaigns", path: admin_email_campaigns_path } if current_user.has_permission?("system.email_campaigns.manage")
+    admin_items << { icon: "person_off",    label: "Customer erasure", path: new_admin_customer_erasure_path } if current_user.has_permission?("system.customer_erasure.manage")
+    admin_items << { icon: "download",      label: "SAR export", path: new_admin_subject_access_request_path } if current_user.has_permission?("system.subject_access.manage")
+    admin_items << { icon: "engineering",   label: "Maintenance", path: edit_admin_maintenance_mode_path }
+
+    sections << { title: "Admin", items: admin_items }
+  end
+
+  row_classes = "flex h-10 items-center gap-3 rounded-lg px-2"
+%>
+<nav class="flex w-full flex-col p-3 text-sm select-none">
+  <% sections.each_with_index do |section, section_index| %>
+    <% if section[:title].present? %>
+      <!-- Section header: fixed-height row; text when expanded, divider line when collapsed -->
+      <div class="flex h-4 items-center px-2 <%= "mt-3" if section_index.positive? %>">
+        <span class="truncate text-xs font-semibold uppercase tracking-wider text-base-content/45 group-data-[collapsed]/sidebar:hidden"><%= section[:title] %></span>
+        <span class="hidden h-px w-full bg-base-300 group-data-[collapsed]/sidebar:block"></span>
+      </div>
+    <% elsif section_index.positive? %>
+      <div class="mt-3"></div>
+    <% end %>
+
+    <ul class="flex flex-col gap-1">
+      <% section[:items].each do |item| %>
+        <%
+          # data-controller="tooltip" is added/removed by sidebar_controller.js so
+          # tooltips only exist while the desktop sidebar is collapsed.
+          tooltip_data = {
+            tooltip_content: item[:label],
+            tooltip_placement_value: "right",
+            tooltip_arrow: "true",
+            tooltip_animation_value: "fade origin",
+            tooltip_size_value: "small"
+          }
+        %>
+        <li>
+          <% if item[:path] %>
+            <% plan_feature = item[:plan_feature] %>
+            <% plan_enabled = plan_feature.blank? || Current.organization.public_send(:"#{plan_feature}_enabled?") %>
+            <% if plan_enabled %>
+              <%= link_to item[:path],
+                    class: "#{row_classes} #{current_page?(item[:path]) ? "bg-base-300 text-base-content" : "text-base-content/80 hover:bg-base-200 hover:text-base-content"}",
+                    data: tooltip_data do %>
+                <span class="flex w-6 shrink-0 items-center justify-center">
+                  <span class="material-symbols-outlined !text-[22px]"><%= item[:icon] %></span>
+                </span>
+                <span class="min-w-0 truncate transition-opacity duration-200 group-data-[collapsed]/sidebar:opacity-0"><%= item[:label] %></span>
+              <% end %>
+            <% elsif current_user.has_permission?("app.billing.manage", organization: Current.organization) %>
+              <%= link_to billing_path,
+                    class: "#{row_classes} text-base-content/60 hover:bg-base-200 hover:text-base-content",
+                    data: tooltip_data.merge(tooltip_content: "#{item[:label]} — #{Billing::Plans::BUSINESS.name} plan") do %>
+                <span class="flex w-6 shrink-0 items-center justify-center">
+                  <span class="material-symbols-outlined !text-[22px]"><%= item[:icon] %></span>
+                </span>
+                <span class="min-w-0 flex items-center gap-2 truncate transition-opacity duration-200 group-data-[collapsed]/sidebar:opacity-0">
+                  <span class="truncate"><%= item[:label] %></span>
+                  <%= plan_gated_nav_badge %>
+                </span>
+              <% end %>
+            <% else %>
+              <%= content_tag :span, class: "#{row_classes} text-base-content/40", data: tooltip_data.merge(tooltip_content: "#{item[:label]} — #{Billing::Plans::BUSINESS.name} plan") do %>
+                <span class="flex w-6 shrink-0 items-center justify-center">
+                  <span class="material-symbols-outlined !text-[22px]"><%= item[:icon] %></span>
+                </span>
+                <span class="min-w-0 flex items-center gap-2 truncate transition-opacity duration-200 group-data-[collapsed]/sidebar:opacity-0">
+                  <span class="truncate"><%= item[:label] %></span>
+                  <%= plan_gated_nav_badge %>
+                </span>
+              <% end %>
+            <% end %>
+          <% else %>
+            <%= content_tag :span, class: "#{row_classes} text-base-content/40", data: tooltip_data do %>
+              <span class="flex w-6 shrink-0 items-center justify-center">
+                <span class="material-symbols-outlined !text-[22px]"><%= item[:icon] %></span>
+              </span>
+              <span class="min-w-0 truncate transition-opacity duration-200 group-data-[collapsed]/sidebar:opacity-0"><%= item[:label] %></span>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</nav>

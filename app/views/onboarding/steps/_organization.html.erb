@@ -1,0 +1,130 @@
+<div class="form-control">
+  <%= label_tag "organization[name]", class: "label" do %>
+    <span class="label-text">Organization name</span>
+  <% end %>
+  <%= text_field_tag "organization[name]", @organization&.name,
+        id: "onboarding_organization_name",
+        class: error_class_for(@organization, :name, "input-field w-full"),
+        autocomplete: "organization",
+        required: true %>
+  <%= field_errors(@organization, :name) %>
+</div>
+
+<div class="form-control">
+  <%= label_tag "organization[slug]", class: "label" do %>
+    <span class="label-text">Slug</span>
+  <% end %>
+  <%= text_field_tag "organization[slug]", @organization&.slug,
+        id: "onboarding_organization_slug",
+        class: error_class_for(@organization, :slug, "input-field w-full font-mono"),
+        autocomplete: "off",
+        spellcheck: false,
+        required: true %>
+  <%= field_errors(@organization, :slug) %>
+</div>
+
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div class="form-control">
+    <%= label_tag "organization[contact_email]", class: "label" do %>
+      <span class="label-text">Email</span>
+    <% end %>
+    <%= email_field_tag "organization[contact_email]", @organization&.contact_email,
+          id: "onboarding_organization_contact_email",
+          class: error_class_for(@organization, :contact_email, "input-field w-full"),
+          autocomplete: "email",
+          required: true %>
+    <%= field_errors(@organization, :contact_email) %>
+  </div>
+
+  <div class="form-control">
+    <%= label_tag "organization[contact_phone]", class: "label" do %>
+      <span class="label-text">Contact number</span>
+    <% end %>
+    <%= text_field_tag "organization[contact_phone]", @organization&.contact_phone,
+          id: "onboarding_organization_contact_phone",
+          class: error_class_for(@organization, :contact_phone, "input-field w-full"),
+          autocomplete: "tel",
+          required: true %>
+    <%= field_errors(@organization, :contact_phone) %>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div>
+  <%= form_subsection_label "Address",
+        tooltips: true,
+        tip: "Your organization's address - shown to customers." %>
+
+  <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div class="form-control">
+      <%= label_tag "organization[address_line1]", class: "label" do %>
+        <span class="label-text">Address line 1</span>
+      <% end %>
+      <%= text_field_tag "organization[address_line1]", @organization&.address_line1,
+            id: "onboarding_organization_address_line1",
+            class: error_class_for(@organization, :address_line1, "input-field w-full"),
+            autocomplete: "address-line1",
+            required: true %>
+      <%= field_errors(@organization, :address_line1) %>
+    </div>
+
+    <div class="form-control">
+      <%= label_tag "organization[address_line2]", class: "label" do %>
+        <span class="label-text">Address line 2</span>
+      <% end %>
+      <%= text_field_tag "organization[address_line2]", @organization&.address_line2,
+            id: "onboarding_organization_address_line2",
+            class: error_class_for(@organization, :address_line2, "input-field w-full"),
+            autocomplete: "address-line2" %>
+      <%= field_errors(@organization, :address_line2) %>
+    </div>
+
+    <div class="form-control">
+      <%= label_tag "organization[address_city]", class: "label" do %>
+        <span class="label-text">City</span>
+      <% end %>
+      <%= text_field_tag "organization[address_city]", @organization&.address_city,
+            id: "onboarding_organization_address_city",
+            class: error_class_for(@organization, :address_city, "input-field w-full"),
+            autocomplete: "address-level2",
+            required: true %>
+      <%= field_errors(@organization, :address_city) %>
+    </div>
+
+    <div class="form-control">
+      <%= label_tag "organization[address_state]", class: "label" do %>
+        <span class="label-text">State / region</span>
+      <% end %>
+      <%= text_field_tag "organization[address_state]", @organization&.address_state,
+            id: "onboarding_organization_address_state",
+            class: error_class_for(@organization, :address_state, "input-field w-full"),
+            autocomplete: "address-level1" %>
+      <%= field_errors(@organization, :address_state) %>
+    </div>
+
+    <div class="form-control">
+      <%= label_tag "organization[address_postal_code]", class: "label" do %>
+        <span class="label-text">Postal code</span>
+      <% end %>
+      <%= text_field_tag "organization[address_postal_code]", @organization&.address_postal_code,
+            id: "onboarding_organization_address_postal_code",
+            class: error_class_for(@organization, :address_postal_code, "input-field w-full"),
+            autocomplete: "postal-code",
+            required: true %>
+      <%= field_errors(@organization, :address_postal_code) %>
+    </div>
+
+    <div class="form-control">
+      <%= label_tag "organization[address_country]", class: "label" do %>
+        <span class="label-text">Country</span>
+      <% end %>
+      <%= text_field_tag "organization[address_country]", @organization&.address_country,
+            id: "onboarding_organization_address_country",
+            class: error_class_for(@organization, :address_country, "input-field w-full"),
+            autocomplete: "country-name",
+            required: true %>
+      <%= field_errors(@organization, :address_country) %>
+    </div>
+  </div>
+</div>

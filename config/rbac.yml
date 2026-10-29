@@ -1,0 +1,52 @@
+permissions:
+  system.users.manage: "Manage user accounts"
+  system.roles.manage: "View/manage roles and permissions"
+  system.audit_logs.view: "View audit logs"
+  system.billing.manage: "Manage platform-wide billing (price migrations, grandfathering)"
+  system.email_campaigns.manage: "Compose and send platform-wide email campaigns"
+  system.customer_erasure.manage: "GDPR customer erasure tool"
+  system.subject_access.manage: "GDPR subject access request export"
+  system.organization_logos.manage: "Review and approve/decline organization logo uploads"
+  app.members.invite: "Invite people to the organization"
+  app.members.remove: "Remove members from the organization"
+  app.members.promote: "Promote/demote members between admin and user"
+  app.members.promote_owner: "Promote a member to co-owner of the organization"
+  app.members.demote_owner: "Demote an owner to admin"
+  app.organization.manage: "Manage organization settings"
+  app.billing.manage: "Manage billing and subscription"
+  app.queue.view: "View live queue and waiting display"
+  app.queue.manage: "Call, complete, cancel, revert queue entries"
+  app.appointments.view: "View appointment list and detail"
+  app.appointments.manage: "Create, edit, cancel, check-in, and mark no-shows"
+  app.services.manage: "Create and manage services, toggle active, assign staff"
+  app.calendars.manage: "Create and manage calendars, hours, and slot config"
+  app.upsells.manage: "Create and manage upsell rules and templates"
+  app.devices.manage: "Provision and revoke kiosk devices"
+  app.kiosk.configure: "Customize kiosk branding, layout, preview, and featured service"
+  app.analytics.view: "View dashboards and stats"
+  app.portal.configure: "Configure public portal slug, hours, postcode region, and printout"
+  app.audit_logs.view: "View organization audit logs"
+
+roles:
+  system:
+    system_admin:
+      permanent: true
+      description: "Permanent platform operator role"
+      permissions: [system.users.manage, system.roles.manage, system.audit_logs.view, system.billing.manage, system.email_campaigns.manage, system.customer_erasure.manage, system.subject_access.manage, system.organization_logos.manage]
+    system_user:
+      permanent: true
+      description: "Permanent basic platform operator role"
+      permissions: [system.users.manage, system.roles.manage]
+  app:
+    owner:
+      permanent: true
+      description: "Organization owner - full control; cannot be removed while sole owner"
+      permissions: [app.members.invite, app.members.remove, app.members.promote, app.members.promote_owner, app.members.demote_owner, app.organization.manage, app.billing.manage, app.queue.view, app.queue.manage, app.appointments.view, app.appointments.manage, app.services.manage, app.calendars.manage, app.upsells.manage, app.devices.manage, app.kiosk.configure, app.analytics.view, app.portal.configure, app.audit_logs.view]
+    admin:
+      permanent: false
+      description: "Organization admin - day-to-day management"
+      permissions: [app.members.invite, app.members.remove, app.queue.view, app.queue.manage, app.appointments.view, app.appointments.manage, app.services.manage, app.calendars.manage, app.upsells.manage, app.devices.manage, app.kiosk.configure, app.analytics.view, app.portal.configure, app.audit_logs.view]
+    user:
+      permanent: false
+      description: "Organization member - front-line queue and appointment operations"
+      permissions: [app.queue.view, app.queue.manage, app.appointments.view, app.appointments.manage]

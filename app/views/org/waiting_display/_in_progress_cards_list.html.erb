@@ -1,0 +1,5 @@
+<div id="in-progress-cards" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+  <% in_progress.each do |request| %>
+    <%= render partial: "in_progress_number", locals: { request: request } %>
+  <% end %>
+</div>

@@ -1,0 +1,77 @@
+<div id="<%= dom_id(organization, :logo_gallery) %>" class="card mt-4 border border-base-300">
+  <div class="card-body gap-6">
+    <div>
+      <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Active logo</p>
+      <% if organization.kiosk_logo.attached? %>
+        <div class="mt-2 flex min-h-36 items-center justify-center rounded-lg border border-base-300 bg-base-100 p-6"
+             data-theme="<%= kiosk_theme_for(organization) %>"
+             style="<%= organization.kiosk_theme_inline_style %>">
+          <%= image_tag organization.kiosk_logo,
+                class: "max-h-28 w-auto max-w-full object-contain",
+                alt: "#{organization.name} logo" %>
+        </div>
+        <% if can_configure_portal? %>
+          <%= button_to "Remove active logo", deactivate_org_organization_logos_path,
+                method: :patch,
+                class: "btn btn-error btn-outline btn-sm mt-3",
+                data: {
+                  controller: "confirm-modal",
+                  action: "click->confirm-modal#confirm",
+                  confirm_modal_message_value: "Remove the active organization logo? The kiosk and portal will show no logo until you activate another one."
+                } %>
+        <% end %>
+      <% else %>
+        <div class="mt-2 flex min-h-36 items-center justify-center rounded-lg border border-dashed border-base-300 bg-base-100 p-6"
+             data-theme="<%= kiosk_theme_for(organization) %>"
+             style="<%= organization.kiosk_theme_inline_style %>">
+          <span class="material-symbols-outlined text-primary !text-[56px]"><%= organization.kiosk_fallback_icon.presence || "favorite" %></span>
+        </div>
+        <% if can_configure_portal? %>
+          <%= form_with model: organization, url: org_organization_path, method: :patch, html: { class: "mt-3" } do |f| %>
+            <%= render "shared/material_icon_picker", form: f, selected_icon: organization.kiosk_fallback_icon, field: :kiosk_fallback_icon, required: true %>
+            <%= field_errors(organization, :kiosk_fallback_icon) %>
+            <%= f.submit "Save icon", class: "btn btn-primary btn-sm mt-2" %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div>
+      <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Your submissions</p>
+      <% if organization.organization_logos.any? %>
+        <div class="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <% organization.organization_logos.with_attached_image.order(created_at: :desc).each do |organization_logo| %>
+            <%= render "org/settings/organization_logo", organization_logo: organization_logo, can_manage: can_configure_portal? %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="mt-2 text-sm text-base-content/60">No logos submitted yet.</p>
+      <% end %>
+    </div>
+
+    <% if can_configure_portal? %>
+      <% if organization.organization_logos.where(status: %w[pending approved]).count < OrganizationLogo::MAX_PER_ORGANIZATION %>
+        <%= form_with url: org_organization_logos_path, method: :post, multipart: true,
+              html: {
+                class: "flex flex-wrap items-end gap-2",
+                data: {
+                  controller: "organization-logo-upload",
+                  organization_logo_upload_remaining_value: OrganizationLogo::MAX_PER_ORGANIZATION - organization.organization_logos.where(status: %w[pending approved]).count
+                }
+              } do %>
+          <div class="form-control max-w-md">
+            <label class="label"><span class="label-text">Upload logos (up to 3)</span></label>
+            <input type="file" name="organization_logo[images][]" multiple accept="image/*"
+                   class="input-field w-full"
+                   data-organization-logo-upload-target="input"
+                   data-action="change->organization-logo-upload#validate">
+            <p class="hidden mt-1 text-xs text-error" data-organization-logo-upload-target="error"></p>
+          </div>
+          <%= submit_tag "Upload for review", class: "btn btn-primary btn-sm", data: { organization_logo_upload_target: "submit" } %>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-base-content/60">You've reached the maximum of <%= OrganizationLogo::MAX_PER_ORGANIZATION %> logos pending or approved. Wait for a decision before uploading more.</p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

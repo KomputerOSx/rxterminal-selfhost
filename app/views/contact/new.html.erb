@@ -1,0 +1,59 @@
+<% content_for :title, "Contact Us" %>
+<% content_for :meta_description, "Get in touch with the RxTerminal team. We'll help you get your self-service kiosk platform set up quickly." %>
+
+<main class="wire">
+  <section class="sec contact-sec">
+    <div class="contact-wrap">
+      <div class="contact-intro">
+        <div class="sec__eyebrow"><span class="num"></span> Get in Touch</div>
+        <h1 class="h-display h-display--lg">Let&rsquo;s talk.</h1>
+        <p class="lead">Have a question, want a demo, or ready to get started? Drop us a message and we&rsquo;ll get back to you within one working day.</p>
+        <p class="contact-email">Or email us directly: <a href="mailto:contact@strixon.co.uk">contact@strixon.co.uk</a></p>
+        <p class="mt-6">
+          <%= link_to "Start your free trial", new_registration_path, class: "btn btn-primary" %>
+        </p>
+      </div>
+
+      <div class="contact-form-wrap">
+        <% if flash[:alert].present? %>
+          <div class="flash flash--alert"><%= flash[:alert] %></div>
+        <% end %>
+
+        <%= form_with url: contact_path, method: :post, class: "contact-form" do |f| %>
+          <%= hidden_field_tag :form_token, session[:contact_form_token] %>
+          <%= hidden_field_tag :form_loaded_at, Time.current.to_i %>
+
+          <div class="visually-hidden" aria-hidden="true">
+            <%= f.text_field :website, autocomplete: "off", tabindex: -1 %>
+            <%= f.text_field :company, autocomplete: "off", tabindex: -1 %>
+          </div>
+
+          <div class="form-row form-row--2">
+            <div class="form-field">
+              <%= f.label :name, "Full name *" %>
+              <%= f.text_field :name, required: true, placeholder: "John Doe", value: params[:name], maxlength: 100 %>
+            </div>
+            <div class="form-field">
+              <%= f.label :email, "Email address *" %>
+              <%= f.email_field :email, required: true, placeholder: "john.doe@mail.com", value: params[:email], maxlength: 254 %>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :phone, "Phone number (optional)" %>
+            <%= f.telephone_field :phone, placeholder: "0191 123 1234", value: params[:phone], maxlength: 20 %>
+          </div>
+
+          <div class="form-field">
+            <%= f.label :message, "Message *" %>
+            <%= f.text_area :message, required: true, rows: 6, placeholder: "Tell us about your team and what you're looking for…", value: params[:message], maxlength: 5000 %>
+          </div>
+
+          <%= f.submit "Send message", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%= render "shared/public_footer" %>
+</main>

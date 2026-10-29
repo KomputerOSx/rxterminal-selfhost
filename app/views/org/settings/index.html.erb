@@ -1,0 +1,268 @@
+<div class="w-full max-w-4xl">
+  <%= render "org/settings/name_editor" %>
+
+  <% if can_configure_portal? %>
+    <%= form_with model: Current.organization,
+          url: org_organization_path,
+          method: :patch,
+          multipart: true,
+          class: "mt-10 space-y-10" do |form| %>
+      <div>
+        <h2 class="text-lg font-semibold">Organization details</h2>
+
+        <div class="card mt-4 border border-base-300">
+          <div class="card-body gap-6 space-y-5">
+            <div class="form-control max-w-md">
+              <%= form.label :slug, class: "label" do %>
+                <%= form_label_text "Slug", tooltips: true,
+                      tip: (Current.organization.slug_change_locked? ?
+                        "You can change your slug again on #{Current.organization.slug_changeable_at.to_date.strftime('%-d %b %Y')}." :
+                        "You can change your slug once every 30 days. Links and QR codes using the old slug stop working.") %>
+              <% end %>
+              <%= form.text_field :slug,
+                    class: error_class_for(Current.organization, :slug, "input-field w-full font-mono"),
+                    autocomplete: "off",
+                    spellcheck: false,
+                    disabled: Current.organization.slug_change_locked? && Current.organization.errors[:slug].empty? %>
+              <%= field_errors(Current.organization, :slug) %>
+            </div>
+
+            <div class="form-control max-w-md">
+              <%= form.label :postcode_region, class: "label" do %>
+                <span class="label-text">Postcode region</span>
+              <% end %>
+              <%= form.select :postcode_region,
+                    options_for_select(postcode_region_options, Current.organization.postcode_region),
+                    {},
+                    class: error_class_for(Current.organization, :postcode_region, "select-field w-full") %>
+              <%= field_errors(Current.organization, :postcode_region) %>
+            </div>
+
+            <div class="form-control max-w-md">
+              <%= form.label :service_currency, class: "label" do %>
+                <%= form_label_text "Service price currency", tooltips: true,
+                      tip: "Applies to every service's price across the organization." %>
+              <% end %>
+              <%= form.select :service_currency,
+                    options_for_select(service_currency_options, Current.organization.service_currency),
+                    {},
+                    class: error_class_for(Current.organization, :service_currency, "select-field w-full") %>
+              <%= field_errors(Current.organization, :service_currency) %>
+            </div>
+
+            <div class="form-control max-w-md"
+                 data-controller="timezone-detect"
+                 data-timezone-detect-mapping-value="<%= ActiveSupport::TimeZone::MAPPING.to_json %>"
+                 data-timezone-detect-auto-value="<%= Current.organization.time_zone == "UTC" %>">
+              <%= form.label :time_zone, class: "label" do %>
+                <span class="label-text">Time zone</span>
+              <% end %>
+              <%= form.time_zone_select :time_zone,
+                    nil,
+                    {},
+                    class: error_class_for(Current.organization, :time_zone, "select-field w-full"),
+                    data: { timezone_detect_target: "select" } %>
+              <%= field_errors(Current.organization, :time_zone) %>
+            </div>
+
+            <label class="flex cursor-pointer items-center gap-3">
+              <%= form.check_box :kiosk_collect_postcode, class: "toggle toggle-primary toggle-sm" %>
+              <%= form_option_label "Collect postcode on kiosk and walk-in forms",
+                    tooltips: true,
+                    tip: "Turn off if your business doesn't need a customer's postcode to serve them." %>
+            </label>
+
+            <label class="flex cursor-pointer items-center gap-3">
+              <%= form.check_box :kiosk_collect_dob, class: "toggle toggle-primary toggle-sm" %>
+              <%= form_option_label "Collect date of birth on kiosk and walk-in forms",
+                    tooltips: true,
+                    tip: "Turn off if your business doesn't need a customer's date of birth to serve them. Customers can then only be looked up by name (or a booking reference) when checking in." %>
+            </label>
+
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold">Contact details</h2>
+
+        <div class="card mt-4 border border-base-300">
+          <div class="card-body gap-6 space-y-5">
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div class="form-control">
+                <%= form.label :contact_email, class: "label" do %>
+                  <span class="label-text">Email</span>
+                <% end %>
+                <%= form.email_field :contact_email,
+                      class: error_class_for(Current.organization, :contact_email, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :contact_email) %>
+              </div>
+
+              <div class="form-control">
+                <%= form.label :contact_phone, class: "label" do %>
+                  <span class="label-text">Contact number</span>
+                <% end %>
+                <%= form.text_field :contact_phone,
+                      class: error_class_for(Current.organization, :contact_phone, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :contact_phone) %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <%= form_section_heading "Address",
+              tooltips: true,
+              tip: "Your organization's address - shown to customers." %>
+
+        <div class="card mt-4 border border-base-300">
+          <div class="card-body gap-6 space-y-5">
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div class="form-control">
+                <%= form.label :address_line1, class: "label" do %>
+                  <span class="label-text">Address line 1</span>
+                <% end %>
+                <%= form.text_field :address_line1,
+                      class: error_class_for(Current.organization, :address_line1, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :address_line1) %>
+              </div>
+
+              <div class="form-control">
+                <%= form.label :address_line2, class: "label" do %>
+                  <span class="label-text">Address line 2</span>
+                <% end %>
+                <%= form.text_field :address_line2,
+                      class: error_class_for(Current.organization, :address_line2, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :address_line2) %>
+              </div>
+
+              <div class="form-control">
+                <%= form.label :address_city, class: "label" do %>
+                  <span class="label-text">City</span>
+                <% end %>
+                <%= form.text_field :address_city,
+                      class: error_class_for(Current.organization, :address_city, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :address_city) %>
+              </div>
+
+              <div class="form-control">
+                <%= form.label :address_state, class: "label" do %>
+                  <span class="label-text">State / region</span>
+                <% end %>
+                <%= form.text_field :address_state,
+                      class: error_class_for(Current.organization, :address_state, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :address_state) %>
+              </div>
+
+              <div class="form-control">
+                <%= form.label :address_postal_code, class: "label" do %>
+                  <span class="label-text">Postal code</span>
+                <% end %>
+                <%= form.text_field :address_postal_code,
+                      class: error_class_for(Current.organization, :address_postal_code, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :address_postal_code) %>
+              </div>
+
+              <div class="form-control">
+                <%= form.label :address_country, class: "label" do %>
+                  <span class="label-text">Country</span>
+                <% end %>
+                <%= form.text_field :address_country,
+                      class: error_class_for(Current.organization, :address_country, "input-field w-full"),
+                      autocomplete: "off" %>
+                <%= field_errors(Current.organization, :address_country) %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%= render "org/settings/public_urls_section" %>
+
+      <%= form.submit "Save changes", class: "btn btn-primary btn-sm w-fit" %>
+    <% end %>
+  <% else %>
+    <div class="mt-10">
+      <h2 class="text-lg font-semibold">Organization details</h2>
+
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body gap-6">
+          <dl class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Slug</dt>
+              <dd class="mt-1 font-mono text-sm"><%= Current.organization.slug %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Postcode region</dt>
+              <dd class="mt-1 text-sm"><%= postcode_region_label(Current.organization.postcode_region) %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Service price currency</dt>
+              <dd class="mt-1 text-sm"><%= service_currency_label(Current.organization.service_currency) %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Collect postcode</dt>
+              <dd class="mt-1 text-sm"><%= Current.organization.kiosk_collect_postcode? ? "Yes" : "No" %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Collect date of birth</dt>
+              <dd class="mt-1 text-sm"><%= Current.organization.kiosk_collect_dob? ? "Yes" : "No" %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Time zone</dt>
+              <dd class="mt-1 text-sm"><%= ActiveSupport::TimeZone[Current.organization.time_zone] %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-lg font-semibold">Contact details</h2>
+
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body gap-6">
+          <dl class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Email</dt>
+              <dd class="mt-1 text-sm"><%= Current.organization.contact_email.presence || "-" %></dd>
+            </div>
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Contact number</dt>
+              <dd class="mt-1 text-sm"><%= Current.organization.contact_phone.presence || "-" %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-lg font-semibold">Address</h2>
+
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body gap-6">
+          <dl class="grid gap-4">
+            <div>
+              <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Address</dt>
+              <dd class="mt-1 text-sm"><%= Current.organization.full_address.presence || "-" %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <%= render "org/settings/public_urls_section" %>
+  <% end %>
+
+  <%= render "org/settings/logo_section" %>
+
+  <%= render "org/settings/leave_section" %>
+</div>

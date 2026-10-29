@@ -1,0 +1,154 @@
+<div class="mx-auto w-full max-w-2xl"
+     data-controller="staff-walk-in"
+     data-staff-walk-in-services-value="<%= @services_json %>">
+
+  <div class="mb-6 flex items-start justify-between gap-4">
+    <h1 class="text-2xl font-semibold">New walk-in</h1>
+    <%= link_to "Queue", org_queue_path, class: "btn btn-outline btn-sm" %>
+  </div>
+
+  <% if flash[:alert] %>
+    <div class="mb-4 rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <% if @services.empty? %>
+    <p class="text-sm text-base-content/60">No immediate services are configured. Add services before creating walk-ins.</p>
+  <% else %>
+    <%= form_with url: org_walk_in_path, method: :post, class: "space-y-6" do %>
+      <div class="card border border-base-300">
+        <div class="card-body gap-4">
+          <h2 class="text-lg font-semibold">Service</h2>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Select a service</span></label>
+            <%= select_tag "service_request[service_id]",
+                  options_for_select(
+                    @services.map { |service| [ service.display_name, service.id ] },
+                    params.dig(:service_request, :service_id)
+                  ),
+                  include_blank: true,
+                  class: "select-field w-full",
+                  required: true,
+                  data: {
+                    staff_walk_in_target: "serviceSelect",
+                    action: "change->staff-walk-in#serviceChanged"
+                  } %>
+
+            <% if @recent_services.present? %>
+              <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                <span class="text-xs text-base-content/50">Recent:</span>
+                <% @recent_services.each do |service| %>
+                  <button type="button"
+                          class="btn btn-outline btn-xs"
+                          data-action="click->staff-walk-in#selectRecent"
+                          data-staff-walk-in-id-param="<%= service.id %>">
+                    <%= service.display_name %>
+                  </button>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div data-staff-walk-in-target="eligibilitySection" class="hidden">
+        <div class="card border border-base-300">
+          <div class="card-body gap-3">
+            <h2 class="text-lg font-semibold">Eligibility requirements</h2>
+            <div data-staff-walk-in-target="eligibilityContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border border-base-300">
+        <div class="card-body gap-4">
+          <h2 class="text-lg font-semibold">Customer details</h2>
+
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="form-control">
+              <label class="label"><span class="label-text">First name</span></label>
+              <input type="text"
+                     name="service_request[first_name]"
+                     value="<%= @service_request.first_name %>"
+                     class="<%= error_class_for(@service_request, :first_name, "input-field w-full uppercase") %>"
+                     data-action="input->staff-walk-in#uppercase"
+                     autocomplete="off"
+                     required>
+              <%= field_errors(@service_request, :first_name) %>
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Last name</span></label>
+              <input type="text"
+                     name="service_request[last_name]"
+                     value="<%= @service_request.last_name %>"
+                     class="<%= error_class_for(@service_request, :last_name, "input-field w-full uppercase") %>"
+                     data-action="input->staff-walk-in#uppercase"
+                     autocomplete="off"
+                     required>
+              <%= field_errors(@service_request, :last_name) %>
+            </div>
+          </div>
+
+          <% dob_required = Current.organization.kiosk_collect_dob? %>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Date of birth<%= dob_required ? " *" : " (optional)" %></span></label>
+            <input type="date"
+                   name="service_request[dob]"
+                   value="<%= @service_request.dob&.iso8601 %>"
+                   lang="en-GB"
+                   min="1900-01-01"
+                   max="<%= Date.current.iso8601 %>"
+                   class="<%= error_class_for(@service_request, :dob, "input-field w-full") %>"
+                   autocomplete="off"
+                   <%= "required" if dob_required %>>
+            <%= field_errors(@service_request, :dob) %>
+          </div>
+
+          <% postcode_required = Current.organization.kiosk_collect_postcode? %>
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text"><%= walk_in_postcode_label(Current.organization) %><%= postcode_required ? " *" : " (optional)" %></span>
+            </label>
+            <input type="text"
+                   name="service_request[postcode]"
+                   value="<%= @service_request.postcode %>"
+                   class="<%= error_class_for(@service_request, :postcode, "input-field w-full uppercase") %>"
+                   data-action="input->staff-walk-in#uppercase"
+                   autocomplete="off"
+                   <%= "required" if postcode_required %>>
+            <%= field_errors(@service_request, :postcode) %>
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">Notes</span></label>
+            <textarea name="service_request[description]"
+                      rows="3"
+                      class="textarea-field w-full uppercase"
+                      data-action="input->staff-walk-in#uppercase"><%= @service_request.description %></textarea>
+          </div>
+
+          <div data-staff-walk-in-target="privacySection" class="hidden">
+            <label class="flex cursor-pointer items-start gap-3">
+              <input type="hidden" name="service_request[privacy_requested]" value="0">
+              <input type="checkbox"
+                     name="service_request[privacy_requested]"
+                     value="1"
+                     class="checkbox-field mt-0.5"
+                     <%= "checked" if @service_request.privacy_requested %>>
+              <span class="text-sm font-medium">Private consultation requested</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <%= link_to "Cancel", org_queue_path, class: "btn btn-ghost btn-sm" %>
+        <button type="submit" class="btn btn-primary btn-sm flex-1 gap-1">
+          <span class="material-symbols-outlined !text-[18px]">confirmation_number</span>
+          Create and get queue number
+        </button>
+      </div>
+    <% end %>
+  <% end %>
+</div>

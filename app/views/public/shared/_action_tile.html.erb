@@ -1,0 +1,13 @@
+<%# locals: (url:, icon:, title:, highlight: false) %>
+<%= link_to url,
+      class: "card border border-base-300 block #{'border-primary' if highlight}" do %>
+  <div class="card-body flex-row items-center gap-4 p-5">
+    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+      <%= material_icon(icon, size: 26) %>
+    </div>
+    <div class="min-w-0 flex-1">
+      <p class="text-lg font-medium"><%= title %></p>
+    </div>
+    <%= material_icon("chevron_right", size: 20, class: "shrink-0 text-base-content/40") %>
+  </div>
+<% end %>

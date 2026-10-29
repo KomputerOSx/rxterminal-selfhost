@@ -1,0 +1,241 @@
+<%= render "public/shared/page_header",
+      title: "Book appointment",
+      back_path: (@walk_in_queue_number.present? ? portal_walk_in_my_queue_path : portal_root_path) %>
+
+<div class="mt-6"
+     data-controller="public-appointment"
+     data-public-appointment-calendar-url-value="<%= portal_appointment_calendar_path %>"
+     data-public-appointment-slots-url-value="<%= portal_appointment_slots_path %>"
+     data-public-appointment-has-errors-value="<%= @appointment&.errors&.any? ? 'true' : 'false' %>"
+     data-public-appointment-error-step-value="<%= @error_step || 0 %>"
+     data-public-appointment-eligibility-data-value="<%= @eligibility_data.to_json %>">
+
+  <div class="mb-6 flex items-center gap-2">
+    <% ["Date & time", "Your details", "Review"].each_with_index do |label, index| %>
+      <div class="flex items-center gap-1.5">
+        <span data-public-appointment-target="stepIndicator"
+              class="flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold bg-base-300 text-base-content/60">
+          <%= index + 1 %>
+        </span>
+        <span class="hidden text-sm text-base-content/60 sm:inline"><%= label %></span>
+      </div>
+      <% unless index == 2 %>
+        <div class="h-px flex-1 bg-base-300"></div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= form_with model: @appointment,
+        url: portal_appointments_path,
+        data: { action: "submit->public-appointment#submit" } do |f| %>
+
+    <%= hidden_field_tag :website, "", class: "hidden", autocomplete: "off", tabindex: -1 %>
+    <%= f.hidden_field :appointment_date,
+          value: @appointment.appointment_date&.iso8601,
+          data: { public_appointment_target: "formDate" } %>
+    <%= f.hidden_field :appointment_time,
+          value: appointment_time_value(@appointment),
+          data: { public_appointment_target: "formSlot" } %>
+
+    <div data-public-appointment-target="step">
+      <div class="card border border-base-300">
+        <div class="card-body gap-5">
+          <h2 class="text-lg font-semibold">Date & time</h2>
+
+          <% appointment_services = @organization.services.visible.active
+                                     .where(requires_appointment: true)
+                                     .order(:display_name) %>
+          <% selected_service_id = @appointment.service_id || @preselected_service_id %>
+          <div class="form-control">
+            <label class="label"><span class="label-text">Service *</span></label>
+            <%= f.select :service_id,
+                  options_for_select(
+                    appointment_services.map { |service|
+                      [
+                        "#{service.display_name} - #{service.estimated_duration} min · #{portal_service_price_label(service)}",
+                        service.id
+                      ]
+                    },
+                    selected_service_id
+                  ),
+                  { prompt: "Choose a service" },
+                  class: error_class_for(@appointment, :service_id, "select-field w-full"),
+                  required: true,
+                  data: service_select_data(
+                    option_count: appointment_services.size,
+                    data: {
+                      public_appointment_target: "serviceSelect",
+                      action: "change->public-appointment#serviceChanged"
+                    }
+                  ) %>
+            <%= field_errors(@appointment, :service_id) %>
+          </div>
+
+          <div data-public-appointment-target="eligibilityPanel" class="hidden"></div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">Date *</span></label>
+            <div data-public-appointment-target="calendarFrame"
+                 class="portal-surface rounded-lg border border-base-300 p-4">
+              <%= render "public/appointments/calendar",
+                    month_date: @appointment_month,
+                    selected_date: @appointment.appointment_date,
+                    schedule: @booking_schedule %>
+            </div>
+            <input type="hidden"
+                   data-public-appointment-target="selectedDate"
+                   value="<%= @appointment.appointment_date&.iso8601 %>">
+            <%= field_errors(@appointment, :appointment_date) %>
+            <p data-public-appointment-target="dateError" class="mt-1 text-sm text-error"></p>
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">Time *</span></label>
+            <div data-public-appointment-target="slotsFrame"
+                 class="portal-surface min-h-[80px] rounded-lg border border-base-300 p-4">
+              <% if @appointment.appointment_date.present? %>
+                <%= render "public/appointments/slots",
+                      appointment_date: @appointment.appointment_date,
+                      slots: @appointment_slots || [],
+                      selected_slot: appointment_time_value(@appointment) %>
+              <% else %>
+                <p class="text-sm text-base-content/60">Select a date above to see available time slots.</p>
+              <% end %>
+            </div>
+            <input type="hidden"
+                   data-public-appointment-target="selectedSlot"
+                   value="<%= appointment_time_value(@appointment) %>">
+            <%= field_errors(@appointment, :appointment_time) %>
+            <p data-public-appointment-target="slotError" class="mt-1 text-sm text-error"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-end">
+        <button type="button" data-action="public-appointment#nextStep" class="btn btn-primary btn-sm gap-1">
+          Continue
+          <%= material_icon("arrow_forward", size: 18) %>
+        </button>
+      </div>
+    </div>
+
+    <div data-public-appointment-target="step" class="hidden">
+      <div class="card border border-base-300">
+        <div class="card-body gap-5">
+          <h2 class="text-lg font-semibold">Your details</h2>
+
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="form-control">
+              <label class="label"><span class="label-text">First name *</span></label>
+              <%= f.text_field :first_name,
+                    class: error_class_for(@appointment, :first_name, "input-field w-full"),
+                    required: true %>
+              <%= field_errors(@appointment, :first_name) %>
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Last name *</span></label>
+              <%= f.text_field :last_name,
+                    class: error_class_for(@appointment, :last_name, "input-field w-full"),
+                    required: true %>
+              <%= field_errors(@appointment, :last_name) %>
+            </div>
+          </div>
+
+          <%= render "public/shared/dob_field",
+                form: f,
+                required: @collect_dob,
+                value: @display_dob %>
+
+          <% if @collect_postcode %>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Postcode *</span></label>
+              <%= f.text_field :postcode,
+                    class: error_class_for(@appointment, :postcode, "input-field w-full"),
+                    required: true %>
+              <%= field_errors(@appointment, :postcode) %>
+            </div>
+          <% end %>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">Email<%= " *" if @organization.require_appointment_email? %></span></label>
+            <%= f.email_field :email,
+                  class: error_class_for(@appointment, :email, "input-field w-full"),
+                  required: @organization.require_appointment_email? %>
+            <%= field_errors(@appointment, :email) %>
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">Notes</span></label>
+            <%= f.text_area :notes,
+                  class: "textarea-field w-full",
+                  rows: 3 %>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-between gap-3">
+        <button type="button" data-action="public-appointment#prevStep" class="btn btn-outline btn-sm gap-1">
+          <%= material_icon("arrow_back", size: 18) %>
+          Back
+        </button>
+        <button type="button" data-action="public-appointment#nextStep" class="btn btn-primary btn-sm gap-1">
+          Review booking
+          <%= material_icon("arrow_forward", size: 18) %>
+        </button>
+      </div>
+    </div>
+
+    <div data-public-appointment-target="step" class="hidden">
+      <div class="card border border-base-300">
+        <div class="card-body gap-4">
+          <h2 class="text-lg font-semibold">Review booking</h2>
+
+          <dl class="divide-y divide-base-300 text-sm">
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-base-content/60">Service</dt>
+              <dd class="text-right font-medium" data-public-appointment-target="reviewService"></dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-base-content/60">Date</dt>
+              <dd class="text-right font-medium" data-public-appointment-target="reviewDate"></dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-base-content/60">Time</dt>
+              <dd class="text-right font-medium" data-public-appointment-target="reviewTime"></dd>
+            </div>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-base-content/60">Name</dt>
+              <dd class="text-right font-medium" data-public-appointment-target="reviewName"></dd>
+            </div>
+            <% if @collect_dob %>
+              <div class="flex justify-between gap-4 py-3">
+                <dt class="text-base-content/60">Date of birth</dt>
+                <dd class="text-right font-medium" data-public-appointment-target="reviewDob"></dd>
+              </div>
+            <% end %>
+            <% if @collect_postcode %>
+              <div class="flex justify-between gap-4 py-3">
+                <dt class="text-base-content/60">Postcode</dt>
+                <dd class="text-right font-medium" data-public-appointment-target="reviewPostcode"></dd>
+              </div>
+            <% end %>
+            <div class="flex justify-between gap-4 py-3">
+              <dt class="text-base-content/60">Email</dt>
+              <dd class="text-right font-medium" data-public-appointment-target="reviewEmail"></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-between gap-3">
+        <button type="button" data-action="public-appointment#prevStep" class="btn btn-outline btn-sm gap-1">
+          <%= material_icon("arrow_back", size: 18) %>
+          Back
+        </button>
+        <%= f.submit "Confirm booking",
+              class: "btn btn-primary btn-sm",
+              data: { public_appointment_target: "submitBtn", turbo: false } %>
+      </div>
+    </div>
+  <% end %>
+</div>

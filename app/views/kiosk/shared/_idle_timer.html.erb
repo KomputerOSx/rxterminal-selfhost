@@ -1,0 +1,19 @@
+<%# Kiosk idle timer — see kiosk_idle_controller.js for modes %>
+<%
+  timeout       = local_assigns.fetch(:timeout, 30_000)
+  countdown     = local_assigns.fetch(:countdown, 5)
+  mode          = local_assigns.fetch(:mode, "overlay")
+  form_selector = local_assigns[:form_selector]
+  redirect_url  = local_assigns.fetch(:redirect_url, kiosk_root_path)
+  interruptible = local_assigns.fetch(:interruptible, true)
+%>
+<% unless kiosk_preview_mode? %>
+<div data-controller="kiosk-idle"
+     data-kiosk-idle-timeout-value="<%= timeout %>"
+     data-kiosk-idle-countdown-value="<%= countdown %>"
+     data-kiosk-idle-mode-value="<%= mode %>"
+     <% if form_selector.present? %>data-kiosk-idle-form-selector-value="<%= form_selector %>"<% end %>
+     data-kiosk-idle-redirect-url-value="<%= redirect_url %>"
+     data-kiosk-idle-interruptible-value="<%= interruptible %>">
+</div>
+<% end %>

@@ -1,0 +1,127 @@
+<% if @service %>
+  <%= render "public/shared/page_header",
+        title: @service.display_name,
+        back_path: new_portal_walk_in_path %>
+
+  <div class="mt-6">
+    <%= form_with model: @service_request,
+          url: portal_walk_in_path,
+          method: :post,
+          class: "space-y-5" do |f| %>
+      <%= f.hidden_field :service_id, value: @service.id %>
+
+      <div class="card border border-base-300">
+        <div class="card-body gap-5">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="form-control">
+              <label class="label"><span class="label-text">First name *</span></label>
+              <%= f.text_field :first_name,
+                    required: true,
+                    autocomplete: "given-name",
+                    class: error_class_for(@service_request, :first_name, "input-field w-full") %>
+              <%= field_errors(@service_request, :first_name) %>
+            </div>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Last name *</span></label>
+              <%= f.text_field :last_name,
+                    required: true,
+                    autocomplete: "family-name",
+                    class: error_class_for(@service_request, :last_name, "input-field w-full") %>
+              <%= field_errors(@service_request, :last_name) %>
+            </div>
+          </div>
+
+          <%= render "public/shared/dob_field", form: f, required: @organization.kiosk_collect_dob?, value: @display_dob %>
+
+          <% if @organization.kiosk_collect_postcode? %>
+            <div class="form-control">
+              <label class="label"><span class="label-text">Postcode *</span></label>
+              <%= f.text_field :postcode,
+                    required: true,
+                    autocomplete: "postal-code",
+                    class: error_class_for(@service_request, :postcode, "input-field w-full") %>
+              <%= field_errors(@service_request, :postcode) %>
+            </div>
+          <% end %>
+
+          <% if @service.allows_private_consultation? %>
+            <label class="flex items-center gap-3">
+              <%= f.check_box :privacy_requested, class: "checkbox-field" %>
+              <span class="text-sm">Private consultation requested</span>
+            </label>
+          <% end %>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">Notes</span></label>
+            <%= f.text_area :description, rows: 3, class: "textarea-field w-full" %>
+          </div>
+        </div>
+      </div>
+
+      <%= f.submit "Join the queue", class: "btn btn-primary btn-sm w-full" %>
+    <% end %>
+  </div>
+
+<% else %>
+  <%= render "public/shared/page_header",
+        title: "Join the queue",
+        back_path: portal_arrive_path %>
+
+  <% if @services.any? %>
+    <div data-controller="portal-search view-toggle" data-view-toggle-storage-key-value="portal_walk_in_services_view">
+      <div class="mt-6 flex flex-row items-center gap-3">
+        <div class="form-control min-w-0 flex-1">
+          <input type="search"
+                 data-portal-search-target="input"
+                 data-action="input->portal-search#filter"
+                 aria-label="Search services"
+                 placeholder="Search services..."
+                 class="input-field w-full">
+        </div>
+
+        <div class="join shrink-0" role="group" aria-label="Layout">
+          <button type="button"
+                  class="btn btn-outline btn-sm join-item gap-1"
+                  data-view-toggle-target="button"
+                  data-view-toggle-mode-param="list"
+                  data-action="click->view-toggle#select"
+                  aria-label="List view">
+            <%= material_icon("view_list", size: 18) %>
+          </button>
+          <button type="button"
+                  class="btn btn-outline btn-sm join-item gap-1"
+                  data-view-toggle-target="button"
+                  data-view-toggle-mode-param="card"
+                  data-action="click->view-toggle#select"
+                  aria-label="Card view">
+            <%= material_icon("grid_view", size: 18) %>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-3 space-y-3" data-view-toggle-target="panel" data-view-toggle-mode="list">
+        <% @services.each do |service| %>
+          <%= render "public/shared/service_link",
+                service: service,
+                url: new_portal_walk_in_path(service_id: service.id),
+                searchable: true %>
+        <% end %>
+      </div>
+
+      <div class="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-3" data-view-toggle-target="panel" data-view-toggle-mode="card">
+        <% @services.each do |service| %>
+          <%= render "public/shared/service_card",
+                service: service,
+                url: new_portal_walk_in_path(service_id: service.id),
+                searchable: true %>
+        <% end %>
+      </div>
+
+      <p data-portal-search-target="empty" class="hidden mt-6 py-10 text-center text-sm text-base-content/60">
+        No services match your search.
+      </p>
+    </div>
+  <% else %>
+    <p class="mt-6 text-sm text-base-content/60">No walk-in services are currently available.</p>
+  <% end %>
+<% end %>

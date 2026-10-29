@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" data-theme="light" class="print-layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
+  <title>RxTerminal Print</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= render "shared/fonts" %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "print_layout" %>
+  <%= yield :head %>
+</head>
+<body class="print-layout-body">
+  <%= yield %>
+</body>
+</html>

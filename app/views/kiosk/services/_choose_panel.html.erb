@@ -1,0 +1,80 @@
+<% service = local_assigns[:service] %>
+<% preview = local_assigns.fetch(:preview, false) %>
+
+<div class="<%= preview ? "flex flex-col bg-base-100" : "kiosk-choose-shell overflow-hidden" %>">
+  <div class="kiosk-choose-topbar shrink-0">
+    <div class="mx-auto max-w-[900px]">
+      <% if preview %>
+        <span class="kiosk-choose-back-btn">
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back to Services
+        </span>
+      <% else %>
+        <%= link_to kiosk_services_path,
+              class: "kiosk-choose-back-btn",
+              data: { action: "pointerdown->kiosk-services#press", turbo_preload: true, turbo_prefetch: false, kiosk_nav: "back" } do %>
+          <span class="material-symbols-outlined">arrow_back</span>
+          Back to Services
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="<%= preview ? "flex items-center justify-center px-10 py-12" : "kiosk-choose-content" %>">
+    <div class="flex w-full max-w-[900px] flex-col gap-10">
+      <div class="text-center">
+        <% if service.icon.present? %>
+          <div class="kiosk-choose-service-icon">
+            <span class="material-symbols-outlined"><%= service.icon %></span>
+          </div>
+        <% end %>
+        <h1 class="kiosk-choose-title mb-2.5"><span class="keep-english"><%= service.display_name %></span></h1>
+        <p class="kiosk-choose-subtitle">How would you like to proceed?</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-5">
+        <% if preview %>
+          <div class="kiosk-choose-card kiosk-choose-card--now">
+            <span class="material-symbols-outlined">play_circle</span>
+            <div>
+              <div class="kiosk-choose-card-title mb-2">Request Service Now</div>
+              <div class="kiosk-choose-card-copy">Join the queue and be seen today</div>
+            </div>
+          </div>
+
+          <div class="kiosk-choose-card kiosk-choose-card--appt">
+            <span class="material-symbols-outlined">calendar_add_on</span>
+            <div>
+              <div class="kiosk-choose-card-title mb-2">Book an Appointment</div>
+              <div class="kiosk-choose-card-copy">Choose a future date and time slot</div>
+            </div>
+          </div>
+        <% else %>
+          <%= link_to kiosk_new_service_request_path(service_id: service.id),
+                class: "kiosk-choose-card kiosk-choose-card--now",
+                data: { action: "pointerdown->kiosk-services#press", turbo_preload: true, turbo_prefetch: false } do %>
+            <span class="material-symbols-outlined">play_circle</span>
+            <div>
+              <div class="kiosk-choose-card-title mb-2">Request Service Now</div>
+              <div class="kiosk-choose-card-copy">Join the queue and be seen today</div>
+            </div>
+          <% end %>
+
+          <%= link_to kiosk_new_appointment_path(service_id: service.id),
+                class: "kiosk-choose-card kiosk-choose-card--appt",
+                data: { action: "pointerdown->kiosk-services#press", turbo_preload: true, turbo_prefetch: false } do %>
+            <span class="material-symbols-outlined">calendar_add_on</span>
+            <div>
+              <div class="kiosk-choose-card-title mb-2">Book an Appointment</div>
+              <div class="kiosk-choose-card-copy">Choose a future date and time slot</div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% unless preview %>
+  <%= render "kiosk/shared/idle_timer", timeout: 30_000, countdown: 10 %>
+<% end %>

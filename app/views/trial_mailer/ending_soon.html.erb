@@ -1,0 +1,18 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Your trial ends soon
+</h1>
+
+<p style="margin:0 0 16px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Hi <%= @owner.first_name.presence || "there" %>, your <%= @trial_plan.name %> trial for
+  <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @organization.name %></strong>
+  ends on <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @trial_ends_at.to_date.to_fs(:long) %></strong>.
+</p>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Add a payment method on Billing before then to keep queue, appointments, and customer-facing features running.
+</p>
+
+<p style="margin:0;">
+  <%= link_to "Go to billing", billing_url, style: "display:inline-block;padding:12px 20px;background:#{MailerTheme::PRIMARY};color:#{MailerTheme::PRIMARY_CONTENT};text-decoration:none;border-radius:8px;font-size:15px;font-weight:600;" %>
+</p>
+<%= render "shared/mailer/link_fallback", url: billing_url %>

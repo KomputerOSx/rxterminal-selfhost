@@ -1,0 +1,22 @@
+<% if slots.any? %>
+  <div class="flex flex-wrap gap-2">
+    <% slots.each do |slot| %>
+      <% if slot[:available] %>
+        <button type="button"
+                class="btn btn-sm <%= selected_time == slot[:time] ? 'btn-primary' : 'btn-outline' %>"
+                data-time="<%= slot[:time] %>"
+                data-action="click->appointment-slots#selectSlot">
+          <%= slot[:time] %>
+        </button>
+      <% else %>
+        <button type="button" class="btn btn-sm btn-disabled" disabled>
+          <%= slot[:time] %>
+        </button>
+      <% end %>
+    <% end %>
+  </div>
+<% elsif local_assigns[:closure] %>
+  <p class="text-sm text-base-content/60">Closed on this day: <%= closure.reason.presence || "Blocked date" %>.</p>
+<% else %>
+  <p class="text-sm text-base-content/60">No slots available for this day. Check appointment booking settings.</p>
+<% end %>

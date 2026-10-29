@@ -1,0 +1,29 @@
+<section class="w-full">
+
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Public Portal Appearence</h1>
+    </div>
+    <% if Current.organization.public_portal_enabled? %>
+      <%= link_to organization_public_portal_url(Current.organization),
+            class: "btn btn-outline btn-sm shrink-0 gap-1",
+            target: "_blank",
+            rel: "noopener" do %>
+        <span class="material-symbols-outlined !text-[18px]">open_in_new</span>
+        Open live portal
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= form_with model: Current.organization,
+        url: org_portal_appearance_path,
+        method: :patch,
+        class: "mt-6",
+        data: { controller: "portal-theme-preview" } do |form| %>
+    <%= render "appearance_form", form: form %>
+
+    <div class="mt-6 flex justify-end">
+      <%= form.submit "Save changes", class: "btn btn-primary btn-sm" %>
+    </div>
+  <% end %>
+</section>

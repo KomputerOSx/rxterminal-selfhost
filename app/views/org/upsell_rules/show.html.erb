@@ -1,0 +1,134 @@
+<section class="w-full max-w-6xl">
+  <p class="text-sm font-medium text-base-content/60">
+    <%= link_to "Upsell rules", org_upsell_rules_path, class: "hover:text-base-content" %>
+    <span class="mx-1">/</span>
+    <span><%= @rule.name %></span>
+  </p>
+
+  <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <div id="<%= dom_id(@rule, :status_badge) %>" class="mb-2">
+        <% if @rule.active? %>
+          <span class="badge badge-success badge-sm">Active</span>
+        <% else %>
+          <span class="badge badge-error badge-sm">Inactive</span>
+        <% end %>
+      </div>
+      <h1 class="text-2xl font-semibold"><%= @rule.name %></h1>
+      <p class="mt-2 flex flex-wrap items-center gap-2 text-sm text-base-content/60">
+        <span><%= @rule.trigger_service.display_name %></span>
+        <span class="material-symbols-outlined !text-[16px] text-base-content/40">arrow_forward</span>
+        <span class="font-medium text-primary"><%= @rule.suggested_service.display_name %></span>
+        <% if @rule.suggested_service.price.to_f.positive? %>
+          <span class="text-base-content/30">·</span>
+          <span class="font-medium text-success">
+            <%= number_to_currency(@rule.suggested_service.price, unit: @rule.suggested_service.organization.service_currency_symbol, separator: ".", delimiter: ",") %> per conversion
+          </span>
+        <% end %>
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <%= link_to edit_org_upsell_rule_path(@rule), class: "btn btn-primary btn-sm gap-1" do %>
+        <span class="material-symbols-outlined !text-[18px]">edit</span>
+        Edit
+      <% end %>
+      <%= link_to "Back", org_upsell_rules_path, class: "btn btn-outline btn-sm" %>
+    </div>
+  </div>
+
+  <div class="mt-6 grid grid-cols-1 items-start gap-6 lg:grid-cols-4">
+    <div class="flex flex-col gap-6 lg:col-span-3">
+      <%= render "stats", rule: @rule, period: @period, stats: @stats, sparkline: @sparkline %>
+
+      <% if @rule.upsell_templates.size > 1 %>
+        <div class="card border border-base-300">
+          <div class="card-body p-0">
+            <div class="px-6 py-5">
+              <h2 class="text-lg font-semibold">A/B variant performance</h2>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="table table-sm">
+                <thead class="bg-base-200 text-sm font-semibold text-base-content">
+                  <tr class="border-b border-base-300">
+                    <th>Variant</th>
+                    <th>Headline</th>
+                    <th class="text-right">Shown</th>
+                    <th class="text-right">Accepted</th>
+                    <th class="text-right">Booked</th>
+                    <th class="text-right">Declined</th>
+                    <th class="text-right">Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @rule.upsell_templates.each_with_index do |template, index| %>
+                    <% template_stats = upsell_template_stats(template) %>
+                    <tr class="hover:bg-base-200">
+                      <td><span class="badge badge-outline badge-sm"><%= upsell_variant_label(index) %></span></td>
+                      <td class="max-w-xs truncate text-sm"><%= template.title.presence || "-" %></td>
+                      <td class="text-right font-mono text-sm"><%= template_stats[:shown] %></td>
+                      <td class="text-right font-mono text-sm text-success"><%= template_stats[:accepted] %></td>
+                      <td class="text-right font-mono text-sm text-primary"><%= template_stats[:booked] %></td>
+                      <td class="text-right font-mono text-sm text-base-content/50"><%= template_stats[:declined] %></td>
+                      <td class="text-right font-mono text-sm font-semibold <%= upsell_conversion_rate_class(template_stats[:rate]) %>">
+                        <%= template_stats[:rate] %>%
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <% template = @rule.upsell_templates.first %>
+      <% if template %>
+        <div class="card border border-base-300">
+          <div class="card-body gap-4">
+            <h2 class="text-lg font-semibold">Presentation</h2>
+            <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <dt class="text-sm text-base-content/60">Title</dt>
+                <dd class="mt-1 font-medium"><%= template.title %></dd>
+              </div>
+              <div>
+                <dt class="text-sm text-base-content/60">Accept button text</dt>
+                <dd class="mt-1 font-medium"><%= template.cta_text %></dd>
+              </div>
+              <% if template.description.present? %>
+                <div class="sm:col-span-2">
+                  <dt class="text-sm text-base-content/60">Description</dt>
+                  <dd class="mt-1 text-sm text-base-content/80"><%= simple_format(template.description) %></dd>
+                </div>
+              <% end %>
+            </dl>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="lg:col-span-1">
+      <%= render "rule_sidebar", rule: @rule %>
+    </div>
+  </div>
+
+  <div class="mt-10">
+    <div class="card border border-error">
+      <div class="card-body p-0">
+        <div class="flex flex-wrap items-center justify-between gap-4 px-8 py-4">
+          <p class="font-medium text-error">Delete upsell rule</p>
+          <%= button_to org_upsell_rule_path(@rule), method: :delete,
+                data: {
+                  controller: "confirm-modal",
+                  action: "click->confirm-modal#confirm",
+                  confirm_modal_message_value: "Delete \"#{@rule.name}\"? This cannot be undone."
+                },
+                class: "btn btn-error btn-outline btn-sm shrink-0" do %>
+            Delete rule
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

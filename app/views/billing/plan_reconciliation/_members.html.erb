@@ -1,0 +1,18 @@
+<h2 class="text-lg font-semibold">Members</h2>
+
+<ul class="mt-4 space-y-2 text-sm">
+  <% wizard.members_to_remove.each do |membership| %>
+    <li class="flex items-center justify-between rounded-lg border border-base-300 px-3 py-2">
+      <span><%= membership.user.email %></span>
+      <span class="text-base-content/60">Will be removed</span>
+    </li>
+  <% end %>
+</ul>
+
+<%= form_with url: billing_plan_reconciliation_path, method: :patch do %>
+  <%= hidden_field_tag :step, :members %>
+  <%= render "billing/plan_reconciliation/step_actions",
+        wizard: wizard,
+        step: step,
+        continue: button_tag("Continue", class: "btn btn-primary btn-sm") %>
+<% end %>

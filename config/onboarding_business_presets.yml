@@ -1,0 +1,130 @@
+# Seed data for the onboarding "business_type" step. Loaded by
+# Onboarding::BusinessPresets - edit this file to add/change presets, no code changes needed.
+#
+# Each preset (other than "general") may list up to 3 services and one upsell_rule - kept to
+# that cap so a fresh preset fits Starter's plan limits (Billing::Plans::STARTER_LIMITS).
+# Onboarding::PresetApplier still caps at whatever room the organization actually has, so a
+# preset listing more than 3 services is safe to add but won't fully apply on Starter.
+#
+# Service fields: internal_name, display_name, icon (Material Symbols name), estimated_duration
+# (minutes), allows_immediate, requires_appointment.
+#
+# upsell_rule fields: name, trigger_index/suggested_index (0-based positions into this preset's
+# services list above), template_title, template_cta.
+
+clinic:
+  label: "Medical / Clinic"
+  services:
+    - internal_name: consultation
+      display_name: Consultation
+      icon: stethoscope
+      estimated_duration: 15
+      allows_immediate: true
+      requires_appointment: false
+    - internal_name: vaccination
+      display_name: Vaccination
+      icon: vaccines
+      estimated_duration: 10
+      allows_immediate: true
+      requires_appointment: false
+    - internal_name: follow_up
+      display_name: Follow-up appointment
+      icon: event_repeat
+      estimated_duration: 20
+      allows_immediate: false
+      requires_appointment: true
+  upsell_rule:
+    name: "Suggest a follow-up"
+    trigger_index: 0
+    suggested_index: 2
+    template_title: "Want to book a follow-up?"
+    template_cta: "Book follow-up"
+
+salon:
+  label: "Salon & Barbershop"
+  services:
+    - internal_name: haircut
+      display_name: Haircut
+      icon: content_cut
+      estimated_duration: 30
+      allows_immediate: true
+      requires_appointment: false
+    - internal_name: colour
+      display_name: Colour
+      icon: palette
+      estimated_duration: 90
+      allows_immediate: false
+      requires_appointment: true
+    - internal_name: blow_dry
+      display_name: Blow-dry
+      icon: dry
+      estimated_duration: 20
+      allows_immediate: true
+      requires_appointment: false
+  upsell_rule:
+    name: "Suggest a blow-dry"
+    trigger_index: 0
+    suggested_index: 2
+    template_title: "Finish with a blow-dry?"
+    template_cta: "Add blow-dry"
+
+retail_repair:
+  label: "Repair / Retail Walk-in"
+  services:
+    - internal_name: quick_repair
+      display_name: Quick Repair
+      icon: build
+      estimated_duration: 15
+      allows_immediate: true
+      requires_appointment: false
+    - internal_name: diagnostic_check
+      display_name: Diagnostic Check
+      icon: search
+      estimated_duration: 20
+      allows_immediate: true
+      requires_appointment: false
+    - internal_name: collection_booking
+      display_name: Collection Booking
+      icon: event_available
+      estimated_duration: 10
+      allows_immediate: false
+      requires_appointment: true
+  upsell_rule:
+    name: "Suggest a diagnostic check"
+    trigger_index: 0
+    suggested_index: 1
+    template_title: "Want a full diagnostic check?"
+    template_cta: "Add diagnostic check"
+
+public_office:
+  label: "Government / Public Office"
+  services:
+    - internal_name: general_enquiry
+      display_name: General Enquiry
+      icon: help
+      estimated_duration: 10
+      allows_immediate: true
+      requires_appointment: false
+    - internal_name: document_submission
+      display_name: Document Submission
+      icon: description
+      estimated_duration: 15
+      allows_immediate: true
+      requires_appointment: false
+    - internal_name: appointment_booking
+      display_name: Appointment Booking
+      icon: event
+      estimated_duration: 20
+      allows_immediate: false
+      requires_appointment: true
+  upsell_rule:
+    name: "Suggest booking ahead"
+    trigger_index: 0
+    suggested_index: 2
+    template_title: "Prefer a booked appointment next time?"
+    template_cta: "Book ahead"
+
+general:
+  label: "General / Other"
+  services: []
+  upsell_rule:

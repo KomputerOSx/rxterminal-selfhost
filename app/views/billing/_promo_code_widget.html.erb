@@ -1,0 +1,17 @@
+<div id="promo_code_widget">
+  <% if promo_code_id.present? %>
+    <div class="flex items-center gap-2 text-sm">
+      <span class="badge badge-success badge-sm">Code applied</span>
+      <span class="text-base-content/70"><%= promo_code_display %></span>
+      <%= button_to "Remove", billing_promo_code_path, method: :delete, class: "link link-hover text-xs text-error" %>
+    </div>
+  <% else %>
+    <%= form_with url: billing_promo_code_path, method: :post, class: "flex flex-wrap items-end gap-2" do |f| %>
+      <div class="form-control">
+        <label class="label py-0"><span class="label-text">Promo code</span></label>
+        <%= f.text_field :code, class: "input-field max-w-[180px]" %>
+      </div>
+      <%= f.button "Apply", type: :submit, class: "btn btn-outline btn-sm" %>
+    <% end %>
+  <% end %>
+</div>

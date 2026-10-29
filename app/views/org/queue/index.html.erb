@@ -1,0 +1,256 @@
+<div class="w-full max-w-7xl"
+     data-controller="queue queue-filter voice-announcement sound-alert keyboard-nav"
+     data-queue-poll-url-value="<%= org_poll_queue_path %>"
+     data-queue-refresh-url-value="<%= org_refresh_queue_path %>"
+     data-queue-poll-interval-value="4000"
+     data-queue-filter-service-ids-value="<%= (@service_ids || []).to_json %>">
+  <%= turbo_stream_from "organization_#{Current.organization.id}_queue" %>
+  <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex min-w-0 flex-1 flex-col gap-3">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 class="text-2xl font-semibold">Queue</h1>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-base-content/60">
+          <span><%= Current.organization.name %> · <%= Date.current.strftime("%a, %b %d") %></span>
+          <span data-queue-target="statusIndicator" class="badge badge-ghost badge-sm">Connecting</span>
+
+          <% if @services.any? %>
+            <div class="dropdown dropdown-bottom">
+              <button type="button" tabindex="0" class="btn btn-ghost btn-xs gap-1 border border-base-300">
+                <span class="material-symbols-outlined !text-[16px]">filter_list</span>
+                <span data-queue-filter-label>
+                  <% if @service_ids&.any? %>
+                    <%= @service_ids.length %> <%= "service".pluralize(@service_ids.length) %>
+                  <% else %>
+                    All services
+                  <% end %>
+                </span>
+                <span class="material-symbols-outlined !text-[16px]">unfold_more</span>
+              </button>
+              <div tabindex="0" class="dropdown-content z-50 mt-1 min-w-56 rounded-lg border border-base-300 bg-base-100 p-3 shadow-none">
+                <div class="mb-2 flex items-center justify-between">
+                  <span class="text-xs font-semibold text-base-content/60">Filter by service</span>
+                  <button type="button"
+                          class="text-xs text-base-content/50 underline underline-offset-2 hover:text-base-content"
+                          data-action="click->queue-filter#clear">
+                    Clear
+                  </button>
+                </div>
+                <div <%= tag.attributes(data: { controller: "options-filter" }) if service_options_filter_enabled?(@services.size) %>>
+                  <% if service_options_filter_enabled?(@services.size) %>
+                    <%= render "shared/options_filter_search", label: "Search services" %>
+                  <% end %>
+                  <div class="space-y-1 <%= "mt-2 max-h-64 overflow-y-auto" if service_options_filter_enabled?(@services.size) %>">
+                    <% @services.each do |service| %>
+                      <label class="flex cursor-pointer items-center gap-2 rounded-lg px-1 py-1.5 hover:bg-base-200"
+                             <%= tag.attributes(data: { options_filter_target: "item", label: service.display_name }) if service_options_filter_enabled?(@services.size) %>>
+                        <input type="checkbox"
+                               value="<%= service.id %>"
+                               class="checkbox-field"
+                               data-queue-filter-checkbox
+                               data-action="change->queue-filter#toggleCheckbox"
+                               <%= "checked" if @service_ids&.include?(service.id) %>>
+                        <span class="text-sm"><%= service.display_name %></span>
+                      </label>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <%= form_with url: org_call_next_queue_path,
+              method: :post,
+              id: "call-next-form",
+              class: "w-full sm:w-auto sm:flex-none",
+              data: {
+                controller: "optimistic-update",
+                turbo_stream: true,
+                optimistic_update_target_value: "in_progress",
+                optimistic_update_call_next_value: true
+              } do |f| %>
+          <% Array(@service_ids).each do |service_id| %>
+            <%= f.hidden_field :service_ids, value: service_id, multiple: true %>
+          <% end %>
+          <%= f.button type: "submit",
+                class: "btn btn-primary btn-md min-h-11 w-full gap-2 px-4 sm:w-auto",
+                title: "Call next",
+                aria: { label: "Call next" } do %>
+            <span class="material-symbols-outlined !text-[22px]">phone_forwarded</span>
+            <span class="font-semibold">Call next</span>
+          <% end %>
+        <% end %>
+
+        <div class="flex flex-wrap items-center gap-1.5">
+          <%= link_to org_new_walk_in_path,
+                class: "btn btn-outline btn-md btn-square min-h-11 min-w-11",
+                title: "Add walk-in",
+                aria: { label: "Add walk-in" } do %>
+            <span class="material-symbols-outlined !text-[22px]">person_add</span>
+          <% end %>
+
+          <%= button_to org_undo_last_cancelled_queue_path,
+                method: :patch,
+                class: "btn btn-outline btn-md btn-square min-h-11 min-w-11",
+                title: "Restore last cancelled customer",
+                aria: { label: "Restore last cancelled customer" },
+                form: { data: { turbo_stream: true }, class: "inline" } do %>
+            <span class="material-symbols-outlined !text-[22px]">undo</span>
+          <% end %>
+
+          <%= link_to org_waiting_display_path,
+                target: "_blank",
+                rel: "noopener",
+                class: "btn btn-outline btn-md btn-square min-h-11 min-w-11",
+                title: "Waiting display",
+                aria: { label: "Waiting display" } do %>
+            <span class="material-symbols-outlined !text-[22px]">tv</span>
+          <% end %>
+
+          <button type="button"
+                  class="btn btn-outline btn-md btn-square min-h-11 min-w-11"
+                  data-action="click->queue#refresh"
+                  data-queue-target="refreshBtn"
+                  title="Refresh queue and waiting display"
+                  aria-label="Refresh queue and waiting display">
+            <span class="material-symbols-outlined !text-[22px]">refresh</span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-outline btn-md btn-square min-h-11 min-w-11"
+                  data-action="click->queue#openCompletedPanel"
+                  title="Completed today"
+                  aria-label="Completed today">
+            <span class="material-symbols-outlined !text-[22px]">task_alt</span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-outline btn-md btn-square min-h-11 min-w-11"
+                  data-action="click->keyboard-nav#showShortcutsDialog"
+                  title="Keyboard shortcuts"
+                  aria-label="Keyboard shortcuts">
+            <span class="material-symbols-outlined !text-[22px]">keyboard</span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-outline btn-error btn-md btn-square min-h-11 min-w-11"
+                  data-voice-announcement-target="toggleBtn"
+                  data-action="click->voice-announcement#toggle"
+                  title="Voice announcements off"
+                  aria-label="Voice announcements off">
+            <span class="material-symbols-outlined !text-[22px]"
+                  data-voice-announcement-target="toggleIcon">volume_off</span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-success btn-md btn-square min-h-11 min-w-11"
+                  data-sound-alert-target="toggleBtn"
+                  data-action="click->sound-alert#toggle"
+                  title="New customer sound on"
+                  aria-label="New customer sound on">
+            <span class="material-symbols-outlined !text-[22px]"
+                  data-sound-alert-target="toggleIcon">notifications</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex shrink-0 flex-wrap items-center gap-3">
+      <div class="grid w-[11rem] grid-cols-2 gap-px overflow-hidden rounded-lg border border-base-300 bg-base-300 sm:w-[12rem]"
+           data-queue-filter-target="stats">
+        <div class="bg-base-100 px-3 py-2">
+          <div class="text-xs text-base-content/60">Waiting</div>
+          <div id="stat-waiting" class="text-xl font-semibold tabular-nums text-primary"><%= @queue_stats[:waiting] %></div>
+        </div>
+        <div class="bg-base-100 px-3 py-2">
+          <div class="text-xs text-base-content/60">In progress</div>
+          <div id="stat-in-progress" class="text-xl font-semibold tabular-nums text-primary"><%= @queue_stats[:in_progress] %></div>
+        </div>
+        <div class="bg-base-100 px-3 py-2">
+          <div class="text-xs text-base-content/60">Completed</div>
+          <div id="stat-completed" class="text-xl font-semibold tabular-nums text-success"><%= @queue_stats[:completed_today] %></div>
+        </div>
+        <div class="bg-base-100 px-3 py-2">
+          <div class="text-xs text-base-content/60">Total</div>
+          <div id="stat-total" class="text-xl font-semibold tabular-nums text-info"><%= @queue_stats[:total_today] %></div>
+        </div>
+      </div>
+
+      <% if Current.organization.waiting_time_enabled? %>
+        <div class="flex items-center gap-2">
+          <div class="text-right">
+            <div class="text-xs text-base-content/60">Avg wait</div>
+            <div id="stat-avg-wait" class="text-xl font-semibold tabular-nums text-warning"><%= @queue_stats[:avg_wait] || "N/A" %></div>
+          </div>
+          <%= button_to org_reset_wait_timer_queue_path,
+                method: :post,
+                class: "btn btn-warning btn-outline btn-sm min-h-11",
+                form: { data: { turbo_stream: true } },
+                data: {
+                  controller: "confirm-modal",
+                  action: "click->confirm-modal#confirm",
+                  confirm_modal_message_value: "Reset average wait timer?"
+                } do %>
+            Reset
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @services.empty? %>
+    <p class="mt-4 text-sm text-base-content/60">
+      No services configured yet. Add services to start using the queue.
+    </p>
+  <% end %>
+
+  <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div>
+      <h2 class="text-lg font-semibold">Waiting</h2>
+      <%= render partial: "waiting_cards_container", locals: { waiting: @waiting } %>
+    </div>
+    <div>
+      <h2 class="text-lg font-semibold">In progress</h2>
+      <%= render partial: "in_progress_cards_container", locals: { in_progress: @in_progress } %>
+    </div>
+  </div>
+</div>
+
+<div id="completed-overlay"
+     class="fixed inset-0 z-[9998] hidden bg-base-content/40 opacity-0 transition-opacity duration-300"
+     data-queue-target="completedOverlay"
+     data-action="click->queue#closeCompletedPanel"></div>
+
+<div id="completed-panel"
+     data-queue-target="completedPanel"
+     class="fixed top-0 right-0 bottom-0 z-[9999] flex w-full max-w-lg translate-x-full flex-col overflow-hidden border-l border-base-300 bg-base-100 transition-transform duration-300">
+  <div class="flex items-center justify-between border-b border-base-300 px-6 py-4">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-success">task_alt</span>
+      <h2 class="text-lg font-semibold">Completed today</h2>
+    </div>
+    <button type="button"
+            class="btn btn-ghost btn-sm btn-square"
+            data-action="click->queue#closeCompletedPanel"
+            data-completed-panel-close
+            aria-label="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <div class="flex-1 overflow-y-auto px-4 py-4">
+    <%= render partial: "completed_cards_container", locals: { completed_today: @completed_today } %>
+  </div>
+</div>
+
+<%# Skeleton templates — cloned by optimistic_update_controller.js, never rendered directly %>
+<template id="skeleton-waiting-template">
+  <%= render "skeleton_waiting_card" %>
+</template>
+<template id="skeleton-in-progress-template">
+  <%= render "skeleton_in_progress_card" %>
+</template>
+<template id="skeleton-completed-template">
+  <%= render "skeleton_completed_card" %>
+</template>

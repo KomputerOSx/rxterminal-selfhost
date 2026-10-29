@@ -1,0 +1,16 @@
+<section class="w-full">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <h1 class="text-2xl font-semibold">Kiosk</h1>
+  </div>
+
+  <%= form_with model: Current.organization, url: org_kiosk_path, method: :patch,
+        multipart: true,
+        class: "mt-6 space-y-6",
+        data: { controller: "kiosk-form kiosk-theme-preview" } do |form| %>
+    <%= render "form", form: form %>
+    <%= render "services_layout", layout_services: @layout_services %>
+    <div class="flex justify-end">
+      <%= form.submit "Save changes", class: "btn btn-primary btn-sm" %>
+    </div>
+  <% end %>
+</section>

@@ -1,0 +1,33 @@
+<% content_for :title, @step.title %>
+<section class="card border border-base-300">
+  <div class="card-body">
+    <h1 class="card-title text-2xl font-bold"><%= @step.title %></h1>
+    <p class="text-sm text-base-content/70 mt-1"><%= @step.description %></p>
+
+    <%= form_with url: onboarding_step_path(@step.key), method: :patch, html: { class: "mt-6 space-y-6" } do %>
+      <% if @user&.errors&.any? || @organization&.errors&.any? %>
+        <div class="alert alert-error text-sm">
+          <ul class="list-disc pl-4">
+            <% @user&.errors&.full_messages&.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+            <% @organization&.errors&.full_messages&.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= render @step.view %>
+
+      <div class="flex items-center justify-between pt-4">
+        <% if previous = Onboarding.step_before(@step.key) %>
+          <%= link_to "Back", onboarding_step_path(previous.key), class: "btn btn-ghost btn-sm" %>
+        <% else %>
+          <span></span>
+        <% end %>
+        <%= submit_tag Onboarding.last_step?(@step.key) ? "Finish" : "Next", class: "btn btn-primary btn-sm" %>
+      </div>
+    <% end %>
+  </div>
+</section>

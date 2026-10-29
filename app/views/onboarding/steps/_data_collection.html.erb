@@ -1,0 +1,17 @@
+<div class="space-y-4">
+  <label class="flex cursor-pointer items-center gap-3">
+    <%= hidden_field_tag "organization[kiosk_collect_dob]", "0" %>
+    <%= check_box_tag "organization[kiosk_collect_dob]", "1", @organization&.kiosk_collect_dob?, class: "checkbox-field" %>
+    <%= form_option_label "Collect date of birth",
+          tooltips: true,
+          tip: "Turn off if your business doesn't need a customer's date of birth. Customers can then only be looked up by name (or a booking reference) when checking in." %>
+  </label>
+
+  <label class="flex cursor-pointer items-center gap-3">
+    <%= hidden_field_tag "organization[kiosk_collect_postcode]", "0" %>
+    <%= check_box_tag "organization[kiosk_collect_postcode]", "1", @organization&.kiosk_collect_postcode?, class: "checkbox-field" %>
+    <%= form_option_label "Collect postcode",
+          tooltips: true,
+          tip: "Turn off if your business doesn't need a customer's postcode." %>
+  </label>
+</div>

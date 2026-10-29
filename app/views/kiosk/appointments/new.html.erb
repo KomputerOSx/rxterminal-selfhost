@@ -1,0 +1,76 @@
+<div
+  data-controller="kiosk-appointment"
+  data-kiosk-appointment-calendar-url-value="<%= calendar_kiosk_appointments_path %>"
+  data-kiosk-appointment-service-id-value="<%= @selected_service.id %>"
+  data-kiosk-appointment-submit-url-value="<%= kiosk_appointments_path %>"
+  data-kiosk-appointment-slots-url-value="<%= slot_options_kiosk_appointments_path %>"
+  data-kiosk-appointment-initial-month-value="<%= @appointment_month.strftime("%Y-%m") %>"
+  data-kiosk-appointment-has-eligibility-value="<%= @selected_service.eligibility_requirements? %>"
+  data-kiosk-appointment-home-url-value="<%= kiosk_root_path %>"
+  data-kiosk-appointment-start-step-value="<%= @appointment_start_step %>"
+  data-kiosk-appointment-upsell-booking-value="<%= @upsell_booking_mode %>"
+  data-kiosk-appointment-prefill-first-name-value="<%= @prefill_first_name %>"
+  data-kiosk-appointment-prefill-last-name-value="<%= @prefill_last_name %>"
+  data-kiosk-appointment-prefill-dob-value="<%= @prefill_dob %>"
+  data-kiosk-appointment-prefill-postcode-value="<%= @prefill_postcode %>"
+  data-kiosk-appointment-postcode-region-value="<%= @organization.postcode_region.presence || 'uk' %>"
+  class="fixed inset-0 overflow-hidden bg-base-100"
+>
+  <div data-kiosk-appointment-target="eligibilityPanel"
+       data-active="<%= @selected_service.eligibility_requirements? ? 'true' : 'false' %>"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/appointments/step_eligibility", service: @selected_service %>
+  </div>
+
+  <div data-kiosk-appointment-target="appointmentPanel"
+       data-active="<%= @appointment_start_step == 'appointment' ? 'true' : 'false' %>"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/appointments/step_appointment", service: @selected_service %>
+  </div>
+
+  <div data-kiosk-appointment-target="namePanel"
+       data-active="false"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/appointments/step_name", service: @selected_service %>
+  </div>
+
+  <% if @organization.kiosk_collect_dob? %>
+    <div data-kiosk-appointment-target="dobPanel"
+         data-active="false"
+         class="kiosk-flow-panel">
+      <%= render "kiosk/appointments/step_dob" %>
+    </div>
+  <% end %>
+
+  <% if @organization.kiosk_collect_postcode? %>
+    <div data-kiosk-appointment-target="postcodePanel"
+         data-active="false"
+         class="kiosk-flow-panel">
+      <%= render "kiosk/appointments/step_postcode", region: @organization.postcode_region.presence || "uk" %>
+    </div>
+  <% end %>
+
+  <div data-kiosk-appointment-target="emailPanel"
+       data-active="false"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/appointments/step_email" %>
+  </div>
+
+  <div data-kiosk-appointment-target="notesPanel"
+       data-active="false"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/appointments/step_notes" %>
+  </div>
+
+  <div data-kiosk-appointment-target="confirmPanel"
+       data-active="false"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/appointments/step_confirm",
+          service: @selected_service,
+          collect_dob: @organization.kiosk_collect_dob?,
+          collect_postcode: @organization.kiosk_collect_postcode?,
+          postcode_region: @organization.postcode_region.presence || "uk" %>
+  </div>
+</div>
+
+<%= render "kiosk/shared/idle_timer", timeout: 60_000, countdown: 10 %>

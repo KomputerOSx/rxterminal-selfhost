@@ -1,0 +1,59 @@
+<% service = local_assigns[:service] %>
+
+<div class="flex min-h-full flex-col items-center justify-center gap-6 p-5">
+
+  <div class="flex w-full max-w-3xl items-center gap-4">
+    <button data-action="pointerdown->kiosk-appointment#apptBack"
+            class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="flex-1 text-center">
+      <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Book Appointment</div>
+      <div class="text-xl text-base-content/70">
+        <% if service %><span class="keep-english"><%= service.display_name %></span> &middot; <% end %>
+        <span data-kiosk-appointment-target="apptSubtitle">Select a date</span>
+        &middot; Step 1 of 7
+      </div>
+      <div data-kiosk-appointment-target="apptError"
+           class="alert alert-error mt-3 hidden text-base font-semibold"></div>
+    </div>
+    <% if @upsell_booking_mode %>
+      <%= render "kiosk/appointments/upsell_booking_cancel_button" %>
+    <% else %>
+      <div class="h-[54px] w-[70px] shrink-0" aria-hidden="true"></div>
+    <% end %>
+  </div>
+
+  <div class="card w-full max-w-3xl border border-base-300 bg-base-200">
+    <div class="card-body p-8">
+
+      <div data-kiosk-appointment-target="apptCalendarView">
+        <div data-kiosk-appointment-target="apptCalendarFrame">
+          <%= render "kiosk/appointments/appointment_calendar",
+                month_date: @appointment_month,
+                selected_date: nil,
+                schedule: @booking_schedule %>
+        </div>
+      </div>
+
+      <div data-kiosk-appointment-target="apptTimeView" class="hidden">
+        <div data-kiosk-appointment-target="apptTimeContent" class="appt-time-content min-h-[300px]">
+          <%= render "kiosk/appointments/appointment_slots",
+                appointment_date: nil,
+                slots: [],
+                selected_slot: nil %>
+        </div>
+
+        <div class="mt-5 flex justify-center">
+          <button data-kiosk-appointment-target="apptConfirmBtn"
+                  data-action="pointerdown->kiosk-appointment#apptConfirm"
+                  data-active="false"
+                  class="appt-confirm-btn btn btn-disabled h-[62px] min-h-0 w-full max-w-md gap-2 rounded-2xl text-sm font-bold uppercase tracking-widest">
+            Select a time above
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

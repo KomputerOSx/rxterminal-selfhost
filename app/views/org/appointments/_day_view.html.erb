@@ -1,0 +1,32 @@
+<% if (closure = @closures[@date]) %>
+  <p class="mt-6 flex items-center gap-1 text-sm text-warning">
+    <span class="material-symbols-outlined !text-[18px]">event_busy</span>
+    Closed: <%= closure %>
+  </p>
+<% end %>
+
+<% if @appointments.any? %>
+  <div class="card mt-6 border border-base-300">
+    <div class="card-body p-0">
+      <div class="overflow-x-auto">
+        <table class="table table-sm">
+          <thead class="bg-base-200 text-sm font-semibold text-base-content">
+            <tr class="border-b border-base-300">
+              <th>Time</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Reference</th>
+              <th>Status</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= render partial: "org/appointments/appointment_row", collection: @appointments, as: :appointment %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <p class="mt-6 text-sm text-base-content/60">No appointments for this day.</p>
+<% end %>

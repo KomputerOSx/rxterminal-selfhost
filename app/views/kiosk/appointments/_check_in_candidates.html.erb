@@ -1,0 +1,9 @@
+<% candidates.each do |appointment| %>
+  <button type="button"
+          data-appointment-id="<%= appointment.id %>"
+          data-action="pointerdown->kiosk-check-in#selectCandidate"
+          class="appt-slot-btn btn btn-outline h-auto min-h-0 flex-col items-start gap-1 rounded-xl p-5 text-left">
+    <span class="text-3xl font-bold tabular-nums"><%= appointment.formatted_time %></span>
+    <span class="text-base text-base-content/70"><%= appointment.formatted_date %></span>
+  </button>
+<% end %>

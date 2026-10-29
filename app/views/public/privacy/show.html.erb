@@ -1,0 +1,15 @@
+<div class="card border border-base-300">
+  <div class="card-body gap-6">
+    <h1 class="text-2xl font-semibold">Privacy</h1>
+
+    <div class="space-y-4 text-sm text-base-content/80">
+      <p>When you book an appointment through this portal, we collect your name, date of birth, postcode, and optionally your email address and notes. This information is used solely to manage your appointment.</p>
+      <p>Your data is stored securely and handled in accordance with UK GDPR. We do not share your data with third parties.</p>
+      <p>You have the right to request access to or erasure of your personal data by contacting the organisation directly.</p>
+    </div>
+
+    <%= form_with url: accept_portal_privacy_path, method: :post do %>
+      <%= submit_tag "I understand - continue", class: "btn btn-primary btn-sm w-full" %>
+    <% end %>
+  </div>
+</div>

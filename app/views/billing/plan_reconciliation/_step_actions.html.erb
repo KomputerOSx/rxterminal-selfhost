@@ -1,0 +1,7 @@
+<% previous = wizard.previous_step(step) %>
+<div class="<%= local_assigns.fetch(:class, "mt-6") %> flex gap-3 <%= previous ? "justify-between" : "" %>">
+  <% if previous %>
+    <%= link_to "Go back", billing_plan_reconciliation_path(step: previous), class: "btn btn-outline btn-sm" %>
+  <% end %>
+  <%= continue %>
+</div>

@@ -1,0 +1,32 @@
+<% if appointment_date.present? %>
+  <div class="mb-5 rounded-2xl border border-primary/30 bg-primary/10 p-5">
+    <div class="text-xs font-bold uppercase tracking-widest text-primary">Selected date</div>
+    <div class="text-2xl font-bold text-base-content"><%= appointment_date.strftime("%A %-d %B") %></div>
+    <div class="text-base text-base-content/70"><%= appointment_date.year %></div>
+  </div>
+
+  <% if slots.any? %>
+    <div data-kiosk-appointment-target="apptSlotGrid" class="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+      <% slots.each do |slot| %>
+        <% selected = selected_slot == slot[:time] %>
+        <button data-slot="<%= slot[:time] %>"
+                data-taken="<%= (!slot[:available]).to_s %>"
+                data-selected="<%= selected %>"
+                <%= "disabled" unless slot[:available] %>
+                class="appt-slot-btn btn btn-outline h-16 min-h-0 rounded-xl text-lg font-bold data-[selected=true]:btn-primary data-[taken=true]:btn-disabled">
+          <%= kiosk_slot_label(slot[:time]) %>
+        </button>
+      <% end %>
+    </div>
+  <% else %>
+    <div data-kiosk-appointment-target="apptSlotGrid"
+         class="kiosk-input-surface rounded-2xl border-2 p-8 text-center text-base-content/70">
+      No available slots for this date.
+    </div>
+  <% end %>
+<% else %>
+  <div data-kiosk-appointment-target="apptSlotGrid"
+       class="kiosk-input-surface rounded-2xl border-2 p-8 text-center text-base-content/70">
+    Select a date to see available slots.
+  </div>
+<% end %>

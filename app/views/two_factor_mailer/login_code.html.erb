@@ -1,0 +1,24 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Your security code
+</h1>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Use this code to finish signing in to RxTerminal. Do not share it with anyone.
+</p>
+
+<div style="margin-bottom:24px;">
+  <%= render "shared/mailer/code_card", code: @code, expires_in_minutes: @expires_in_minutes %>
+</div>
+
+<%= render "shared/mailer/request_details", request_details: @request_details, requested_at: @requested_at, heading: "Sign-in details" %>
+
+<p style="margin:24px 0 0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  If this was not you, do not use this code.
+  <strong style="color:<%= MailerTheme::HEADING_TEXT %>;">Change your password immediately</strong>
+  or ask another admin to disable your account.
+</p>
+
+<p style="margin:16px 0 0;font-size:13px;color:<%= MailerTheme::LIGHT_MUTED %>;">
+  This email was sent because the correct password was entered for an account on RxTerminal.
+  RxTerminal will never ask you to share this code.
+</p>

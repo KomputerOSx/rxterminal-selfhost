@@ -1,0 +1,83 @@
+<div id="<%= dom_id(service, :kiosk_row) %>"
+     data-service-id="<%= service.id %>"
+     data-controller="kiosk-service-row"
+     data-kiosk-service-row-featured-value="<%= service.featured? %>"
+     data-kiosk-service-row-active-value="<%= service.active? %>"
+     class="card border border-base-300 <%= service.active? ? 'bg-base-200' : 'bg-base-200/40 opacity-70' %>"
+     data-kiosk-service-row-target="row">
+  <%= hidden_field_tag "service_order[]", service.id %>
+
+  <div class="card-body flex flex-row items-center gap-3 p-3">
+    <div data-sortable-handle
+         class="cursor-grab select-none text-base-content/30 hover:text-base-content/60"
+         title="Drag to reorder">
+      <span class="material-symbols-outlined !text-[22px]">drag_indicator</span>
+    </div>
+
+    <div class="relative shrink-0"
+         data-controller="material-icon-picker"
+         data-material-icon-picker-icons-value="<%= material_icon_groups.to_json %>"
+         data-material-icon-picker-selected-value="<%= service.icon.to_s %>">
+      <button type="button"
+              class="btn btn-circle btn-sm btn-outline border-primary/30 bg-primary/10"
+              title="Change icon"
+              data-action="click->material-icon-picker#toggle">
+        <span class="material-symbols-outlined text-primary !text-[20px]"
+              data-material-icon-picker-target="triggerIcon"><%= service.icon.presence || "medical_services" %></span>
+      </button>
+      <span class="hidden" data-material-icon-picker-target="triggerLabel"></span>
+      <%= hidden_field_tag "services[#{service.id}][icon]",
+            service.icon.to_s,
+            data: { material_icon_picker_target: "hidden" } %>
+
+      <div data-material-icon-picker-target="popover"
+           class="absolute left-0 top-full z-50 mt-2 hidden w-72">
+        <div class="card border border-base-300 bg-base-200">
+          <div class="card-body gap-3 p-3">
+            <input type="search"
+                   class="input-field w-full"
+                   data-material-icon-picker-target="search"
+                   data-action="input->material-icon-picker#filter">
+            <div data-material-icon-picker-target="grid" class="max-h-64 overflow-y-auto"></div>
+            <p data-material-icon-picker-target="empty"
+               class="hidden text-sm text-base-content/60">
+              No icons match your search.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-sm font-semibold"><%= service.display_name %></p>
+    </div>
+
+    <%= hidden_field_tag "services[#{service.id}][featured]", service.featured? ? "1" : "0",
+          data: { kiosk_service_row_target: "featuredInput" } %>
+    <button type="button"
+            class="btn btn-ghost btn-sm btn-square <%= service.featured? ? 'text-warning' : 'text-base-content/30 hover:text-warning' %>"
+            title="<%= service.featured? ? 'Remove featured' : 'Mark as featured' %>"
+            data-kiosk-service-row-target="featuredButton"
+            data-action="click->kiosk-service-row#toggleFeatured">
+      <span class="material-symbols-outlined !text-[20px]"
+            data-kiosk-service-row-target="featuredIcon"><%= service.featured? ? "star" : "star_border" %></span>
+    </button>
+
+    <%= hidden_field_tag "services[#{service.id}][active]", service.active? ? "1" : "0",
+          data: { kiosk_service_row_target: "activeInput" } %>
+    <button type="button"
+            class="btn btn-ghost btn-sm btn-square <%= service.active? ? 'text-success' : 'text-base-content/30 hover:text-base-content/60' %>"
+            title="<%= service.active? ? 'Hide from kiosk' : 'Show on kiosk' %>"
+            data-kiosk-service-row-target="activeButton"
+            data-action="click->kiosk-service-row#toggleActive">
+      <span class="material-symbols-outlined !text-[20px]"
+            data-kiosk-service-row-target="activeIcon"><%= service.active? ? "visibility" : "visibility_off" %></span>
+    </button>
+
+    <%= link_to edit_org_service_path(service),
+          class: "btn btn-ghost btn-sm btn-square text-base-content/60",
+          title: "Edit service" do %>
+      <span class="material-symbols-outlined !text-[18px]">settings</span>
+    <% end %>
+  </div>
+</div>

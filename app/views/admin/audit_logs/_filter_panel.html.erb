@@ -1,0 +1,172 @@
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+  <div class="card border border-base-300" data-controller="checkboxes-filter">
+    <div class="card-body flex h-80 flex-col gap-3 p-4">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-semibold">Event types</h2>
+        <div class="flex gap-3">
+          <button type="button"
+                  class="text-xs text-base-content/60 underline underline-offset-2 hover:text-base-content"
+                  data-action="click->checkboxes-filter#selectAll">
+            Select all
+          </button>
+          <button type="button"
+                  class="text-xs text-base-content/60 underline underline-offset-2 hover:text-base-content"
+                  data-action="click->checkboxes-filter#clear">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <input type="search"
+             placeholder="Search event types..."
+             class="input-field w-full"
+             data-checkboxes-filter-target="search"
+             data-action="input->checkboxes-filter#filter"
+             autocomplete="off">
+
+      <div class="min-h-0 flex-1 overflow-y-auto">
+        <% AuditLog.event_types.keys.sort.each do |event_type| %>
+          <label class="flex cursor-pointer items-center gap-2 rounded px-1 py-1 hover:bg-base-200"
+                 data-checkboxes-filter-target="item"
+                 data-label="<%= event_type.humanize %>">
+            <input type="checkbox"
+                   name="event_types[]"
+                   value="<%= event_type %>"
+                   class="checkbox-field"
+                   data-checkboxes-filter-target="checkbox"
+                   <%= "checked" if Array(@filter_params[:event_types]).include?(event_type) %>>
+            <span class="text-sm font-mono"><%= event_type.humanize %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% selected_organization_ids = Array(@filter_params[:organization_ids]).map(&:to_s) %>
+  <div class="card border border-base-300" data-controller="checkboxes-filter">
+    <div class="card-body flex h-80 flex-col gap-3 p-4">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-sm font-semibold">Organizations</h2>
+        <button type="button"
+                class="text-xs text-base-content/60 underline underline-offset-2 hover:text-base-content"
+                data-action="click->checkboxes-filter#clear">
+          Clear
+        </button>
+      </div>
+
+      <input type="search"
+             placeholder="Search organizations..."
+             class="input-field w-full"
+             data-checkboxes-filter-target="search"
+             data-action="input->checkboxes-filter#filter"
+             autocomplete="off">
+
+      <div class="min-h-0 flex-1 overflow-y-auto">
+        <% @organizations.each do |organization| %>
+          <label class="flex cursor-pointer items-center gap-2 rounded px-1 py-1 hover:bg-base-200"
+                 data-checkboxes-filter-target="item"
+                 data-label="<%= [organization.name, organization.slug, organization.id].join(' ') %>">
+            <input type="checkbox"
+                   name="organization_ids[]"
+                   value="<%= organization.id %>"
+                   class="checkbox-field"
+                   data-checkboxes-filter-target="checkbox"
+                   <%= "checked" if selected_organization_ids.include?(organization.id.to_s) %>>
+            <span class="text-sm"><%= organization.name %></span>
+            <span class="ml-auto font-mono text-xs text-base-content/50"><%= organization.slug %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-6 border border-base-300">
+  <div class="card-body gap-6 p-4">
+    <h2 class="text-lg font-semibold">Audit details</h2>
+
+    <div class="form-control">
+      <label class="label py-1"><span class="label-text text-xs font-medium">Extensive search</span></label>
+      <%= text_area_tag :json_search,
+            @filter_params[:json_search],
+            rows: 3,
+            class: "textarea-field w-full font-mono text-sm",
+            placeholder: "Search full audit JSON, metadata, emails, organization names, IPs...",
+            autocomplete: "off" %>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div>
+        <h3 class="text-sm font-semibold">Time range</h3>
+        <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          <%= render "admin/audit_logs/datetime_filter_field",
+                name: :date_from,
+                value: @filter_params[:date_from],
+                label: "From" %>
+          <%= render "admin/audit_logs/datetime_filter_field",
+                name: :date_to,
+                value: @filter_params[:date_to],
+                label: "To" %>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <% [
+            [ "Last hour", audit_log_filter_datetime(1.hour.ago), audit_log_filter_datetime(Time.current) ],
+            [ "Last 24h", audit_log_filter_datetime(24.hours.ago), audit_log_filter_datetime(Time.current) ],
+            [ "Last 7 days", audit_log_filter_datetime(7.days.ago), audit_log_filter_datetime(Time.current) ],
+            [ "Last 30 days", audit_log_filter_datetime(30.days.ago), audit_log_filter_datetime(Time.current) ],
+            [ "Today", audit_log_filter_datetime(Date.current.beginning_of_day), audit_log_filter_datetime(Date.current.end_of_day) ]
+          ].each do |label, from, to| %>
+            <button type="button"
+                    class="btn btn-outline btn-xs"
+                    data-action="click->audit-log-filters#applyRange"
+                    data-audit-log-filters-from-param="<%= from %>"
+                    data-audit-log-filters-to-param="<%= to %>">
+              <%= label %>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold">Resource</h3>
+        <div class="mt-3 grid grid-cols-1 gap-3">
+          <div class="form-control">
+            <label class="label py-1"><span class="label-text text-xs">Type</span></label>
+            <%= select_tag :resource_type,
+                  options_for_select([ [ "Any type", "" ] ] + AuditLogSearch::RESOURCE_TYPES.map { |type| [ type, type ] },
+                    @filter_params[:resource_type]),
+                  class: "select-field w-full",
+                  data: searchable_select_data(option_count: AuditLogSearch::RESOURCE_TYPES.size) %>
+          </div>
+          <div class="form-control">
+            <label class="label py-1"><span class="label-text text-xs">ID</span></label>
+            <%= text_field_tag :resource_id,
+                  @filter_params[:resource_id],
+                  class: "input-field w-full font-mono",
+                  placeholder: "e.g. 42",
+                  autocomplete: "off" %>
+          </div>
+        </div>
+        <p class="mt-2 text-xs text-base-content/60">Trace every action on a specific record.</p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold">User</h3>
+        <div class="mt-3 form-control">
+          <label class="label py-1"><span class="label-text text-xs">Email or user ID</span></label>
+          <%= text_field_tag :user_search,
+                @filter_params[:user_search],
+                class: "input-field w-full",
+                placeholder: "Search user",
+                autocomplete: "off" %>
+          <label class="label py-1"><span class="label-text-alt text-base-content/50">Partial email match supported</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <%= submit_tag "Search audit logs", class: "btn btn-primary btn-sm" %>
+      <%= link_to "Clear all", admin_audit_logs_path, class: "btn btn-outline btn-sm", data: { turbo_frame: "_top" } %>
+    </div>
+  </div>
+</div>

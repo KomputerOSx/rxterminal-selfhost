@@ -1,0 +1,20 @@
+<div class="flex items-start justify-between">
+  <div>
+    <p class="text-sm font-medium text-base-content/60">Organization</p>
+    <div class="mt-3 flex items-center gap-3">
+      <%= render "org/settings/name_display" %>
+
+      <% if current_user.has_permission?("app.organization.manage", organization: Current.organization) %>
+        <div data-controller="modal">
+          <button data-action="click->modal#open" class="btn btn-ghost btn-xs">
+            <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+          </button>
+
+          <dialog id="<%= dom_id(Current.organization, :dialog) %>" data-modal-target="dialog" class="modal">
+            <%= render "org/settings/name_dialog_content" %>
+          </dialog>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

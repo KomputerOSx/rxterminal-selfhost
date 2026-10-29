@@ -1,0 +1,28 @@
+Appointment Confirmed
+=====================
+
+Dear <%= @appointment.first_name %>,
+
+We're pleased to confirm your appointment at <%= @organization.name %>.
+
+APPOINTMENT DETAILS
+-------------------
+Booking Reference: <%= @appointment.booking_reference %>
+Service:           <%= @service.display_name %>
+Date:              <%= @appointment.appointment_date.strftime("%A, %d %B %Y") %>
+Time:              <%= @appointment.formatted_time %>
+<% if @organization.full_address.present? %>Location:          <%= @organization.full_address %>
+<% end %><% if @organization.contact_phone.present? %>Phone:             <%= @organization.contact_phone %>
+<% end %>
+<%= @organization.appointment_email_message_text %>
+
+A calendar file is attached so you can add this appointment to your calendar.
+<% if @appointment.notes.present? %>
+
+Notes: <%= @appointment.notes %>
+<% end %>
+
+---
+<%= @organization.name %><% if @organization.full_address.present? %> · <%= @organization.full_address %><% end %><% if @organization.contact_phone.present? %> · <%= @organization.contact_phone %><% end %><% if @organization.contact_email.present? %> · <%= @organization.contact_email %><% end %>
+
+<%= mailer_powered_by_text %>

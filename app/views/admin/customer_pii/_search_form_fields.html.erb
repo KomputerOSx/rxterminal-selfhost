@@ -1,0 +1,47 @@
+<div class="card border border-base-300">
+  <div class="card-body">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div class="form-control">
+        <label class="label"><span class="label-text">First name *</span></label>
+        <%= f.text_field :first_name,
+              class: error_class_for(search, :first_name, "input-field w-full"),
+              autocomplete: "off",
+              required: true %>
+        <%= field_errors(search, :first_name) %>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Last name *</span></label>
+        <%= f.text_field :last_name,
+              class: error_class_for(search, :last_name, "input-field w-full"),
+              autocomplete: "off",
+              required: true %>
+        <%= field_errors(search, :last_name) %>
+      </div>
+
+      <div class="form-control">
+        <label class="label">
+          <%= form_label_text "Date of birth",
+                tooltips: true,
+                tip: "Leave blank to search by name only - you'll then need to select at least one organization below." %>
+        </label>
+        <%= f.date_field :display_dob,
+              value: search.display_dob,
+              class: error_class_for(search, :display_dob, "input-field w-full"),
+              lang: "en-GB",
+              min: "1900-01-01",
+              max: Date.current.iso8601,
+              autocomplete: "off" %>
+        <%= field_errors(search, :display_dob) %>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Postcode</span></label>
+        <%= f.text_field :postcode,
+              class: error_class_for(search, :postcode, "input-field w-full"),
+              autocomplete: "off" %>
+        <%= field_errors(search, :postcode) %>
+      </div>
+    </div>
+  </div>
+</div>

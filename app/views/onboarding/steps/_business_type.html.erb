@@ -1,0 +1,12 @@
+<div class="space-y-3">
+  <% Onboarding::BusinessPresets.all.each do |preset| %>
+    <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-base-300 p-4 hover:bg-base-200">
+      <%= radio_button_tag "organization[business_type]", preset.key,
+            @organization&.business_type == preset.key,
+            class: "radio-field" %>
+      <%= form_option_label preset.label,
+            tooltips: preset.services.any?,
+            tip: preset.services.any? ? "Adds #{preset.services.map(&:display_name).to_sentence} as starter services, plus one example upsell." : nil %>
+    </label>
+  <% end %>
+</div>

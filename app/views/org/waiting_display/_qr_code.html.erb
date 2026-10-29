@@ -1,0 +1,10 @@
+<div id="portal-qr-code" class="lg:col-span-1">
+  <% if @portal_qr_svg %>
+    <div class="flex h-full flex-col items-center justify-center gap-6 self-stretch rounded-2xl border border-base-300 bg-base-200 p-8 text-center">
+      <p class="text-2xl font-bold lg:text-3xl"><%= @portal_qr_context.label %></p>
+      <div class="h-56 w-56 rounded-xl bg-white p-3 lg:h-80 lg:w-80 [&_svg]:h-full [&_svg]:w-full">
+        <%= sanitized_qr_svg(@portal_qr_svg) %>
+      </div>
+    </div>
+  <% end %>
+</div>

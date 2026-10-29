@@ -1,0 +1,12 @@
+<h2 class="text-lg font-semibold">Appointments</h2>
+
+<%= form_with url: billing_plan_reconciliation_path, method: :patch, class: "mt-4" do %>
+  <%= hidden_field_tag :step, :appointments %>
+  <p class="mb-4 text-sm text-base-content/60">
+    New appointment booking will be disabled on Starter. Existing appointments stay fully manageable.
+  </p>
+  <%= render "billing/plan_reconciliation/step_actions",
+        wizard: wizard,
+        step: step,
+        continue: button_tag("Continue", class: "btn btn-primary btn-sm") %>
+<% end %>

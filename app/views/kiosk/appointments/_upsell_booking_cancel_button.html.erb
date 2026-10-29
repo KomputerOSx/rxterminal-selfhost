@@ -1,0 +1,10 @@
+<% compact = local_assigns.fetch(:compact, false) %>
+<%= button_to cancel_upsell_booking_kiosk_appointments_path,
+      method: :post,
+      class: [
+        "btn btn-outline btn-error shrink-0 rounded-xl font-bold uppercase tracking-widest",
+        compact ? "h-auto min-h-0 px-4 py-2 text-sm" : "h-[54px] min-h-0 px-4 text-xs"
+      ].join(" "),
+      data: { turbo: false } do %>
+  Cancel
+<% end %>

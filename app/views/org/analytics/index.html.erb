@@ -1,0 +1,143 @@
+<section class="w-full max-w-5xl">
+  <h1 class="text-2xl font-semibold">Analytics</h1>
+
+  <div class="mt-6 flex flex-wrap items-center gap-3">
+    <div class="flex flex-wrap gap-1 rounded-lg border border-base-300 bg-base-200 p-1">
+      <% AnalyticsHelper::ANALYTICS_PERIODS.each do |label, value| %>
+        <%= link_to label,
+              org_analytics_path(period: value),
+              class: "btn btn-xs #{@period == value ? 'btn-primary' : 'btn-ghost'}" %>
+      <% end %>
+    </div>
+
+    <%= link_to org_analytics_path(request.query_parameters), class: "btn btn-outline btn-sm gap-1" do %>
+      <span class="material-symbols-outlined !text-[18px]">refresh</span>
+      Refresh
+    <% end %>
+  </div>
+
+  <% if @total.zero? %>
+    <p class="mt-6 text-sm text-base-content/60">No data for this period.</p>
+  <% else %>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="card border border-base-300">
+        <div class="card-body gap-2">
+          <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Total</p>
+          <p class="text-2xl font-semibold"><%= @total %></p>
+        </div>
+      </div>
+
+      <div class="card border border-base-300">
+        <div class="card-body gap-2">
+          <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Completed</p>
+          <p class="text-2xl font-semibold text-success"><%= @completed %></p>
+        </div>
+      </div>
+
+      <div class="card border border-base-300">
+        <div class="card-body gap-2">
+          <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Cancelled</p>
+          <p class="text-2xl font-semibold text-base-content/50"><%= @cancelled %></p>
+        </div>
+      </div>
+
+      <div class="card border border-base-300">
+        <div class="card-body gap-2">
+          <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Completion rate</p>
+          <p class="text-2xl font-semibold"><%= @completion_rate %>%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-lg font-semibold">Requests by service</h2>
+
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body">
+          <% if @by_service.empty? %>
+            <p class="text-sm text-base-content/60">No data.</p>
+          <% else %>
+            <div class="relative h-64">
+              <canvas data-controller="analytics-chart"
+                      data-analytics-chart-chart-type-value="horizontalBar"
+                      data-analytics-chart-labels-value="<%= @service_chart[:labels].to_json %>"
+                      data-analytics-chart-datasets-value="<%= @service_chart[:datasets].to_json %>"></canvas>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2">
+      <div>
+        <h2 class="text-lg font-semibold">Request type</h2>
+
+        <div class="card mt-4 border border-base-300">
+          <div class="card-body gap-5">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-lg border border-base-300 bg-base-200/40 p-4 text-center">
+                <div class="text-2xl font-semibold"><%= @immediate_count %></div>
+                <div class="mt-1.5 text-xs font-medium text-base-content/50">Walk-in</div>
+              </div>
+              <div class="rounded-lg border border-base-300 bg-base-200/40 p-4 text-center">
+                <div class="text-2xl font-semibold"><%= @appointment_count %></div>
+                <div class="mt-1.5 text-xs font-medium text-base-content/50">Appointment</div>
+              </div>
+            </div>
+
+            <div class="relative h-32">
+              <canvas data-controller="analytics-chart"
+                      data-analytics-chart-chart-type-value="bar"
+                      data-analytics-chart-labels-value="<%= @type_chart[:labels].to_json %>"
+                      data-analytics-chart-datasets-value="<%= @type_chart[:datasets].to_json %>"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold">Busiest days</h2>
+
+        <div class="card mt-4 border border-base-300">
+          <div class="card-body">
+            <% if @day_chart[:labels].empty? %>
+              <p class="text-sm text-base-content/60">No data.</p>
+            <% else %>
+              <div class="relative h-40">
+                <canvas data-controller="analytics-chart"
+                        data-analytics-chart-chart-type-value="bar"
+                        data-analytics-chart-labels-value="<%= @day_chart[:labels].to_json %>"
+                        data-analytics-chart-datasets-value="<%= @day_chart[:datasets].to_json %>"></canvas>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-lg font-semibold">Activity heatmap</h2>
+
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body">
+          <%= render "heatmap", heatmap: @heatmap, heatmap_max: @heatmap_max %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <h2 class="text-lg font-semibold">Busiest hours</h2>
+
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body">
+          <div class="relative h-48">
+            <canvas data-controller="analytics-chart"
+                    data-analytics-chart-chart-type-value="bar"
+                    data-analytics-chart-labels-value="<%= @hour_chart[:labels].to_json %>"
+                    data-analytics-chart-datasets-value="<%= @hour_chart[:datasets].to_json %>"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

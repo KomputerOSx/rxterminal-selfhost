@@ -1,0 +1,36 @@
+<div class="checkin-result checkin-result--late"
+     data-controller="kiosk-idle"
+     data-kiosk-idle-timeout-value="0"
+     data-kiosk-idle-countdown-value="20"
+     data-kiosk-idle-mode-value="auto-redirect"
+     data-kiosk-idle-interruptible-value="false"
+     data-kiosk-idle-redirect-url-value="<%= kiosk_root_path %>">
+
+  <div class="late-slide checkin-result-center">
+    <div class="checkin-result-icon-wrap">
+      <span class="material-symbols-outlined checkin-result-icon">schedule</span>
+    </div>
+    <h1 class="checkin-result-headline">Your appointment was <%= @appointment.formatted_date %></h1>
+    <p class="checkin-result-late-time">
+      It looks like you may have missed your slot at <%= @appointment.formatted_time %>
+    </p>
+  </div>
+
+  <div class="late-info">
+    <div class="late-info-row">
+      <span class="material-symbols-outlined">groups</span>
+      <p class="checkin-result-info-copy">
+        Please speak to a member of staff at the counter &mdash; they will do their best to accommodate you.
+      </p>
+    </div>
+  </div>
+
+  <%= link_to kiosk_root_path, class: "late-pulse late-home-btn", data: { turbo_action: "replace" } do %>
+    <span class="material-symbols-outlined">home</span>
+    Back to Home
+  <% end %>
+
+  <p class="checkin-countdown-text" data-kiosk-idle-target="countdownText">
+    Returning to home screen in 20 seconds&hellip;
+  </p>
+</div>

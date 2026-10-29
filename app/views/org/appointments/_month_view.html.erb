@@ -1,0 +1,40 @@
+<div class="card mt-6 border border-base-300">
+  <div class="card-body p-0">
+    <div class="grid grid-cols-7 border-b border-base-300 bg-base-200 text-sm font-semibold">
+      <% %w[Mon Tue Wed Thu Fri Sat Sun].each do |day| %>
+        <div class="px-2 py-2"><%= day %></div>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-7">
+      <% @range.each_with_index do |date, index| %>
+        <% closure = @closures[date] %>
+        <% in_month = @period.cover?(date) %>
+        <% counts = appointment_status_counts(@appointments_by_date.fetch(date, [])) %>
+        <% total = counts.values.sum %>
+        <%= link_to appointment_calendar_path(view: "day", date: date.iso8601),
+              id: "appointments_day_#{date.iso8601}",
+              title: (closure ? "Closed: #{closure}" : nil),
+              class: "block min-h-24 border-base-300 p-2 hover:bg-base-200 #{'border-l' unless (index % 7).zero?} #{'border-t' if index >= 7} #{'bg-base-200/50' if closure} #{'opacity-50' unless in_month}" do %>
+          <div class="text-sm <%= date == Date.current ? 'font-semibold text-primary' : 'font-medium' %>"><%= date.day %></div>
+
+          <% if closure %>
+            <div class="truncate text-xs text-base-content/60">Closed: <%= closure %></div>
+          <% end %>
+
+          <% if total.positive? %>
+            <div class="mt-1 text-xs font-semibold sm:hidden"><%= total %></div>
+            <div class="mt-1 hidden space-y-0.5 text-xs sm:block">
+              <% Appointment::STATUSES.each do |status| %>
+                <% next if counts[status].zero? %>
+                <div class="<%= appointment_status_color(status) %> <%= 'opacity-60' if status.in?(%w[cancelled no_show]) %>">
+                  <span class="font-semibold"><%= counts[status] %></span> <%= appointment_status_label(status).downcase %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

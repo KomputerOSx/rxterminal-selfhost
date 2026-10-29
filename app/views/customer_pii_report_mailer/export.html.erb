@@ -1,0 +1,35 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Your data export is ready
+</h1>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Your requested <%= @report_label.downcase %> export from RxTerminal is attached as a CSV file.
+</p>
+
+<div style="background:<%= MailerTheme::CARD_BG %>;border-radius:12px;padding:28px 24px;">
+  <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:<%= MailerTheme::MUTED_TEXT %>;letter-spacing:0.08em;text-transform:uppercase;">
+    Request summary
+  </p>
+  <p style="margin:0 0 14px;font-size:16px;color:<%= MailerTheme::HEADING_TEXT %>;">
+    Hello<%= @first_name.present? ? " #{@first_name}" : "" %>, your export has been prepared and attached to this email.
+  </p>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0"
+         style="border-radius:12px;overflow:hidden;">
+    <tr>
+      <td style="padding:12px 16px;font-size:14px;font-weight:600;color:<%= MailerTheme::BODY_TEXT %>;width:42%;">Records included</td>
+      <td style="padding:12px 16px;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;"><%= @total_records %></td>
+    </tr>
+    <tr>
+      <td style="padding:12px 16px;font-size:14px;font-weight:600;color:<%= MailerTheme::BODY_TEXT %>;">Generated at</td>
+      <td style="padding:12px 16px;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;"><%= @generated_at.strftime("%d %b %Y, %H:%M %Z") %></td>
+    </tr>
+  </table>
+</div>
+
+<p style="margin:24px 0 0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  If you did not expect this email, please contact the organisation that handled your request.
+</p>
+
+<p style="margin:16px 0 0;font-size:13px;color:<%= MailerTheme::LIGHT_MUTED %>;">
+  This is an automated email. Do not reply to this message.
+</p>

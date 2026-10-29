@@ -1,0 +1,120 @@
+<% blocked_date ||= organization.appointment_blocked_dates.new %>
+<% show_calendars = organization.calendars.count > 1 %>
+<% blocked_dates = booking_table_page(organization.appointment_blocked_dates.upcoming.includes(:calendars), :blocked_dates_page) %>
+
+<div id="appointment_blocked_dates_section" class="mt-10 space-y-6">
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <%= form_section_heading "Add blocked date", tooltips: true,
+            tip: "Customers cannot book on blocked dates. Leave the end date blank to block a single day." %>
+
+      <%= form_with model: blocked_date, url: org_appointment_booking_blocked_dates_path, scope: :appointment_blocked_date, class: "space-y-4" do |form| %>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="form-control">
+            <label class="label" for="appointment_blocked_date_start_date"><%= form_label_text "Start date", required: true %></label>
+            <%= form.date_field :start_date, min: Date.current.iso8601,
+                  class: error_class_for(blocked_date, :start_date, "input-field w-full") %>
+            <%= field_errors(blocked_date, :start_date) %>
+          </div>
+
+          <div class="form-control">
+            <label class="label" for="appointment_blocked_date_end_date"><%= form_label_text "End date" %></label>
+            <%= form.date_field :end_date, min: Date.current.iso8601,
+                  value: (blocked_date.end_date unless blocked_date.single_day?),
+                  class: error_class_for(blocked_date, :end_date, "input-field w-full") %>
+            <%= field_errors(blocked_date, :end_date) %>
+          </div>
+
+          <div class="form-control">
+            <label class="label" for="appointment_blocked_date_reason"><%= form_label_text "Reason" %></label>
+            <%= form.text_field :reason, maxlength: 255, class: error_class_for(blocked_date, :reason, "input-field w-full") %>
+            <%= field_errors(blocked_date, :reason) %>
+          </div>
+
+          <%= render "org/appointment_booking/calendar_scope_field", organization: organization, record: blocked_date, scope_key: "appointment_blocked_date" %>
+        </div>
+
+        <%= form.submit "Add blocked date", class: "btn btn-primary btn-sm" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <%= form_section_heading "Import public holidays", tooltips: true,
+            tip: "Adds the public holidays for the next 12 months as blocked dates. Dates you have already blocked are skipped." %>
+
+      <%= form_with url: import_org_appointment_booking_blocked_dates_path, scope: :holiday_import, class: "space-y-4" do |form| %>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="form-control">
+            <label class="label" for="holiday_import_region"><%= form_label_text "Country or region", required: true %></label>
+            <%= form.select :region, holiday_region_options, {}, class: "select-field w-full" %>
+          </div>
+
+          <%= render "org/appointment_booking/calendar_scope_field", organization: organization, record: AppointmentBlockedDate.new(organization: organization), scope_key: "holiday_import" %>
+        </div>
+
+        <%= form.submit "Import public holidays", class: "btn btn-outline btn-sm" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="text-lg font-semibold">Blocked dates</h2>
+
+    <%= turbo_frame_tag "appointment_blocked_dates_table", data: { turbo_action: "advance" } do %>
+    <% if blocked_dates.any? %>
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body p-0">
+          <div class="overflow-x-auto">
+            <table class="table table-sm">
+              <thead class="bg-base-200 text-sm font-semibold text-base-content">
+                <tr class="border-b border-base-300">
+                  <th>Date</th>
+                  <th>Reason</th>
+                  <% if show_calendars %>
+                    <th>Calendars</th>
+                  <% end %>
+                  <th>Source</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% blocked_dates.each do |block| %>
+                  <tr id="<%= dom_id(block) %>" class="hover:bg-base-200">
+                    <td class="font-medium"><%= blocked_date_range_label(block) %></td>
+                    <td class="text-base-content/60"><%= block.reason.presence || "-" %></td>
+                    <% if show_calendars %>
+                      <td class="text-base-content/60"><%= block.calendar_label %></td>
+                    <% end %>
+                    <td>
+                      <span class="badge badge-outline rounded-none badge-sm"><%= block.source == "imported" ? "Imported" : "Manual" %></span>
+                    </td>
+                    <td>
+                      <div class="flex justify-end gap-1">
+                        <%= button_to org_appointment_booking_blocked_date_path(block, blocked_dates_page: blocked_dates.current_page), method: :delete,
+                              class: "btn btn-ghost btn-xs btn-square text-error",
+                              title: "Remove",
+                              data: {
+                                controller: "confirm-modal",
+                                action: "click->confirm-modal#confirm",
+                                confirm_modal_message_value: "Remove the blocked date #{blocked_date_range_label(block)}?"
+                              } do %>
+                          <span class="material-symbols-outlined" style="font-size:18px">delete</span>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <%= render "org/appointment_booking/table_pagination", records: blocked_dates, param_name: :blocked_dates_page, frame_id: "appointment_blocked_dates_table" %>
+    <% else %>
+      <p class="mt-4 text-sm text-base-content/60">No blocked dates.</p>
+    <% end %>
+    <% end %>
+  </div>
+</div>

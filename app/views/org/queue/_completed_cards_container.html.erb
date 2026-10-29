@@ -1,0 +1,5 @@
+<div id="completed-cards" class="space-y-2">
+  <% if completed_today.any? %>
+    <%= render partial: "completed_card", collection: completed_today, as: :request %>
+  <% end %>
+</div>

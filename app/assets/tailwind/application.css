@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@import "./themes.css";
+@import "./base.css";
+@import "./components.css";
+@import "./toast.css";
+@import "./editor.css";
+@import "./legal.css";
+@import "./kiosk.css";
+@import "./portal.css";
+@import "./vendor.css";
+@import "./misc.css";

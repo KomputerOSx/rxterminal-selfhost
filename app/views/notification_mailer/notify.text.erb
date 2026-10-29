@@ -1,0 +1,19 @@
+<%= @title %>
+
+Hi <%= @user.first_name.presence || @user.email %>,
+
+<%= @body %>
+<% if @details.present? %>
+
+<% @details.each do |label, value| -%>
+<%= label %>: <%= value.presence || "Unknown" %>
+<% end -%>
+<% end %>
+
+You can review this and manage your account by signing in to RxTerminal at <%= mailer_website_domain %>.
+
+Notification settings can be modified inside the RxTerminal application.
+
+If you run into problems, contact support at <%= mailer_contact_email %>. Please do not reply directly to this email.
+
+<%= mailer_powered_by_text %>

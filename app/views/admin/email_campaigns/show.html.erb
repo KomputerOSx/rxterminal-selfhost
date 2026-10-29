@@ -1,0 +1,115 @@
+<section class="w-full max-w-4xl">
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="text-sm font-medium text-base-content/60">
+        <%= link_to "Email Campaigns", admin_email_campaigns_path, class: "hover:text-base-content" %>
+        <span class="mx-1">/</span>
+        <span><%= @email_campaign.subject %></span>
+      </p>
+      <div class="mt-3 flex items-center gap-3">
+        <h1 class="text-4xl font-semibold tracking-normal"><%= @email_campaign.subject %></h1>
+        <% case @email_campaign.status
+           when "draft" %>
+          <span class="badge badge-neutral">Draft</span>
+        <% when "sending" %>
+          <span class="badge badge-warning">Sending</span>
+        <% when "sent" %>
+          <span class="badge badge-success">Sent</span>
+        <% end %>
+        <% if @email_campaign.important? %>
+          <span class="badge badge-outline badge-warning">Important</span>
+        <% else %>
+          <span class="badge badge-outline"><%= @email_campaign.category.titleize %></span>
+        <% end %>
+      </div>
+      <p class="mt-1 text-sm text-base-content/60">
+        <%= @email_campaign.email_campaign_recipients.size %> recipient(s)
+        &middot; created by <%= @email_campaign.created_by&.email || "System" %>
+      </p>
+    </div>
+    <%= link_to "Back", admin_email_campaigns_path, class: "btn btn-outline btn-sm shrink-0" %>
+  </div>
+
+  <div class="mt-6 flex gap-2">
+    <% if @email_campaign.deliverable? %>
+      <%= button_to "Send now", deliver_admin_email_campaign_path(@email_campaign), method: :post,
+            class: "btn btn-primary btn-sm",
+            data: {
+              controller: "confirm-modal",
+              action: "click->confirm-modal#confirm",
+              confirm_modal_message_value: "Send this campaign to #{@email_campaign.email_campaign_recipients.size} user(s) now? This cannot be undone."
+            } %>
+      <%= link_to "Edit", edit_admin_email_campaign_path(@email_campaign), class: "btn btn-outline btn-sm" %>
+      <%= button_to "Delete", admin_email_campaign_path(@email_campaign), method: :delete,
+            class: "btn btn-error btn-outline btn-sm",
+            data: {
+              controller: "confirm-modal",
+              action: "click->confirm-modal#confirm",
+              confirm_modal_message_value: "Delete this draft campaign?"
+            } %>
+    <% end %>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-lg font-semibold">Preview</h2>
+    <div class="card mt-4 border border-base-300 overflow-hidden">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: <%= MailerTheme::BODY_BG %>;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="<%= @email_campaign.max_width %>" cellpadding="0" cellspacing="0" border="0"
+                   style="width: 100%; max-width: <%= @email_campaign.max_width %>px;">
+              <%= render "shared/mailer/header" %>
+              <tr>
+                <td class="email-body-content email-preview-content" style="background-color: <%= MailerTheme::BODY_BG %>; padding: 24px;">
+                  <%= sanitize @email_campaign.body_html, tags: EmailCampaign::ALLOWED_TAGS, attributes: EmailCampaign::ALLOWED_ATTRIBUTES %>
+                </td>
+              </tr>
+              <%= render "shared/mailer/footer", campaign: true, unsubscribe_url: (@email_campaign.important? ? nil : "#") %>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <% unless @email_campaign.draft? %>
+    <div class="mt-8">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Delivery status</h2>
+        <%= link_to "View all recipients", recipients_admin_email_campaign_path(@email_campaign), class: "btn btn-outline btn-sm" %>
+      </div>
+      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div class="card border border-base-300">
+          <div class="card-body p-5">
+            <p class="text-sm text-base-content/60">Total</p>
+            <p class="mt-1 text-3xl font-semibold"><%= number_with_delimiter(@recipient_counts[:total]) %></p>
+          </div>
+        </div>
+        <div class="card border border-base-300">
+          <div class="card-body p-5">
+            <p class="text-sm text-base-content/60">Sent</p>
+            <p class="mt-1 text-3xl font-semibold text-success"><%= number_with_delimiter(@recipient_counts[:sent]) %></p>
+          </div>
+        </div>
+        <div class="card border border-base-300">
+          <div class="card-body p-5">
+            <p class="text-sm text-base-content/60">Failed</p>
+            <p class="mt-1 text-3xl font-semibold text-error"><%= number_with_delimiter(@recipient_counts[:failed]) %></p>
+          </div>
+        </div>
+        <div class="card border border-base-300">
+          <div class="card-body p-5">
+            <p class="text-sm text-base-content/60">Skipped (unsubscribed)</p>
+            <p class="mt-1 text-3xl font-semibold text-base-content/60"><%= number_with_delimiter(@recipient_counts[:skipped]) %></p>
+          </div>
+        </div>
+        <div class="card border border-base-300">
+          <div class="card-body p-5">
+            <p class="text-sm text-base-content/60">Pending</p>
+            <p class="mt-1 text-3xl font-semibold"><%= number_with_delimiter(@recipient_counts[:pending]) %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

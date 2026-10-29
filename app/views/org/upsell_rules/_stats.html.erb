@@ -1,0 +1,42 @@
+<%# locals: (rule:, period:, stats:, sparkline:) %>
+<%= turbo_frame_tag "upsell_rule_stats", class: "block w-full" do %>
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <h2 class="text-lg font-semibold">Performance</h2>
+        <div class="flex flex-wrap gap-1 rounded-lg border border-base-300 bg-base-200 p-1">
+          <% [["Today", "today"], ["This week", "this_week"], ["This month", "this_month"], ["All time", "all_time"]].each do |label, key| %>
+            <%= link_to label,
+                  org_upsell_rule_path(rule, period: key),
+                  class: "btn btn-xs #{period == key ? 'btn-primary' : 'btn-ghost'}",
+                  data: { turbo_frame: "upsell_rule_stats" } %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        <% [
+          { value: stats[:triggered], label: "Shown", color: "text-base-content" },
+          { value: stats[:conversions], label: "Accepted now", color: "text-success" },
+          { value: stats[:book_laters], label: "Booked later", color: "text-primary" },
+          { value: stats[:declines], label: "Declined", color: "text-base-content/40" },
+          { value: "#{stats[:rate]}%", label: "Conv. rate", color: upsell_conversion_rate_class(stats[:rate]) },
+          { value: stats[:revenue].to_f.positive? ? upsell_revenue_label(stats[:revenue], rule.suggested_service) : (rule.suggested_service.price.to_f.positive? ? upsell_revenue_label(0, rule.suggested_service) : "-"),
+            label: "Est. revenue", color: stats[:revenue].to_f.positive? ? "text-success" : "text-base-content/30" }
+        ].each do |stat| %>
+          <div class="rounded-lg border border-base-300 bg-base-200/40 p-4 text-center">
+            <div class="text-2xl font-semibold <%= stat[:color] %>"><%= stat[:value] %></div>
+            <div class="mt-1.5 text-xs font-medium text-base-content/50"><%= stat[:label] %></div>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="border-t border-base-300 pt-5">
+        <p class="mb-3 text-xs font-medium uppercase tracking-wide text-base-content/50">Last 7 days</p>
+        <div data-controller="upsell-sparkline"
+             data-upsell-sparkline-data-value="<%= sparkline.to_json %>">
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

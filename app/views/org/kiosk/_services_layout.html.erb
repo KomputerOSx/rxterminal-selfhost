@@ -1,0 +1,23 @@
+<div class="mt-4">
+  <h2 class="text-lg font-semibold">Services layout</h2>
+
+  <% if layout_services.any? %>
+    <div class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2"
+         data-controller="sortable"
+         data-sortable-id-attribute-value="serviceId">
+      <% layout_services.each do |service| %>
+        <%= render "service_row", service: service %>
+      <% end %>
+    </div>
+
+    <p class="mt-4 flex items-center gap-1.5 text-xs text-base-content/50">
+      <span class="material-symbols-outlined !text-[16px]">info</span>
+      Drag to reorder. Hidden services sort to the bottom on the kiosk. Use Preview to see the home screen.
+    </p>
+  <% else %>
+    <p class="mt-4 text-sm text-base-content/60">
+      No services yet.
+      <%= link_to "Add a service", new_org_service_path, class: "link link-primary" %>.
+    </p>
+  <% end %>
+</div>

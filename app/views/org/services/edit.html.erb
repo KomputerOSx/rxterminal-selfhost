@@ -1,0 +1,18 @@
+<section class="w-full max-w-3xl">
+  <p class="text-sm font-medium text-base-content/60">
+    <%= link_to "Services", org_services_path, class: "hover:text-base-content" %>
+    <span class="mx-1">/</span>
+    <%= link_to @service.display_name, org_service_path(@service), class: "hover:text-base-content" %>
+    <span class="mx-1">/</span>
+    <span>Edit</span>
+  </p>
+
+  <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
+    <h1 class="text-2xl font-semibold">Edit service</h1>
+    <%= link_to "Back", org_service_path(@service), class: "btn btn-outline btn-sm" %>
+  </div>
+
+  <div class="mt-6">
+    <%= render "form", service: @service, calendars: @calendars %>
+  </div>
+</section>

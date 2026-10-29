@@ -1,0 +1,1491 @@
+/* Kiosk app: inputs, upsell, services/choose/search, confirmed screens, check-in flow. */
+
+/* Kiosk service request wizard */
+@keyframes kiosk-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+.kiosk-shake {
+  animation: kiosk-shake 0.45s ease-in-out;
+}
+
+.dob-segment {
+  @apply cursor-pointer rounded-2xl border-2 p-4 transition-all;
+}
+
+/* Kiosk inputs — very light tint of the active theme primary on surface */
+[data-kiosk-app] {
+  --kiosk-input-bg: color-mix(in oklab, var(--color-primary) 2%, var(--color-base-200));
+  --kiosk-input-border: color-mix(in oklab, var(--color-primary) 5%, var(--color-base-300));
+  --kiosk-input-bg-active: color-mix(in oklab, var(--color-primary) 5%, var(--color-base-200));
+}
+
+.kiosk-input-surface,
+.kiosk-input-field {
+  --kiosk-input-bg: color-mix(in oklab, var(--color-primary) 2%, var(--color-base-200));
+  --kiosk-input-border: color-mix(in oklab, var(--color-primary) 5%, var(--color-base-300));
+  --kiosk-input-bg-active: color-mix(in oklab, var(--color-primary) 5%, var(--color-base-200));
+  background: var(--kiosk-input-bg);
+  border-color: var(--kiosk-input-border);
+}
+
+[data-kiosk-app] .input-field,
+[data-kiosk-app] .textarea-field,
+[data-kiosk-app] .select-field:not([multiple]) {
+  --kiosk-input-bg: color-mix(in oklab, var(--color-primary) 2%, var(--color-base-200));
+  --kiosk-input-border: color-mix(in oklab, var(--color-primary) 5%, var(--color-base-300));
+  background: var(--kiosk-input-bg);
+  --tw-ring-color: var(--kiosk-input-border);
+}
+
+.kiosk-input-field {
+  @apply rounded-2xl border-2 p-4 transition-all;
+}
+
+.kiosk-input-field[data-active="true"] {
+  border-color: var(--color-primary);
+  background: var(--kiosk-input-bg-active);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.dob-segment[data-state="active"] {
+  border-color: var(--color-primary);
+  background: var(--kiosk-input-bg-active);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.dob-segment[data-state="error"] {
+  @apply border-error bg-error/10 ring-2 ring-error/30;
+}
+
+.dob-segment[data-state="idle"] {
+  background: var(--kiosk-input-bg);
+  border-color: var(--kiosk-input-border);
+}
+
+.dob-display[data-state="active"] {
+  @apply text-base-content;
+}
+
+.dob-display[data-state="error"] {
+  @apply text-error;
+}
+
+.dob-display[data-state="idle"] {
+  @apply text-base-content/40;
+}
+
+.postcode-field[data-state="active"],
+.postcode-field[data-state="ready"] {
+  border-color: var(--color-primary);
+  background: var(--kiosk-input-bg-active);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.postcode-field[data-state="error"] {
+  @apply border-error bg-error/10 ring-2 ring-error/30;
+}
+
+.postcode-field[data-state="idle"] {
+  background: var(--kiosk-input-bg);
+  border-color: var(--kiosk-input-border);
+}
+
+.email-field[data-state="active"],
+.email-field[data-state="ready"] {
+  border-color: var(--color-primary);
+  background: var(--kiosk-input-bg-active);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.email-field[data-state="error"] {
+  @apply border-error bg-error/10 ring-2 ring-error/30;
+}
+
+.email-field[data-state="idle"] {
+  background: var(--kiosk-input-bg);
+  border-color: var(--kiosk-input-border);
+}
+
+[data-kiosk-app] .appt-day-btn:not([data-selected="true"]):not(:disabled) {
+  background: var(--kiosk-input-bg);
+  border-color: var(--kiosk-input-border);
+  color: var(--color-base-content);
+}
+
+[data-kiosk-app] .appt-slot-btn:not([data-selected="true"]):not(:disabled) {
+  background: var(--kiosk-input-bg);
+  border-color: var(--kiosk-input-border);
+}
+
+.appt-day-btn[data-selected="true"] {
+  @apply btn-primary;
+}
+
+.appt-slot-btn[data-selected="true"] {
+  @apply btn-primary border-primary bg-primary text-primary-content;
+}
+
+.appt-confirm-btn[data-active="true"] {
+  @apply btn-primary;
+}
+
+.appt-time-content > * {
+  animation: kiosk-fade-in 220ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+/* Kiosk service request — private room choice */
+.privacy-choice {
+  background: var(--kiosk-input-bg, color-mix(in oklab, var(--color-primary) 2%, var(--color-base-200)));
+  border-color: var(--kiosk-input-border, color-mix(in oklab, var(--color-primary) 5%, var(--color-base-300)));
+}
+
+.privacy-choice[data-active="true"] {
+  border-color: var(--color-primary);
+  background: var(--kiosk-input-bg-active, color-mix(in oklab, var(--color-primary) 5%, var(--color-base-200)));
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 18%, transparent);
+}
+
+.privacy-choice[data-active="true"] .privacy-choice-icon {
+  @apply border border-primary/30 bg-primary/15;
+}
+
+.privacy-choice[data-active="true"] .privacy-choice-icon .material-symbols-outlined {
+  @apply text-primary;
+}
+
+.privacy-choice[data-active="true"] .privacy-choice-label {
+  @apply text-primary;
+}
+
+.privacy-choice[data-active="true"] .privacy-choice-radio {
+  @apply border-primary bg-primary;
+}
+
+.privacy-choice-dot {
+  display: none;
+}
+
+.privacy-choice[data-active="true"] .privacy-choice-dot {
+  display: block;
+  @apply bg-primary-content;
+}
+
+.privacy-continue-btn[data-active="true"] {
+  @apply btn-primary;
+}
+
+@keyframes kiosk-confirmed-btn-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+
+@keyframes kiosk-fade-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.98); }
+}
+
+@keyframes kiosk-fade-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.kiosk-flow-panel {
+  @apply absolute inset-0 overflow-y-auto;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.97);
+  transition:
+    opacity 280ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: opacity, transform;
+}
+
+.kiosk-flow-panel[data-active="true"]:not([data-entering]) {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.kiosk-flow-panel[data-entering="forward"],
+.kiosk-flow-panel[data-entering="back"] {
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+.kiosk-flow-panel[data-exiting="forward"],
+.kiosk-flow-panel[data-exiting="back"] {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+html[data-kiosk-vt="forward"]::view-transition-old(root),
+html[data-turbo-visit-direction="forward"]:not([data-kiosk-vt])::view-transition-old(root),
+html[data-kiosk-vt="back"]::view-transition-old(root),
+html[data-turbo-visit-direction="back"]:not([data-kiosk-vt])::view-transition-old(root) {
+  animation: kiosk-fade-out 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+html[data-kiosk-vt="forward"]::view-transition-new(root),
+html[data-turbo-visit-direction="forward"]:not([data-kiosk-vt])::view-transition-new(root),
+html[data-kiosk-vt="back"]::view-transition-new(root),
+html[data-turbo-visit-direction="back"]:not([data-kiosk-vt])::view-transition-new(root) {
+  animation: kiosk-fade-in 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+#kiosk-main[data-kiosk-enter="forward"]:not([data-kiosk-enter-active="true"]),
+#kiosk-main[data-kiosk-enter="back"]:not([data-kiosk-enter-active="true"]) {
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+#kiosk-main[data-kiosk-enter-active="true"] {
+  transition:
+    opacity 280ms cubic-bezier(0.32, 0.72, 0, 1),
+    transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kiosk upsell screen — semantic tokens (structure from old_repo)            */
+/* -------------------------------------------------------------------------- */
+
+@keyframes kiosk-upsell-header-in {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kiosk-upsell-card-pop {
+  0%   { opacity: 0; transform: scale(0.94) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes kiosk-upsell-icon-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+
+@keyframes kiosk-upsell-cta-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.02); }
+}
+
+.kiosk-upsell-shell {
+  min-height: 100vh;
+  background-color: var(--color-upsell-bg, var(--color-primary));
+  color: var(--color-upsell-content, var(--color-primary-content));
+}
+
+/* Bordered kiosk cards use surface (base-200), not page background (base-100) */
+[data-kiosk-app] .card.border {
+  @apply bg-base-200;
+}
+
+.kiosk-upsell-header-in {
+  animation: kiosk-upsell-header-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.kiosk-upsell-page-title {
+  @apply text-4xl font-bold md:text-5xl;
+  color: var(--color-upsell-content, var(--color-primary-content));
+}
+
+.kiosk-upsell-card-pop {
+  animation: kiosk-upsell-card-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+.kiosk-upsell-icon-pulse {
+  animation: kiosk-upsell-icon-pulse 2.5s ease-in-out infinite;
+}
+
+.kiosk-upsell-title {
+  @apply mb-4 text-4xl font-black;
+}
+
+.kiosk-upsell-description {
+  @apply mb-8 text-xl leading-relaxed;
+}
+
+.kiosk-upsell-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  @apply rounded-full px-6 py-3 text-xl font-bold;
+}
+
+.kiosk-upsell-badge .material-symbols-outlined {
+  font-size: 28px !important;
+}
+
+.kiosk-upsell-badge--free {
+  @apply bg-success text-success-content;
+}
+
+.kiosk-upsell-badge--price {
+  @apply bg-primary text-primary-content;
+}
+
+.kiosk-upsell-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  @apply mb-10 text-lg;
+}
+
+.kiosk-upsell-meta-copy {
+  @apply font-medium;
+}
+
+.kiosk-upsell-meta-divider {
+  width: 1px;
+  height: 1.5rem;
+}
+
+.kiosk-upsell-cta-btn--pulse {
+  animation: kiosk-upsell-cta-pulse 2s ease-in-out infinite;
+}
+
+.kiosk-upsell-pressing {
+  transform: scale(0.97) !important;
+  transition: transform 0.1s ease;
+}
+
+.kiosk-upsell-btn--dimmed {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.kiosk-upsell-note {
+  @apply mt-6 text-center text-base;
+  color: color-mix(in oklab, var(--color-upsell-content, var(--color-primary-content)) 60%, transparent);
+}
+
+.kiosk-upsell-spinner {
+  font-size: 32px !important;
+}
+
+.kiosk-keyboard-key {
+  @apply border transition-colors;
+  background-color: var(--color-keyboard-bg, var(--color-base-100));
+  color: var(--color-keyboard-content, var(--color-base-content));
+  border-color: color-mix(in oklab, var(--color-keyboard-content, var(--color-base-content)) 20%, transparent);
+}
+
+.kiosk-keyboard-key:active {
+  background-color: color-mix(in oklab, var(--color-keyboard-content, var(--color-base-content)) 8%, var(--color-keyboard-bg, var(--color-base-100)));
+}
+
+.kiosk-keyboard-key--delete {
+  background-color: color-mix(in oklab, var(--color-keyboard-delete, var(--color-error)) 12%, var(--color-keyboard-bg, var(--color-base-100)));
+  color: var(--color-keyboard-delete, var(--color-error));
+  border-color: color-mix(in oklab, var(--color-keyboard-delete, var(--color-error)) 30%, transparent);
+}
+
+.kiosk-keyboard-key--accent {
+  background-color: color-mix(in oklab, var(--color-keyboard-accent, var(--color-accent)) 18%, var(--color-keyboard-bg, var(--color-base-100)));
+  color: var(--color-keyboard-accent, var(--color-accent));
+  border-color: color-mix(in oklab, var(--color-keyboard-accent, var(--color-accent)) 35%, transparent);
+}
+
+/* Org settings — live theme preview (scaled kiosk canvases) */
+.kiosk-theme-preview-label {
+  margin-bottom: 0.5rem;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  @apply text-base-content/45;
+}
+
+.kiosk-theme-preview-section {
+  @apply space-y-0;
+}
+
+.kiosk-theme-preview-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: var(--color-base-100);
+}
+
+.kiosk-theme-preview-canvas {
+  width: 1100px;
+  transform-origin: top left;
+  pointer-events: none;
+  user-select: none;
+}
+
+[data-kiosk-theme-preview] .kiosk-services-shell,
+[data-kiosk-theme-preview] .kiosk-choose-shell,
+[data-kiosk-theme-preview] .kiosk-upsell-shell {
+  min-height: 0 !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kiosk services list + choose — structure from old_repo, semantic tokens    */
+/* -------------------------------------------------------------------------- */
+
+@keyframes kiosk-featured-primary {
+  0%, 100% {
+    box-shadow:
+      0 4px 20px color-mix(in oklab, var(--color-primary) 10%, transparent),
+      0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow:
+      0 4px 20px color-mix(in oklab, var(--color-primary) 18%, transparent),
+      0 0 0 10px color-mix(in oklab, var(--color-primary) 10%, transparent);
+  }
+}
+
+@keyframes kiosk-featured-accent {
+  0%, 100% {
+    box-shadow:
+      0 4px 20px color-mix(in oklab, var(--color-accent) 12%, transparent),
+      0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow:
+      0 4px 20px color-mix(in oklab, var(--color-accent) 20%, transparent),
+      0 0 0 10px color-mix(in oklab, var(--color-accent) 14%, transparent);
+  }
+}
+
+.kiosk-featured-primary {
+  animation: kiosk-featured-primary 2.2s ease-in-out infinite;
+}
+
+.kiosk-featured-accent {
+  animation: kiosk-featured-accent 2.2s ease-in-out infinite;
+}
+
+.kiosk-services-shell,
+.kiosk-choose-shell {
+  @apply flex min-h-screen flex-col bg-base-100;
+}
+
+.kiosk-choose-content {
+  @apply flex min-h-0 flex-1 flex-col items-center justify-center px-10 py-5;
+}
+
+.kiosk-services-topbar,
+.kiosk-choose-topbar {
+  @apply shrink-0 border-b border-base-300 bg-base-200 px-10 py-5;
+}
+
+.kiosk-services-back-btn,
+.kiosk-choose-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  @apply border-2 border-base-300 bg-base-200 text-base-content;
+}
+
+.kiosk-services-title {
+  @apply text-[26px] font-extrabold text-base-content;
+}
+
+.kiosk-services-subtitle {
+  @apply mt-0.5 text-[15px] text-base-content/60;
+}
+
+.kiosk-service-card {
+  position: relative;
+  display: block;
+  cursor: default;
+  border-radius: 24px;
+  border: 2px solid var(--color-base-300);
+  padding: 40px 36px;
+  text-decoration: none;
+  @apply bg-base-200 text-base-content;
+}
+
+.kiosk-service-card--with-badge {
+  padding: 52px 36px 40px;
+}
+
+.kiosk-service-card--featured {
+  border-width: 3px;
+  @apply border-primary;
+}
+
+.kiosk-service-card--appointment {
+  @apply border-accent;
+}
+
+.kiosk-service-badge {
+  position: absolute;
+  top: 16px;
+  font-weight: 700;
+}
+
+.kiosk-service-badge--featured {
+  right: 16px;
+  border-radius: 8px;
+  padding: 5px 13px;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  @apply bg-primary text-primary-content;
+}
+
+.kiosk-service-badge--appointment {
+  left: 16px;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  @apply bg-accent text-accent-content;
+}
+
+.kiosk-service-badge--both {
+  left: 16px;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 14px;
+  @apply bg-primary/10 text-primary;
+}
+
+.kiosk-service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 22px;
+  border-radius: 999px;
+}
+
+.kiosk-service-icon--default {
+  @apply bg-primary/10 text-primary;
+}
+
+.kiosk-service-icon--appointment {
+  @apply bg-accent/15 text-accent;
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--color-accent) 28%, transparent);
+}
+
+.kiosk-service-icon .material-symbols-outlined {
+  font-size: 64px !important;
+}
+
+.kiosk-service-name {
+  margin-bottom: 16px;
+  font-size: 36px;
+  font-weight: 800;
+  @apply text-base-content;
+}
+
+.kiosk-service-price-free {
+  @apply text-success;
+}
+
+.kiosk-service-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 14px;
+  padding: 16px 36px;
+  border: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.kiosk-service-btn--default {
+  @apply bg-primary text-primary-content;
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.kiosk-service-btn--appointment {
+  @apply bg-accent text-accent-content;
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--color-accent) 30%, transparent);
+}
+
+.kiosk-services-empty-title {
+  @apply text-[28px] font-bold text-base-content/60;
+}
+
+.kiosk-services-empty-copy {
+  @apply text-lg text-base-content/45;
+}
+
+.kiosk-choose-service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  @apply bg-primary/10 text-primary;
+}
+
+.kiosk-choose-service-icon .material-symbols-outlined {
+  font-size: 44px !important;
+}
+
+.kiosk-choose-title {
+  @apply text-[34px] font-extrabold tracking-tight text-base-content;
+}
+
+.kiosk-choose-subtitle {
+  @apply text-xl text-base-content/70;
+}
+
+.kiosk-choose-card {
+  display: flex;
+  min-height: 260px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  border: 0;
+  border-radius: 20px;
+  padding: 44px 28px;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 150ms ease;
+}
+
+.kiosk-choose-card--now {
+  @apply bg-primary text-primary-content;
+  box-shadow: 0 8px 32px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.kiosk-choose-card--appt {
+  @apply bg-accent text-accent-content;
+  box-shadow: 0 8px 32px color-mix(in oklab, var(--color-accent) 30%, transparent);
+}
+
+.kiosk-choose-card-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.kiosk-choose-card-copy {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.kiosk-choose-card .material-symbols-outlined {
+  font-size: 80px !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kiosk service search — on-screen keyboard + fuzzy match results            */
+/* -------------------------------------------------------------------------- */
+
+.kiosk-search-shell {
+  @apply flex min-h-screen flex-col overflow-hidden bg-base-100;
+}
+
+.kiosk-search-topbar {
+  @apply shrink-0 border-b border-base-300 bg-base-200 px-10 py-5;
+}
+
+.kiosk-search-title {
+  @apply text-[26px] font-extrabold text-base-content;
+}
+
+.kiosk-search-subtitle {
+  @apply mt-0.5 text-[15px] text-base-content/60;
+}
+
+.kiosk-search-displaybar {
+  @apply shrink-0 px-10 py-4;
+}
+
+.kiosk-search-display-field {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 16px;
+  border: 2px solid var(--color-base-300);
+  padding: 14px 20px;
+  @apply bg-base-200;
+}
+
+.kiosk-search-display-icon {
+  font-size: 22px !important;
+  @apply text-primary;
+}
+
+.kiosk-search-display-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  @apply text-base-content/50;
+}
+
+.kiosk-search-display-text {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kiosk-search-display-text--empty {
+  @apply text-base-content/30;
+}
+
+.kiosk-search-display-text--filled {
+  @apply text-base-content;
+}
+
+.kiosk-search-clear-btn {
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 0;
+  cursor: pointer;
+  @apply bg-base-300 text-base-content/70;
+}
+
+.kiosk-search-results {
+  @apply flex-1 overflow-y-auto px-10 py-7;
+}
+
+.kiosk-search-empty {
+  @apply px-5 py-16 text-center;
+}
+
+.kiosk-search-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 20px;
+  border-radius: 999px;
+  @apply bg-primary/10 text-primary;
+}
+
+.kiosk-search-empty-icon--muted {
+  @apply bg-base-300 text-base-content/40;
+}
+
+.kiosk-search-empty-icon .material-symbols-outlined {
+  font-size: 48px !important;
+}
+
+.kiosk-search-empty-title {
+  @apply mb-2 text-xl font-bold text-base-content/60;
+}
+
+.kiosk-search-empty-copy {
+  @apply text-base text-base-content/45;
+}
+
+.kiosk-search-results-count {
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  @apply text-base-content/40;
+}
+
+.kiosk-search-result-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-radius: 20px;
+  border: 2px solid var(--color-base-300);
+  padding: 20px 24px;
+  text-decoration: none;
+  transition: border-color 150ms ease, background-color 150ms ease;
+  @apply bg-base-200 text-base-content;
+}
+
+.kiosk-search-result-card--appt {
+  @apply border-accent;
+}
+
+.kiosk-search-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  @apply bg-primary/10 text-primary;
+}
+
+.kiosk-search-result-icon--appt {
+  @apply bg-accent/15 text-accent;
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--color-accent) 28%, transparent);
+}
+
+.kiosk-search-result-icon .material-symbols-outlined {
+  font-size: 32px !important;
+}
+
+.kiosk-search-result-name {
+  margin-bottom: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  @apply text-base-content;
+}
+
+.kiosk-search-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.kiosk-search-result-duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  @apply text-base-content/60;
+}
+
+.kiosk-search-result-duration .material-symbols-outlined {
+  font-size: 16px !important;
+}
+
+.kiosk-search-result-price {
+  font-size: 14px;
+  font-weight: 700;
+  @apply text-base-content;
+}
+
+.kiosk-search-result-price-free {
+  font-size: 14px;
+  font-weight: 800;
+  @apply text-success;
+}
+
+.kiosk-search-result-chevron {
+  flex-shrink: 0;
+  font-size: 24px !important;
+  @apply text-base-content/40;
+}
+
+.kiosk-search-keyboard-shell {
+  @apply shrink-0 px-10 pb-5 pt-4;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Kiosk confirmed screens — fixed palette (not org success/warning tokens)   */
+/* Matches old_repo: queue #16a34a/white · appointment amber-500/white        */
+/* -------------------------------------------------------------------------- */
+
+@keyframes kiosk-confirmed-pop-in {
+  0%   { opacity: 0; transform: scale(0.5); }
+  65%  { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes kiosk-confirmed-slide-down {
+  0%   { opacity: 0; transform: translateY(-24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Green queue success — walk-in / upsell / service request confirmed */
+.kiosk-confirmed-page {
+  --kiosk-queue-bg: #16a34a;
+  --kiosk-queue-fg: #ffffff;
+  --kiosk-queue-panel: rgba(255, 255, 255, 0.2);
+  --kiosk-queue-home-bg: #ffffff;
+  --kiosk-queue-shadow: #111827;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  background: var(--kiosk-queue-bg);
+  color: var(--kiosk-queue-fg);
+}
+
+.kiosk-confirmed-page--panel {
+  min-height: 100%;
+  height: 100%;
+}
+
+.kiosk-confirmed-header-row,
+.kiosk-confirmed-page .confirmed-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 48px;
+  animation: kiosk-confirmed-slide-down 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.kiosk-confirmed-page .kiosk-confirmed-icon {
+  font-size: 96px !important;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  color: var(--kiosk-queue-fg);
+}
+
+.kiosk-confirmed-heading {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--kiosk-queue-fg);
+}
+
+.kiosk-confirmed-subtext {
+  margin: 8px 0 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--kiosk-queue-fg) 90%, transparent);
+}
+
+.kiosk-confirmed-subtext-muted {
+  margin-top: 4px;
+  font-size: 20px;
+  opacity: 0.8;
+}
+
+.kiosk-confirmed-number-card,
+.kiosk-confirmed-page .confirmed-card {
+  min-width: 420px;
+  margin-bottom: 48px;
+  padding: 40px 48px;
+  text-align: center;
+  border-radius: 24px;
+  border: 2px solid color-mix(in srgb, var(--kiosk-queue-fg) 22%, transparent);
+  background: var(--kiosk-queue-panel);
+  animation: kiosk-confirmed-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.kiosk-confirmed-service-label {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+}
+
+.kiosk-confirmed-queue-list {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 64px;
+}
+
+.kiosk-confirmed-queue-item {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0;
+  text-align: center;
+}
+
+.kiosk-confirmed-service-name {
+  max-width: 500px;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.kiosk-confirmed-queue-num,
+.kiosk-confirmed-page .queue-number {
+  font-size: 8rem;
+  font-weight: 900;
+  color: var(--kiosk-queue-fg);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.kiosk-confirmed-home-btn,
+.kiosk-confirmed-page .confirmed-btn {
+  margin-bottom: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 64px;
+  border-radius: 32px;
+  border: 0;
+  background: var(--kiosk-queue-home-bg);
+  color: var(--kiosk-queue-bg);
+  font-size: 32px;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--kiosk-queue-shadow) 25%, transparent);
+  animation:
+    kiosk-confirmed-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both,
+    kiosk-confirmed-btn-pulse 2s 0.8s ease-in-out infinite;
+}
+
+.kiosk-confirmed-home-btn .material-symbols-outlined,
+.kiosk-confirmed-page .confirmed-btn .material-symbols-outlined {
+  font-size: 56px !important;
+}
+
+.kiosk-confirmed-animate[data-kiosk-confirmed-animate="header"] {
+  animation: kiosk-confirmed-slide-down 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.kiosk-confirmed-animate[data-kiosk-confirmed-animate="card"] {
+  animation: kiosk-confirmed-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.kiosk-confirmed-animate[data-kiosk-confirmed-animate="home"] {
+  animation:
+    kiosk-confirmed-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both,
+    kiosk-confirmed-btn-pulse 2s 0.8s ease-in-out infinite;
+}
+
+/* Upsell book-later — queue number + booking reference on green confirmed page */
+.kiosk-upsell-booking-grid {
+  display: grid;
+  width: 100%;
+  max-width: 72rem;
+  gap: 24px;
+  margin-bottom: 48px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.kiosk-upsell-booking-queue-card {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.kiosk-upsell-booking-ref-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  border: 2px solid #fcd34d;
+  background: #f59e0b;
+  padding: 40px 48px;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: none;
+  animation: kiosk-confirmed-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+}
+
+.kiosk-upsell-booking-ref-label {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.kiosk-upsell-booking-ref-number {
+  font-size: 4.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.14em;
+}
+
+.kiosk-upsell-booking-ref-service {
+  margin: 20px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.kiosk-upsell-booking-ref-when {
+  margin: 4px 0 0;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.kiosk-confirmed-countdown {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--kiosk-queue-fg) 60%, transparent);
+}
+
+/* Amber appointment booked success */
+.kiosk-appointment-confirmed-page {
+  --kiosk-appt-bg: #f59e0b;
+  --kiosk-appt-fg: #ffffff;
+  --kiosk-appt-panel: color-mix(in srgb, #ffffff 22%, transparent);
+  --kiosk-appt-home-bg: #ffffff;
+  --kiosk-appt-home-fg: #f59e0b;
+  --kiosk-appt-shadow: #111827;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background: var(--kiosk-appt-bg);
+  color: var(--kiosk-appt-fg);
+}
+
+.kiosk-appointment-confirmed-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 48px;
+  animation: kiosk-confirmed-slide-down 0.5s ease both;
+}
+
+.kiosk-appointment-confirmed-page .kiosk-confirmed-icon {
+  font-size: 96px !important;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  color: var(--kiosk-appt-fg);
+}
+
+.kiosk-appointment-confirmed-ref-card {
+  background: var(--kiosk-appt-panel);
+  border-radius: 1.5rem;
+  padding: 2.5rem 4rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  min-width: 320px;
+  animation: kiosk-confirmed-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 200ms both;
+}
+
+.kiosk-appointment-confirmed-ref-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+  margin: 0 0 0.75rem;
+}
+
+.kiosk-appointment-confirmed-ref-number {
+  font-size: 8rem;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  line-height: 1;
+}
+
+.kiosk-appointment-confirmed-ref-note {
+  font-size: 1rem;
+  margin: 1rem 0 0;
+  opacity: 0.7;
+}
+
+.kiosk-appointment-confirmed-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--kiosk-appt-home-bg);
+  color: var(--kiosk-appt-home-fg);
+  font-weight: 900;
+  font-size: 2rem;
+  padding: 2rem 4rem;
+  border-radius: 2rem;
+  border: 0;
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--kiosk-appt-shadow) 25%, transparent);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  animation:
+    kiosk-confirmed-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 400ms both,
+    kiosk-confirmed-btn-pulse 2s ease-in-out infinite;
+}
+
+.kiosk-appointment-confirmed-home-btn .material-symbols-outlined {
+  font-size: 56px !important;
+}
+
+/* Kiosk appointment check-in — fixed palette (not org-themed) */
+.kiosk-key-pressing { animation: kiosk-key-press 0.14s ease !important; }
+.kiosk-card-pressing { transform: scale(0.98); transition: transform 0.14s ease; }
+
+@keyframes kiosk-key-press {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.93); }
+  100% { transform: scale(1); }
+}
+
+@keyframes checkin-pop-in {
+  0% { opacity: 0; transform: scale(0.5); }
+  65% { opacity: 1; transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes checkin-slide-down {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes checkin-btn-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.kiosk-checkin-flow {
+  @apply overflow-hidden;
+}
+
+.kiosk-checkin-flow .checkin-content {
+  @apply relative min-h-0 flex-1;
+}
+
+.kiosk-checkin-flow .checkin-view {
+  @apply flex flex-col items-center justify-center px-10 py-5;
+}
+
+.checkin-hidden-form { display: none; }
+
+.checkin-alert {
+  @apply absolute top-5 right-10 left-10 z-10 mx-auto;
+  width: auto;
+  max-width: 808px;
+  margin-bottom: 0;
+  background: #fff5f5;
+  border: 2px solid #fecaca;
+  border-radius: 16px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.checkin-alert-icon { color: #e53e3e !important; font-size: 24px !important; }
+.checkin-alert-copy { font-size: 17px; font-weight: 600; color: #dc2626; margin: 0; }
+
+.checkin-choose-copy { text-align: center; max-width: 808px; margin-inline: auto; }
+.checkin-choose-icon .material-symbols-outlined { font-size: 72px !important; color: #004fe0; }
+.checkin-choose-title { font-size: 42px; font-weight: 800; color: #111827; letter-spacing: -0.02em; margin-bottom: 10px; }
+.checkin-choose-subtitle { font-size: 20px; color: #6b7280; font-weight: 400; margin: 0; }
+.checkin-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 808px; margin-inline: auto; }
+
+.checkin-choice-card {
+  border-radius: 20px;
+  padding: 44px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+  gap: 20px;
+  width: 100%;
+  cursor: pointer;
+  border: none;
+}
+
+.checkin-choice-card--primary {
+  background: #004fe0;
+  box-shadow: 0 8px 32px rgba(0, 64, 184, 0.3);
+}
+
+.checkin-choice-card--primary .checkin-choice-icon { color: #ffffff !important; font-size: 80px !important; }
+.checkin-choice-card--secondary .checkin-choice-icon { color: #004fe0 !important; font-size: 80px !important; }
+
+.checkin-choice-card--secondary {
+  background: #ffffff;
+  border: 2px solid #d1d5db;
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.06);
+}
+
+.checkin-choice-copy { text-align: center; }
+.checkin-choice-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+.checkin-choice-card--primary .checkin-choice-title { color: #ffffff; }
+.checkin-choice-card--secondary .checkin-choice-title { color: #111827; }
+.checkin-choice-subtitle { font-size: 16px; font-weight: 400; margin: 0; }
+.checkin-choice-card--primary .checkin-choice-subtitle { color: rgba(255, 255, 255, 0.75); }
+.checkin-choice-card--secondary .checkin-choice-subtitle { color: #6b7280; }
+
+.checkin-step-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.checkin-step-heading {
+  width: 100%;
+  max-width: 768px;
+  text-align: center;
+}
+.checkin-step-title { font-size: 3.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 4px; color: #111827; }
+.checkin-step-subtitle { font-size: 1.25rem; color: #6b7280; }
+
+/* Check-in result screens — hardcoded (success / early / late) */
+.checkin-result {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.checkin-result--success { background: #f59e0b; }
+.checkin-result--early { background: #2563eb; }
+.checkin-result--late { background: #dc2626; }
+
+.checkin-slide,
+.early-slide,
+.late-slide { animation: checkin-slide-down 0.5s ease both; }
+
+.checkin-pop-1 { animation: checkin-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 200ms both; }
+.checkin-pop-2 { animation: checkin-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 400ms both; }
+
+.checkin-pulse,
+.early-pulse,
+.late-pulse { animation: checkin-btn-pulse 2s ease-in-out infinite; }
+
+.checkin-result-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 48px;
+  text-align: left;
+}
+
+.checkin-result-icon { font-size: 96px !important; color: #ffffff; flex-shrink: 0; }
+.checkin-result-icon-wrap { display: flex; justify-content: center; margin-bottom: 24px; }
+.checkin-result-title { font-size: 2.25rem; font-weight: 900; margin: 0; line-height: 1.1; }
+.checkin-result-note { font-size: 1.5rem; opacity: 0.9; margin: 0 0 40px; }
+.checkin-result-headline { font-size: 3rem; font-weight: 900; margin: 0 0 16px; line-height: 1.15; letter-spacing: -0.02em; }
+.checkin-result-lead { font-size: 1.5rem; opacity: 0.9; margin: 0 0 8px; }
+.checkin-result-date { font-size: 2.25rem; font-weight: 800; margin: 0 0 40px; letter-spacing: -0.02em; }
+.checkin-result-late-time { font-size: 1.875rem; font-weight: 600; opacity: 0.95; margin: 0 0 40px; }
+.checkin-result-center { max-width: 720px; }
+
+.queue-card {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 1.5rem;
+  padding: 2.5rem 4rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  min-width: 220px;
+}
+
+.queue-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.85;
+  margin: 0 0 -0.5rem;
+}
+
+.queue-number {
+  font-size: 10rem;
+  font-weight: 900;
+  line-height: 1;
+  margin: 0.5rem 0;
+}
+
+.checkin-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #ffffff;
+  color: #d97706;
+  font-weight: 900;
+  font-size: 2rem;
+  padding: 2rem 5rem;
+  border-radius: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  margin-bottom: 2rem;
+}
+
+.checkin-home-btn .material-symbols-outlined { font-size: 56px !important; }
+
+.early-info,
+.late-info {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
+  padding: 2rem 3rem;
+  max-width: 560px;
+  margin-bottom: 3rem;
+  animation: checkin-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 200ms both;
+}
+
+.late-info { max-width: 600px; }
+
+.late-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  text-align: left;
+}
+
+.late-info-row .material-symbols-outlined {
+  font-size: 32px !important;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.checkin-result-info-copy {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin: 0;
+  text-align: left;
+}
+
+.early-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  color: #1d4ed8;
+  font-weight: 900;
+  font-size: 1.75rem;
+  padding: 1.5rem 4rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  animation: checkin-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 400ms both;
+}
+
+.late-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  color: #b91c1c;
+  font-weight: 900;
+  font-size: 1.75rem;
+  padding: 1.5rem 4rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  animation: checkin-pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 400ms both;
+}
+
+.checkin-countdown-text {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0;
+}

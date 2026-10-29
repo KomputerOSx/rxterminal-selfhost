@@ -1,0 +1,23 @@
+<div id="<%= dom_id(organization_logo, :review_panel) %>" class="flex flex-wrap items-center gap-2 px-8 py-4">
+  <% if organization_logo.pending? %>
+    <%= button_to "Approve", approve_admin_organization_logo_path(organization_logo), method: :patch,
+          class: "btn btn-primary btn-sm",
+          data: {
+            controller: "confirm-modal",
+            action: "click->confirm-modal#confirm",
+            confirm_modal_message_value: "Approve this logo for #{organization_logo.organization.name}?"
+          } %>
+    <button type="button" data-action="click->modal#open" class="btn btn-error btn-outline btn-sm">Decline</button>
+  <% elsif organization_logo.declined? %>
+    <div>
+      <p class="font-medium text-error">Declined</p>
+      <p class="mt-1 text-sm text-base-content/60">Reason given to the organization:</p>
+      <p class="mt-1 text-sm"><%= organization_logo.decline_reason %></p>
+    </div>
+  <% else %>
+    <div>
+      <p class="font-medium text-success">Approved</p>
+      <p class="mt-1 text-sm text-base-content/60">The organization can now set this as their active logo.</p>
+    </div>
+  <% end %>
+</div>

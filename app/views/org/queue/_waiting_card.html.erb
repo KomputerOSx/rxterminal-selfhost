@@ -1,0 +1,115 @@
+<%# data-request-id used for identification only, NOT counting
+    Counts come from server broadcasts %>
+<%= turbo_frame_tag dom_id(request, :waiting) do %>
+  <div class="mb-1 rounded-lg border border-base-300 px-2 py-1.5 transition-colors hover:bg-base-200"
+       data-request-id="<%= request.id %>"
+       data-service-id="<%= request.service_id %>">
+    <div class="flex items-stretch justify-between gap-2">
+
+      <!-- Left: Queue number + time + customer info -->
+      <div class="flex items-start space-x-2 lg:space-x-3">
+        <div class="flex h-full min-w-[48px] shrink-0 flex-col items-center justify-between text-center lg:min-w-[60px]">
+          <div class="text-3xl font-black leading-none text-primary lg:text-5xl"><%= request.queue_number %></div>
+          <div class="mt-0.5 text-[10px] leading-none text-base-content/50">
+            <% if request.privacy_requested? %>
+              <span class="material-symbols-outlined !text-[10px] text-error">shield</span>
+            <% end %>
+            <%= request.created_at.strftime("%H:%M") %>
+          </div>
+        </div>
+        <div class="pt-0.5">
+          <div class="text-sm font-bold lg:text-base"><%= request.last_name %>, <%= request.first_name %></div>
+          <div class="mb-0.5 text-xs text-base-content/60">
+            <% if request.dob.present? %>
+              DOB: <span class="text-base-content"><%= request.dob&.strftime("%d/%m/%Y") %></span> <% if request.postcode.present? %>|<% end %>
+            <% end %>
+
+            <% if request.postcode.present? %>
+              <strong class="text-base-content">
+            <%= request.postcode.upcase %></strong><% end %>
+          </div>
+          <div class="text-xs text-base-content/70">
+            <%= request.service.display_name %>
+            <span class="hidden text-xs lg:inline">(<%= request.service.estimated_duration %> min)</span>
+            <% if request.appointment.present? %>
+              <span class="badge badge-xs badge-warning">Appt</span>
+            <% end %>
+            <% if request.appointment&.notes.present? %>
+              <span data-controller="modal">
+                <button type="button"
+                        class="badge badge-xs badge-secondary cursor-pointer"
+                        data-action="click->modal#open">
+                  Notes
+                </button>
+                <dialog data-modal-target="dialog" class="modal">
+                  <div class="modal-box border border-base-300">
+                    <h3 class="mb-2 text-lg font-bold">Appointment Notes</h3>
+                    <p class="whitespace-pre-wrap text-sm text-base-content/80"><%= request.appointment.notes %></p>
+                    <div class="modal-action">
+                      <button type="button" class="btn btn-sm" data-action="click->modal#close">Close</button>
+                    </div>
+                  </div>
+                  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+                </dialog>
+              </span>
+            <% end %>
+            <% if request.description.present? %>
+              <span data-controller="modal">
+                <button type="button"
+                        class="badge badge-xs badge-info cursor-pointer"
+                        data-action="click->modal#open">
+                  Notes
+                </button>
+                <dialog data-modal-target="dialog" class="modal">
+                  <div class="modal-box border border-base-300">
+                    <h3 class="mb-2 text-lg font-bold">Notes</h3>
+                    <p class="whitespace-pre-wrap text-sm text-base-content/80"><%= request.description %></p>
+                    <div class="modal-action">
+                      <button type="button" class="btn btn-sm" data-action="click->modal#close">Close</button>
+                    </div>
+                  </div>
+                  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+                </dialog>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: full-height action buttons -->
+      <div class="flex shrink-0 gap-1.5">
+        <%= form_with url: org_update_status_queue_path(request),
+              method: :patch,
+              class: "flex h-full",
+              data: {
+                controller: "optimistic-update",
+                turbo_stream: true,
+                optimistic_update_target_value: "in_progress",
+                optimistic_update_request_id_value: request.id
+              } do |f| %>
+          <%= f.hidden_field :status, value: "in_progress" %>
+          <%= f.submit "Call", class: "btn btn-primary btn-xs h-full rounded-lg px-8" %>
+        <% end %>
+        <%= form_with url: org_update_status_queue_path(request),
+              method: :patch,
+              class: "flex h-full items-center",
+              data: {
+                controller: "optimistic-update",
+                turbo_stream: true,
+                optimistic_update_target_value: "cancelled",
+                optimistic_update_request_id_value: request.id
+              } do |f| %>
+          <%= f.hidden_field :status, value: "cancelled" %>
+          <%= f.submit "Cancel",
+                class: "btn btn-error btn-xs h-8 rounded-lg px-3",
+                data: {
+                  controller: "confirm-modal",
+                  action: "click->confirm-modal#confirm",
+                  confirm_modal_message_value: "Cancel queue number #{request.queue_number}?"
+                } %>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+<% end %>

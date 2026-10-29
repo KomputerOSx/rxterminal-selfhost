@@ -1,0 +1,333 @@
+<% check_in_mode = @check_in_mode || "choose" %>
+<div
+  data-controller="kiosk-check-in"
+  data-kiosk-check-in-ref-form-id-value="kiosk-checkin-ref-form"
+  data-kiosk-check-in-details-form-id-value="kiosk-checkin-details-form"
+  data-kiosk-check-in-initial-mode-value="<%= check_in_mode %>"
+  data-kiosk-check-in-collect-dob-value="<%= @organization.kiosk_collect_dob? %>"
+  data-kiosk-check-in-candidates-url-value="<%= check_in_candidates_kiosk_appointments_path %>"
+  class="kiosk-services-shell kiosk-checkin-flow"
+>
+  <div class="kiosk-services-topbar shrink-0" data-kiosk-check-in-target="topbar">
+    <div class="mx-auto max-w-[1100px]">
+      <%= link_to kiosk_home_path,
+            class: "kiosk-services-back-btn",
+            data: {
+              turbo_action: "replace",
+              kiosk_nav: "back"
+            } do %>
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_tag process_check_in_kiosk_appointments_path, method: :post, id: "kiosk-checkin-ref-form", class: "checkin-hidden-form", data: { turbo: false } do %>
+    <input type="hidden" name="booking_reference" data-kiosk-check-in-target="refInput">
+  <% end %>
+
+  <%= form_tag process_check_in_kiosk_appointments_path, method: :post, id: "kiosk-checkin-details-form", class: "checkin-hidden-form", data: { turbo: false } do %>
+    <input type="hidden" name="last_name" data-kiosk-check-in-target="lastNameInput">
+    <input type="hidden" name="dob" data-kiosk-check-in-target="dobInput">
+    <input type="hidden" name="appointment_id" data-kiosk-check-in-target="appointmentIdInput">
+  <% end %>
+
+  <div class="checkin-content mx-auto w-full max-w-[1100px] flex-1">
+    <div class="checkin-alert <%= "!hidden" if flash[:alert].blank? %>" data-kiosk-check-in-target="alert">
+      <span class="material-symbols-outlined checkin-alert-icon">error</span>
+      <p class="checkin-alert-copy" data-kiosk-check-in-target="alertMessage"><%= flash[:alert] %></p>
+    </div>
+
+    <div data-kiosk-check-in-target="chooseView"
+         data-active="<%= check_in_mode == "choose" ? "true" : "false" %>"
+         class="checkin-view kiosk-flow-panel">
+      <div class="flex w-full max-w-[808px] flex-col items-center gap-10">
+      <div class="checkin-choose-copy">
+        <div class="checkin-choose-icon">
+          <span class="material-symbols-outlined">event_available</span>
+        </div>
+        <h1 class="checkin-choose-title">Check In for Appointment</h1>
+        <p class="checkin-choose-subtitle">How would you like to check in?</p>
+      </div>
+
+      <div class="checkin-choice-grid">
+        <button type="button" data-action="pointerdown->kiosk-check-in#chooseRef" class="checkin-choice-card checkin-choice-card--primary">
+          <span class="material-symbols-outlined checkin-choice-icon">tag</span>
+          <div class="checkin-choice-copy">
+            <div class="checkin-choice-title">Booking Reference</div>
+            <div class="checkin-choice-subtitle">I have a reference code</div>
+          </div>
+        </button>
+
+        <button type="button" data-action="pointerdown->kiosk-check-in#chooseName" class="checkin-choice-card checkin-choice-card--secondary">
+          <span class="material-symbols-outlined checkin-choice-icon">badge</span>
+          <div class="checkin-choice-copy">
+            <div class="checkin-choice-title"><%= @organization.kiosk_collect_dob? ? "Name &amp; Date of Birth".html_safe : "Name" %></div>
+            <div class="checkin-choice-subtitle">Search by your details</div>
+          </div>
+        </button>
+      </div>
+      </div>
+    </div>
+
+    <div data-kiosk-check-in-target="refView"
+         data-active="<%= check_in_mode == "reference" ? "true" : "false" %>"
+         class="checkin-view kiosk-flow-panel">
+      <div class="flex w-full max-w-3xl flex-col items-center gap-6">
+        <div class="flex w-full max-w-3xl items-center gap-4">
+          <button type="button"
+                  data-action="pointerdown->kiosk-check-in#back"
+                  class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div class="flex-1 text-center">
+            <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Booking Reference</div>
+            <div class="text-xl text-base-content/70">Enter the 6-character reference from your confirmation</div>
+          </div>
+          <button type="button"
+                  data-action="pointerdown->kiosk-check-in#refReset"
+                  class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0 text-xs font-bold uppercase tracking-widest">
+            Clear
+          </button>
+        </div>
+
+        <div class="card w-full max-w-3xl border border-base-300 bg-base-200">
+          <div class="card-body p-9">
+            <div class="mb-5">
+              <div data-active="true" class="kiosk-input-field cursor-pointer">
+                <div class="mb-1 text-xs font-bold uppercase tracking-widest text-base-content/60">Booking Reference</div>
+                <div data-kiosk-check-in-target="refDisplay" class="text-3xl font-bold tracking-[0.14em] text-base-content/40">&mdash;</div>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-2">
+              <div class="grid grid-cols-10 gap-2">
+                <% %w[1 2 3 4 5 6 7 8 9 0].each do |k| %>
+                  <button type="button" data-action="pointerdown->kiosk-check-in#refKey" data-key="<%= k %>"
+                          class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+                <% end %>
+              </div>
+              <div class="my-0.5 h-px w-full max-w-[692px] bg-base-300"></div>
+              <div class="grid grid-cols-10 gap-2">
+                <% %w[Q W E R T Y U I O P].each do |k| %>
+                  <button type="button" data-action="pointerdown->kiosk-check-in#refKey" data-key="<%= k %>"
+                          class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+                <% end %>
+              </div>
+              <div class="grid grid-cols-9 gap-2 pl-6">
+                <% %w[A S D F G H J K L].each do |k| %>
+                  <button type="button" data-action="pointerdown->kiosk-check-in#refKey" data-key="<%= k %>"
+                          class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+                <% end %>
+              </div>
+              <div class="grid grid-cols-8 gap-2 pl-12">
+                <% %w[Z X C V B N M].each do |k| %>
+                  <button type="button" data-action="pointerdown->kiosk-check-in#refKey" data-key="<%= k %>"
+                          class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+                <% end %>
+                <button type="button" data-action="pointerdown->kiosk-check-in#refKey" data-key="⌫"
+                        class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete h-14 w-14 min-h-0 px-0">
+                  <span class="material-symbols-outlined">backspace</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-4 flex justify-center">
+              <button type="button"
+                      data-kiosk-check-in-target="refConfirmBtn"
+                      data-action="pointerdown->kiosk-check-in#refConfirm"
+                      class="btn btn-disabled h-[62px] min-h-0 w-[172px] gap-2 rounded-2xl border-0 text-sm font-bold uppercase tracking-widest">
+                <span class="material-symbols-outlined">check</span>
+                Check In
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-kiosk-check-in-target="nameView"
+         data-active="<%= check_in_mode == "details" ? "true" : "false" %>"
+         class="checkin-view kiosk-flow-panel">
+      <div class="flex w-full max-w-3xl flex-col items-center gap-6">
+        <div class="flex w-full max-w-3xl items-center gap-4">
+          <button type="button"
+                  data-action="pointerdown->kiosk-check-in#back"
+                  class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div class="flex-1 text-center">
+            <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Last Name</div>
+            <div class="text-xl text-base-content/70">Enter the surname on your booking &middot; Step 1 of 2</div>
+          </div>
+          <button type="button"
+                  data-action="pointerdown->kiosk-check-in#nameReset"
+                  class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0 text-xs font-bold uppercase tracking-widest">
+            Clear
+          </button>
+        </div>
+
+        <div class="card w-full max-w-3xl border border-base-300 bg-base-200">
+          <div class="card-body p-9">
+            <div class="mb-5">
+              <div data-active="true" class="kiosk-input-field cursor-pointer">
+                <div class="mb-1 text-xs font-bold uppercase tracking-widest text-base-content/60">Last Name</div>
+                <div data-kiosk-check-in-target="nameDisplay" class="text-3xl font-bold text-base-content">&middot;</div>
+              </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-2">
+              <div class="grid grid-cols-10 gap-2">
+                <% %w[Q W E R T Y U I O P].each do |k| %>
+                  <button type="button" data-action="pointerdown->kiosk-check-in#nameKey" data-key="<%= k %>"
+                          class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+                <% end %>
+              </div>
+              <div class="grid grid-cols-9 gap-2 pl-6">
+                <% %w[A S D F G H J K L].each do |k| %>
+                  <button type="button" data-action="pointerdown->kiosk-check-in#nameKey" data-key="<%= k %>"
+                          class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+                <% end %>
+              </div>
+              <div class="grid grid-cols-8 gap-2 pl-12">
+                <% %w[Z X C V B N M].each do |k| %>
+                  <button type="button" data-action="pointerdown->kiosk-check-in#nameKey" data-key="<%= k %>"
+                          class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+                <% end %>
+                <button type="button" data-action="pointerdown->kiosk-check-in#nameKey" data-key="⌫"
+                        class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete h-14 w-14 min-h-0 px-0">
+                  <span class="material-symbols-outlined">backspace</span>
+                </button>
+              </div>
+              <div class="flex gap-2">
+                <button type="button" data-action="pointerdown->kiosk-check-in#nameKey" data-key="SPACE"
+                        class="btn btn-lg kiosk-keyboard-key h-14 min-h-0 w-64 text-sm font-bold uppercase tracking-widest">Space</button>
+                <button type="button" data-action="pointerdown->kiosk-check-in#nameKey" data-key="'"
+                        class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--accent h-14 min-h-0 w-14 text-lg font-bold">'</button>
+                <button type="button" data-action="pointerdown->kiosk-check-in#nameKey" data-key="-"
+                        class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--accent h-14 min-h-0 w-14 text-lg font-bold">-</button>
+              </div>
+            </div>
+
+            <div class="mt-4 flex justify-center">
+              <button type="button"
+                      data-kiosk-check-in-target="nameContinueBtn"
+                      data-action="pointerdown->kiosk-check-in#nameContinue"
+                      class="btn btn-disabled h-[62px] min-h-0 w-[220px] gap-2 rounded-2xl border-0 text-sm font-bold uppercase tracking-widest">
+                Continue
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-kiosk-check-in-target="dobView"
+         data-active="false"
+         class="checkin-view kiosk-flow-panel">
+      <div class="flex w-full max-w-sm flex-col items-center gap-6">
+        <div class="flex w-full max-w-sm items-center gap-4">
+          <button type="button"
+                  data-action="pointerdown->kiosk-check-in#back"
+                  class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div class="flex-1 text-center">
+            <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Date of Birth</div>
+            <div class="text-xl text-base-content/70">
+              Step 2 of 2 &middot; <span data-kiosk-check-in-target="dobNameBadge"></span>
+            </div>
+          </div>
+          <button type="button"
+                  data-action="pointerdown->kiosk-check-in#dobReset"
+                  class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0 text-xs font-bold uppercase tracking-widest">
+            Clear
+          </button>
+        </div>
+
+        <div class="card w-full max-w-sm border border-base-300 bg-base-200">
+          <div class="card-body p-8 pt-9">
+            <div class="mb-5 flex items-end justify-center gap-2.5">
+              <div data-kiosk-check-in-target="ddTab"
+                   data-action="pointerdown->kiosk-check-in#selectDobField"
+                   data-field="dd" data-active="true" data-state="active"
+                   class="dob-segment w-[90px]">
+                <div class="mb-1 text-center text-xs font-bold uppercase tracking-widest text-base-content/60">Day</div>
+                <div data-kiosk-check-in-target="ddDisplay" data-state="active" class="dob-display text-center text-3xl font-black">DD</div>
+              </div>
+
+              <div data-kiosk-check-in-target="mmTab"
+                   data-action="pointerdown->kiosk-check-in#selectDobField"
+                   data-field="mm" data-active="false" data-state="idle"
+                   class="dob-segment w-[90px]">
+                <div class="mb-1 text-center text-xs font-bold uppercase tracking-widest text-base-content/60">Month</div>
+                <div data-kiosk-check-in-target="mmDisplay" data-state="idle" class="dob-display text-center text-3xl font-black">MM</div>
+              </div>
+
+              <div data-kiosk-check-in-target="yyyyTab"
+                   data-action="pointerdown->kiosk-check-in#selectDobField"
+                   data-field="yyyy" data-active="false" data-state="idle"
+                   class="dob-segment w-[154px]">
+                <div class="mb-1 text-center text-xs font-bold uppercase tracking-widest text-base-content/60">Year</div>
+                <div data-kiosk-check-in-target="yyyyDisplay" data-state="idle" class="dob-display text-center text-3xl font-black">YYYY</div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2.5">
+              <% [["1","2","3"],["4","5","6"],["7","8","9"],["⌫","0","✓"]].each do |row| %>
+                <div class="flex gap-2.5">
+                  <% row.each do |key| %>
+                    <% is_confirm = key == "✓" %>
+                    <% is_back    = key == "⌫" %>
+                    <% klass = is_confirm ? "btn btn-primary" : is_back ? "btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete" : "btn btn-lg kiosk-keyboard-key" %>
+                    <button type="button"
+                            <%= "data-kiosk-check-in-target=\"dobConfirmBtn\"".html_safe if is_confirm %>
+                            data-action="pointerdown->kiosk-check-in#dobKey"
+                            data-key="<%= key %>"
+                            class="<%= klass %> h-16 min-h-0 flex-1 rounded-2xl px-0 text-2xl font-bold">
+                      <% if is_back %>
+                        <span class="material-symbols-outlined">backspace</span>
+                      <% elsif is_confirm %>
+                        <span class="material-symbols-outlined">check</span>
+                      <% else %>
+                        <%= key %>
+                      <% end %>
+                    </button>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-kiosk-check-in-target="candidatesView"
+         data-active="false"
+         class="checkin-view kiosk-flow-panel">
+      <div class="flex w-full max-w-3xl flex-col items-center gap-6">
+        <div class="flex w-full max-w-3xl items-center gap-4">
+          <button type="button"
+                  data-action="pointerdown->kiosk-check-in#back"
+                  class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div class="flex-1 text-center">
+            <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl">Select Appointment</div>
+            <div class="text-xl text-base-content/70">Step 2 of 2</div>
+          </div>
+          <div class="w-[70px] shrink-0"></div>
+        </div>
+
+        <div class="card w-full max-w-3xl border border-base-300 bg-base-200">
+          <div class="card-body p-9">
+            <div data-kiosk-check-in-target="candidatesGrid" class="grid grid-cols-1 gap-3 sm:grid-cols-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render "kiosk/shared/idle_timer", timeout: 60_000, countdown: 10 %>

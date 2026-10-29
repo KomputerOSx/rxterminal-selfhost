@@ -1,0 +1,15 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Confirm your email
+</h1>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Welcome! Enter this code to confirm <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @email %></strong>.
+</p>
+
+<div style="margin-bottom:24px;">
+  <%= render "shared/mailer/code_card", code: @code, label: "Confirmation code", expires_in_minutes: @expires_in_minutes %>
+</div>
+
+<p style="margin:0;font-size:14px;color:<%= MailerTheme::BODY_TEXT %>;">
+  If you didn't create this account, you can safely ignore this email.
+</p>

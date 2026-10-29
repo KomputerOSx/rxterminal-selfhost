@@ -1,0 +1,114 @@
+<% unless local_assigns[:hide_heading] %><h1>GDPR &amp; Data Protection Statement</h1><% end %>
+<p class="legal-subtitle">This statement describes how Strixon Ltd and <%= org_name %> handle personal data in connection with the RxTerminal service.</p>
+
+<section>
+  <h2>1. Who We Are</h2>
+  <p><strong>Strixon Ltd</strong> is a company registered in England and Wales under company number 16475557, with its registered office at 3 Tamworth Road, Newcastle Upon Tyne, NE4 5AJ.</p>
+  <p>Strixon Ltd develops and operates RxTerminal, a real-time queue management system.</p>
+  <p>Data protection contact: <a href="mailto:contact@strixon.co.uk">contact@strixon.co.uk</a></p>
+</section>
+
+<section>
+  <h2>2. Data Controller and Data Processor Roles</h2>
+  <p><strong><%= org_name %></strong> is the Data Controller for personal data collected through this portal. Strixon Ltd acts as a Data Processor, processing that data only on the organisation's documented instructions under a Data Processing Agreement.</p>
+  <p>Strixon Ltd acts as Data Controller only for its own staff, contractor, supplier, and website visitor data.</p>
+</section>
+
+<section>
+  <h2>3. What Personal Data We Process</h2>
+  <h3>Customer data</h3>
+  <ul>
+    <li>First name and last name</li>
+    <li>Date of birth and postcode (for counter-based identity verification)</li>
+    <li>Service category selected</li>
+    <li>Queue timestamps (arrival, called, completion)</li>
+  </ul>
+  <p>We do not collect NHS numbers, payment card information, or clinical records.</p>
+  <h3>Staff and manager data</h3>
+  <ul>
+    <li>Full name and application login credentials</li>
+    <li>Role and organisation assignment</li>
+    <li>Session and audit log data</li>
+  </ul>
+</section>
+
+<section>
+  <h2>4. Lawful Basis for Processing</h2>
+  <ul>
+    <li><strong>Article 6(1)(f) - Legitimate interests:</strong> queue management and service delivery.</li>
+    <li><strong>Article 9(2)(h):</strong> where health-related information is included in a customer's query, for provision of health or social care.</li>
+    <li><strong>Article 6(1)(b):</strong> performance of a contract, for staff and contractor data.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Data Retention</h2>
+  <ul>
+    <li>Customer personally identifiable information is automatically anonymised after <strong>90 days</strong>.</li>
+    <li>Anonymised service records are retained for <strong>7 years</strong> for operational and legal purposes.</li>
+    <li>Staff account data is retained for the duration of the subscription plus 30 days.</li>
+    <li>Audit logs are retained for <strong>12 months</strong> in line with NHS DSP Toolkit guidance.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Where Data Is Stored</h2>
+  <p>All customer and staff data is stored on a managed PostgreSQL database hosted in <strong>Germany, EEA</strong>. Application servers do not persistently store customer records.</p>
+</section>
+
+<section>
+  <h2>7. Sub-Processors</h2>
+  <table>
+    <thead>
+      <tr><th>Sub-processor</th><th>Purpose</th><th>Location</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Hetzner</td><td>Application server compute &amp; database management</td><td>Germany (EU)</td></tr>
+      <tr><td>Docker Hub</td><td>Container image registry (no personal data processed)</td><td>USA</td></tr>
+      <tr><td>Microsoft Azure</td><td>Communications (email and text messages)</td><td>UK South</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>8. Your Rights</h2>
+  <ul>
+    <li>Right of access</li>
+    <li>Right to rectification</li>
+    <li>Right to erasure</li>
+    <li>Right to restrict processing</li>
+    <li>Right to data portability</li>
+    <li>Right to object</li>
+    <li>Rights related to automated decision-making (RxTerminal does not make automated decisions with legal or significant effects)</li>
+  </ul>
+  <p>Requests relating to your data held within <%= org_name %>'s account should be directed to <strong><%= org_name %></strong> as Data Controller.</p>
+  <p>For data for which Strixon Ltd is Data Controller, contact <a href="mailto:contact@strixon.co.uk">contact@strixon.co.uk</a>.</p>
+</section>
+
+<section>
+  <h2>9. Data Security</h2>
+  <ul>
+    <li>All data in transit encrypted via TLS 1.2+</li>
+    <li>All data encrypted at rest</li>
+    <li>Database connections requiring SSL</li>
+    <li>Role-based access controls</li>
+    <li>Passwords stored as bcrypt hashes</li>
+    <li>Audit logging of all significant data access and modification events</li>
+  </ul>
+</section>
+
+<section>
+  <h2>10. Data Breaches</h2>
+  <p>In the event of a personal data breach, Strixon Ltd will assess the risk within 24 hours, notify affected organisation clients without undue delay, and support ICO notification within 72 hours where required.</p>
+  <p>Suspected breaches should be reported to <a href="mailto:security@strixon.co.uk">security@strixon.co.uk</a>.</p>
+</section>
+
+<section>
+  <h2>11. Complaints</h2>
+  <p>Contact Strixon Ltd at <a href="mailto:contact@strixon.co.uk">contact@strixon.co.uk</a>, or lodge a complaint with the ICO:</p>
+  <ul>
+    <li>Wycliffe House, Water Lane, Wilmslow, Cheshire SK9 5AF</li>
+    <li>Telephone: 0303 123 1113</li>
+    <li>Website: <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a></li>
+  </ul>
+</section>

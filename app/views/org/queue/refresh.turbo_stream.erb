@@ -1,0 +1,49 @@
+<% org_id = Current.organization.id %>
+
+<% Turbo::StreamsChannel.broadcast_replace_to(
+  "organization_#{org_id}_queue",
+  target: "waiting-cards",
+  partial: "org/queue/waiting_cards_container",
+  locals: { waiting: @waiting }
+) %>
+
+<% Turbo::StreamsChannel.broadcast_replace_to(
+  "organization_#{org_id}_queue",
+  target: "in-progress-cards",
+  partial: "org/queue/in_progress_cards_container",
+  locals: { in_progress: @in_progress }
+) %>
+
+<% Turbo::StreamsChannel.broadcast_replace_to(
+  "organization_#{org_id}_queue",
+  target: "completed-cards",
+  partial: "org/queue/completed_cards_container",
+  locals: { completed_today: @completed_today }
+) %>
+
+<% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_queue", target: "stat-waiting", html: @queue_stats[:waiting].to_s) %>
+<% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_queue", target: "stat-in-progress", html: @queue_stats[:in_progress].to_s) %>
+<% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_queue", target: "stat-completed", html: @queue_stats[:completed_today].to_s) %>
+<% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_queue", target: "stat-total", html: @queue_stats[:total_today].to_s) %>
+
+<% Turbo::StreamsChannel.broadcast_replace_to(
+  "organization_#{org_id}_waiting_display",
+  target: "waiting-cards",
+  partial: "org/waiting_display/waiting_cards_list",
+  locals: { waiting: @waiting }
+) %>
+
+<% Turbo::StreamsChannel.broadcast_replace_to(
+  "organization_#{org_id}_waiting_display",
+  target: "in-progress-cards",
+  partial: "org/waiting_display/in_progress_cards_list",
+  locals: { in_progress: @in_progress }
+) %>
+
+<% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_waiting_display", target: "waitingCount", html: @waiting.size.to_s) %>
+<% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_waiting_display", target: "inProgressCount", html: @in_progress.size.to_s) %>
+
+<% if Current.organization.waiting_time_enabled? %>
+  <% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_queue", target: "stat-avg-wait", html: @queue_stats[:avg_wait].to_s) %>
+  <% Turbo::StreamsChannel.broadcast_update_to("organization_#{org_id}_waiting_display", target: "stat-avg-wait", html: @avg_wait_display.to_s) %>
+<% end %>

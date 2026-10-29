@@ -1,0 +1,9 @@
+<dd id="<%= dom_id(organization_logo, :status_badge) %>">
+  <% if organization_logo.pending? %>
+    <span class="badge badge-warning badge-sm">Pending review</span>
+  <% elsif organization_logo.approved? %>
+    <span class="badge badge-success badge-sm">Approved</span>
+  <% elsif organization_logo.declined? %>
+    <span class="badge badge-error badge-sm">Declined</span>
+  <% end %>
+</dd>

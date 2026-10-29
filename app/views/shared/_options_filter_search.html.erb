@@ -1,0 +1,12 @@
+<%# locals: (label: "Search", placeholder: nil) %>
+<div class="form-control">
+  <% unless placeholder %>
+    <label class="label py-1"><span class="label-text text-xs"><%= label %></span></label>
+  <% end %>
+  <input type="search"
+         class="input-field w-full"
+         placeholder="<%= placeholder %>"
+         autocomplete="off"
+         data-options-filter-target="search"
+         data-action="input->options-filter#filter">
+</div>

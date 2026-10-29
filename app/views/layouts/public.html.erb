@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<% portal_theme = portal_theme_for(@organization) %>
+<% portal_theme_style = @organization&.portal_theme_inline_style %>
+<html <%= tag.attributes(
+      lang: "en",
+      "data-portal-app": true,
+      data: { theme: portal_theme },
+      style: portal_theme_style.presence
+    ) %>>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <% page_title = content_for(:title).presence || @organization&.name.presence || "Book an appointment" %>
+    <title><%= page_title %></title>
+    <% if @organization && portal_indexable? %>
+      <meta name="robots" content="index, follow">
+      <meta name="description" content="<%= portal_meta_description %>">
+      <link rel="canonical" href="<%= portal_canonical_url %>">
+      <meta property="og:type" content="website">
+      <meta property="og:title" content="<%= page_title %>">
+      <meta property="og:description" content="<%= portal_meta_description %>">
+      <meta property="og:url" content="<%= portal_canonical_url %>">
+      <meta property="og:site_name" content="<%= @organization.name %>">
+      <% if (logo_url = portal_logo_url) %>
+        <meta property="og:image" content="<%= logo_url %>">
+      <% end %>
+    <% else %>
+      <meta name="robots" content="noindex, nofollow">
+    <% end %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <% if @organization&.kiosk_logo&.attached? %>
+      <link rel="icon" href="<%= url_for(@organization.kiosk_logo) %>" type="<%= @organization.kiosk_logo.content_type %>">
+      <link rel="apple-touch-icon" href="<%= url_for(@organization.kiosk_logo) %>">
+    <% else %>
+      <link rel="icon" href="/icon.png" type="image/png">
+      <link rel="icon" href="/icon.svg" type="image/svg+xml">
+      <link rel="apple-touch-icon" href="/icon.png">
+    <% end %>
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= render "shared/fonts" %>
+  </head>
+
+  <body class="min-h-screen bg-base-100 text-base-content antialiased">
+    <div class="flex min-h-screen flex-col">
+      <header class="portal-chrome sticky top-0 z-50 border-b border-base-300 backdrop-blur">
+        <div class="mx-auto flex h-14 max-w-2xl items-center justify-between gap-4 px-4 lg:px-6">
+          <%= link_to portal_back_path, class: "flex min-w-0 items-center gap-3 no-underline" do %>
+            <% if @organization&.kiosk_logo&.attached? %>
+              <%= image_tag @organization.kiosk_logo, class: "h-9 w-auto shrink-0 object-contain", alt: @organization.name %>
+            <% end %>
+            <span class="truncate text-lg font-semibold"><%= @organization&.name %></span>
+          <% end %>
+          <% nav_links = @organization ? portal_nav_links(@organization) : [] %>
+          <% if nav_links.any? %>
+            <nav class="hidden items-center gap-1 sm:flex" aria-label="Portal">
+              <% nav_links.each do |label, path| %>
+                <%= link_to label, path, class: "btn btn-ghost btn-sm #{"btn-active" if current_page?(path)}", aria: { current: ("page" if current_page?(path)) } %>
+              <% end %>
+            </nav>
+            <div class="dropdown dropdown-end sm:hidden">
+              <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-square" aria-label="Menu">
+                <%= material_icon("menu", size: 22) %>
+              </div>
+              <ul tabindex="0" class="menu dropdown-content z-50 mt-2 w-48 rounded-lg border border-base-300 bg-base-100 p-2">
+                <% nav_links.each do |label, path| %>
+                  <li><%= link_to label, path, class: ("active" if current_page?(path)), aria: { current: ("page" if current_page?(path)) } %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        </div>
+      </header>
+
+      <main class="mx-auto w-full max-w-2xl flex-1 px-4 py-8 lg:px-6">
+        <%= render "shared/toast_container" %>
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+
+      <footer class="portal-chrome mt-auto border-t border-base-300">
+        <div class="mx-auto max-w-2xl space-y-4 px-4 py-6 lg:px-6">
+          <% if @organization %>
+            <nav class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-base-content/60">
+              <%= link_to "Privacy Policy", portal_privacy_policy_path, class: "link link-hover" %>
+              <%= link_to "GDPR Statement", portal_gdpr_path, class: "link link-hover" %>
+              <%= link_to "Terms & Conditions", portal_terms_path, class: "link link-hover" %>
+              <%= link_to "Cookies Policy", portal_cookies_path, class: "link link-hover" %>
+            </nav>
+          <% end %>
+
+          <div class="flex flex-col gap-1 text-xs text-base-content/50 sm:flex-row sm:items-center sm:justify-between">
+            <span>&copy; <%= Date.current.year %> <%= @organization&.name %>. All rights reserved.</span>
+            <span class="inline-flex items-center gap-1">Powered by <%= render "shared/rx_terminal_brand", class: "text-base" %></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,376 @@
+<% content_for :meta_description, "RxTerminal is an all-in-one self-service kiosk platform that helps UK businesses manage queues, reduce counter congestion, and promote services at check-in, with a real-time staff dashboard." %>
+
+<main class="wire">
+
+  <section class="sec hero hero--split">
+    <div class="hero__backdrop" aria-hidden="true">
+      <svg class="hero__backdrop-svg" viewBox="0 0 1080 640" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="hero-dots" width="26" height="26" patternUnits="userSpaceOnUse">
+            <circle cx="1.5" cy="1.5" r="1.5" fill="currentColor"></circle>
+          </pattern>
+        </defs>
+        <rect width="1080" height="640" fill="url(#hero-dots)" opacity="0.55"></rect>
+        <path class="hero__backdrop-wave" d="M -40 280 C 40 300, 120 -40, 200 320 C 280 180, 360 460, 440 320 S 840 460, 920 320 C 980 250, 1040 380, 1120 460" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 10"></path>
+      </svg>
+    </div>
+
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <h1 class="h-display h-display--hero">All in One <span class="blue">Self Service</span> Kiosk Platform</h1>
+        <div class="hero__actions">
+          <%= link_to "Start your free trial", new_registration_path, class: "btn btn-primary" %>
+          <%= link_to "See how it works", "#video", class: "btn btn-outline" %>
+        </div>
+        <div class="hero__tags">
+          <span class="hero__tag">Less <span class="second">Admin</span></span>
+          <span class="hero__tag">More <span class="second">Revenue</span></span>
+          <span class="hero__tag">Clearer <span class="second">Flow</span></span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-visual__stack">
+          <div class="hero-visual__card hero-visual__cycle hero-visual__cycle--1">
+            <div class="hero-visual__drift hero-visual__drift--1">
+              <div class="hero-mock hero-mock--kiosk">
+                <div class="hero-mock__kiosk-top">
+                  <span class="hero-mock__kiosk-back"><%= material_icon("arrow_back", size: 12) %> Back to Services</span>
+                </div>
+                <div class="hero-mock__kiosk-body">
+                  <div class="hero-mock__kiosk-icon"><%= material_icon("monitor_heart", size: 18) %></div>
+                  <div class="hero-mock__kiosk-title">Blood Pressure Check</div>
+                  <div class="hero-mock__kiosk-sub">How would you like to proceed?</div>
+                  <div class="hero-mock__kiosk-actions">
+                    <div class="hero-mock__kiosk-action hero-mock__kiosk-action--primary">
+                      <%= material_icon("play_circle", size: 16) %>
+                      <div>
+                        <div class="hero-mock__kiosk-action-title">Request Service Now</div>
+                        <div class="hero-mock__kiosk-action-copy">Join the queue and be seen today</div>
+                      </div>
+                    </div>
+                    <div class="hero-mock__kiosk-action">
+                      <%= material_icon("calendar_add_on", size: 16) %>
+                      <div>
+                        <div class="hero-mock__kiosk-action-title">Book an Appointment</div>
+                        <div class="hero-mock__kiosk-action-copy">Choose a future date and time slot</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual__card hero-visual__cycle hero-visual__cycle--2">
+            <div class="hero-visual__drift hero-visual__drift--2">
+              <div class="hero-mock hero-mock--phone">
+                <div class="hero-mock__phone-notch"></div>
+                <div class="hero-mock__phone-body hero-mock__phone-body--qr">
+                  <div class="hero-mock__qr-wrap">
+                    <%= marketing_hero_qr_svg %>
+                  </div>
+                  <div class="hero-mock__qr-label"><%= material_icon("qr_code_scanner", size: 14) %> Scan to join queue</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual__card hero-visual__cycle hero-visual__cycle--3">
+            <div class="hero-visual__drift hero-visual__drift--3">
+              <div class="hero-mock hero-mock--desk">
+                <div class="hero-mock__desk-chrome">
+                  <span class="hero-mock__desk-dot hero-mock__desk-dot--red"></span>
+                  <span class="hero-mock__desk-dot hero-mock__desk-dot--amber"></span>
+                  <span class="hero-mock__desk-dot hero-mock__desk-dot--green"></span>
+                  <span class="hero-mock__desk-title">Queue dashboard</span>
+                </div>
+                <div class="hero-mock__desk-rows">
+                  <div class="hero-mock__desk-row">
+                    <div class="hero-mock__desk-num">14</div>
+                    <div class="hero-mock__desk-copy">
+                      <div class="hero-mock__desk-name">Smith, Jane</div>
+                      <div class="hero-mock__desk-service">Flu vaccination</div>
+                    </div>
+                    <span class="hero-mock__desk-pill">Call</span>
+                  </div>
+                  <div class="hero-mock__desk-row">
+                    <div class="hero-mock__desk-num hero-mock__desk-num--muted">15</div>
+                    <div class="hero-mock__desk-copy">
+                      <div class="hero-mock__desk-name">Patel, Ravi</div>
+                      <div class="hero-mock__desk-service">Prescription pickup</div>
+                    </div>
+                    <span class="hero-mock__desk-pill hero-mock__desk-pill--ghost">Call</span>
+                  </div>
+                  <div class="hero-mock__desk-row">
+                    <div class="hero-mock__desk-num hero-mock__desk-num--accent">3</div>
+                    <div class="hero-mock__desk-copy">
+                      <div class="hero-mock__desk-name">Jones, Alex</div>
+                      <div class="hero-mock__desk-service">Follow-up appointment</div>
+                    </div>
+                    <span class="hero-mock__desk-pill hero-mock__desk-pill--ghost">Call</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec impact-stats" data-controller="stat-counter">
+    <div class="impact-stats__grid">
+      <div class="impact-stats__item">
+        <div class="impact-stats__num">
+          <span data-stat-counter-target="number" data-end="60" data-duration="1200" data-suffix="s">60s</span>
+        </div>
+        <div class="impact-stats__label">Average check-in time</div>
+      </div>
+
+      <div class="impact-stats__item">
+        <div class="impact-stats__num">
+          <span data-stat-counter-target="number" data-end="47" data-duration="1500" data-suffix="min">47min</span>
+        </div>
+        <div class="impact-stats__label">Staff time freed per day</div>
+      </div>
+
+      <div class="impact-stats__item">
+        <div class="impact-stats__num">
+          <span data-stat-counter-target="number" data-end="8" data-duration="1000">8</span><span class="">x</span>
+        </div>
+        <div class="impact-stats__label">Return on subscription</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec video-row" id="video">
+    <div class="sec__eyebrow"><span class="num"></span> See It In Action</div>
+    <h2 class="h-display h-display--lg">Watch How It Works</h2>
+    <div class="ph-video" id="patient-flow-video" data-turbo-permanent>
+      <video class="ph-video__iframe" autoplay loop muted playsinline>
+        <source src="/customer-flow.webm" type="video/webm">
+        <source src="/customer-flow.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="video-row__below">
+      <span class="video-row__cap">For demonstration purposes only &mdash; the live application may look different.</span>
+    </div>
+  </section>
+
+  <section class="sec" id="overview">
+    <div class="sec__eyebrow"><span class="num"></span> Why You Need It</div>
+    <h2 class="h-display h-display--lg-w">It solves the problems teams deal with every day.</h2>
+    <div class="usp-grid">
+      <article class="usp-card">
+        <div class="usp-card__icon">
+          <%= material_icon("grid_view", size: 22) %>
+        </div>
+        <div class="usp-card__title">Reduce Counter Congestion</div>
+        <p class="usp-card__body">Customers check in at the kiosk instead of crowding the counter.</p>
+      </article>
+      <article class="usp-card">
+        <div class="usp-card__icon">
+          <%= material_icon("schedule", size: 22) %>
+        </div>
+        <div class="usp-card__title">More Staff Time</div>
+        <p class="usp-card__body">Routine queue and booking questions move away from the team.</p>
+      </article>
+      <article class="usp-card">
+        <div class="usp-card__icon">
+          <%= material_icon("trending_up", size: 22) %>
+        </div>
+        <div class="usp-card__title">Increase Service Uptake</div>
+        <p class="usp-card__body">Promote the right services at the right moment during check-in.</p>
+      </article>
+      <article class="usp-card">
+        <div class="usp-card__icon">
+          <%= material_icon("calendar_month", size: 22) %>
+        </div>
+        <div class="usp-card__title">Public Booking Portal</div>
+        <p class="usp-card__body">Customers can request services, book appointments, and self check-in online from their phone.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec sec--tint solutions-sec" id="features">
+    <%= render "shared/section_wave", path: "M -40 220 C 160 60, 340 300, 560 140 S 900 320, 1120 100 S 1300 40, 1240 220" %>
+    <div class="sec__eyebrow"><span class="num"></span> What We Offer</div>
+    <h2 class="h-display h-display--lg-w">One platform. Four powerful solutions.</h2>
+    <div class="solutions-grid">
+      <article class="solution-card solution-card--dark">
+        <div class="solution-card__icon">
+          <%= material_icon("groups", size: 28) %>
+        </div>
+        <div>
+          <h3 class="solution-card__title">Queue Management</h3>
+          <p class="solution-card__desc">Streamline customer flow, reduce wait times, and eliminate long lines at the counter.</p>
+        </div>
+      </article>
+
+      <article class="solution-card">
+        <div class="solution-card__icon">
+          <%= material_icon("event", size: 28) %>
+        </div>
+        <div>
+          <h3 class="solution-card__title">Appointment Booking</h3>
+          <p class="solution-card__desc">Let customers book services online - automates scheduling and minimises manual workload.</p>
+        </div>
+      </article>
+
+      <article class="solution-card">
+        <div class="solution-card__icon">
+          <%= material_icon("smartphone", size: 28) %>
+        </div>
+        <div>
+          <h3 class="solution-card__title">Online Check-in</h3>
+          <p class="solution-card__desc">Customers check-in for appointment or join the queue from their phone when they arrive.</p>
+        </div>
+      </article>
+
+      <article class="solution-card solution-card--dark">
+        <div class="solution-card__icon">
+          <%= material_icon("check_circle", size: 28) %>
+        </div>
+        <div>
+          <h3 class="solution-card__title">Kiosk Self Check-in</h3>
+          <p class="solution-card__desc">Quick touchscreen check-ins on arrival - keeps track of who&rsquo;s in and what they need.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec__eyebrow"><span class="num"></span> Outcomes &amp; Scenarios</div>
+    <div class="">
+      <h2 class="h-display h-display--md">Where it works <span class="outcomes-label--blue">Best</span></h2>
+      <div>
+        <div class="scenario">
+          <div class="scenario__t">Seasonal services</div>
+          <div class="scenario__b">Promote services at the right time.</div>
+        </div>
+        <div class="scenario">
+          <div class="scenario__t">Busy morning rush</div>
+          <div class="scenario__b">Control crowding with less staff on the counter.</div>
+        </div>
+        <div class="scenario">
+          <div class="scenario__t">Multiple branches</div>
+          <div class="scenario__b">Give each branch control with clearer group oversight.</div>
+        </div>
+        <div class="scenario">
+          <div class="scenario__t">Locum staff</div>
+          <div class="scenario__b">Help temporary staff get started with less friction.</div>
+        </div>
+        <div class="scenario">
+          <div class="scenario__t">Designated waiting areas</div>
+          <div class="scenario__b">Separate your waiting areas by services provided.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--tint" id="security">
+    <%= render "shared/section_wave", path: "M -40 80 C 220 300, 380 60, 620 260 S 940 40, 1120 260 S 1280 320, 1240 100" %>
+    <div class="sec__eyebrow"><span class="num"></span> Security &amp; Compliance</div>
+    <div class="compliance">
+      <div>
+        <h2 class="h-display h-display--lg">Meets<br/>compliance<br/>requirements.</h2>
+        <p class="lead lead--mt">RxTerminal is designed to support data protection, governance, and operational trust across UK business environments.</p>
+        <div class="chips">
+          <span class="chip"><%= material_icon("shield", size: 12, class: "chip__icon") %> GDPR compliant</span>
+          <span class="chip"><%= material_icon("database", size: 12, class: "chip__icon") %> DSPT toolkit aligned</span>
+          <span class="chip"><%= material_icon("lock", size: 12, class: "chip__icon") %> Encryption at rest</span>
+        </div>
+      </div>
+      <div class="gov-grid">
+        <article class="gov-card">
+          <div class="gov-card__icon"><%= material_icon("shield_lock", size: 18) %></div>
+          <h3>Governance built in</h3>
+          <p>Access, audit history, and customer data controls are part of the platform.</p>
+        </article>
+        <article class="gov-card">
+          <div class="gov-card__icon"><%= material_icon("store", size: 18) %></div>
+          <h3>Works across branches</h3>
+          <p>Run one site or many with clearer oversight and separate branch data.</p>
+        </article>
+        <article class="gov-card">
+          <div class="gov-card__icon"><%= material_icon("fact_check", size: 18) %></div>
+          <h3>Clear accountability</h3>
+          <p>Important actions are traceable when you need to review activity.</p>
+        </article>
+        <article class="gov-card">
+          <div class="gov-card__icon"><%= material_icon("manage_accounts", size: 18) %></div>
+          <h3>Practical access control</h3>
+          <p>Give managers, staff, and locums the right level of access.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="audience"
+           data-controller="audience-tab"
+           data-audience-tab-active-value="managers">
+    <div class="sec__eyebrow"><span class="num"></span> Who is it for</div>
+    <h2 class="h-display h-display--lg">Built for Everyone.</h2>
+
+    <div class="aud-tabs">
+      <button type="button" class="aud-tab aud-tab--active"
+              data-audience-tab-target="tab"
+              data-audience-tab-key="managers"
+              data-action="click->audience-tab#select">Managers</button>
+      <button type="button" class="aud-tab"
+              data-audience-tab-target="tab"
+              data-audience-tab-key="staff"
+              data-action="click->audience-tab#select">Staff</button>
+      <button type="button" class="aud-tab"
+              data-audience-tab-target="tab"
+              data-audience-tab-key="customers"
+              data-action="click->audience-tab#select">Customers</button>
+    </div>
+
+    <div class="aud-panel" data-audience-tab-target="panel" data-audience-tab-key="managers">
+      <div class="aud-panel__role">Managers</div>
+      <div class="aud-panel__items">
+        <div class="aud-panel__item">Improve operations with less day-to-day oversight</div>
+        <div class="aud-panel__item">Keep schedules, flow, and performance on track</div>
+        <div class="aud-panel__item">Reduce bottlenecks while staying in control</div>
+        <div class="aud-panel__item">Run a smoother front desk with better visibility</div>
+      </div>
+    </div>
+
+    <div class="aud-panel" data-audience-tab-target="panel" data-audience-tab-key="staff" hidden>
+      <div class="aud-panel__role">Staff</div>
+      <div class="aud-panel__items">
+        <div class="aud-panel__item">Cut repetitive tasks and save valuable time</div>
+        <div class="aud-panel__item">Help teams move faster with fewer interruptions</div>
+        <div class="aud-panel__item">Simplify check-in so staff can focus on care</div>
+        <div class="aud-panel__item">Reduce manual work across the front desk</div>
+      </div>
+    </div>
+
+    <div class="aud-panel" data-audience-tab-target="panel" data-audience-tab-key="customers" hidden>
+      <div class="aud-panel__role">Customers</div>
+      <div class="aud-panel__items">
+        <div class="aud-panel__item">Make every visit feel faster and easier</div>
+        <div class="aud-panel__item">Reduce wait-time friction from the moment they walk in</div>
+        <div class="aud-panel__item">Create a more convenient check-in experience</div>
+        <div class="aud-panel__item">View current queue position and wait times</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="get-started">
+    <div class="final-cta">
+      <div>
+        <h2>Promote More Services Today</h2>
+        <p>See how RxTerminal can help your team manage queues, promote services, and improve the customer experience.</p>
+      </div>
+      <div class="final-cta__actions">
+        <%= link_to "Start your free trial", new_registration_path, class: "btn btn-primary" %>
+      </div>
+    </div>
+  </section>
+
+  <%= render "shared/public_footer" %>
+
+</main>

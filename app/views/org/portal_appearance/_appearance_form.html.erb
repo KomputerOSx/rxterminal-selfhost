@@ -1,0 +1,106 @@
+<div class="card border border-base-300">
+  <div class="card-body gap-4">
+    <h2 class="text-lg font-semibold">Appearance (Live Preview)</h2>
+
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
+      <div class="flex min-h-[480px] min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-base-200/25 lg:sticky lg:top-4 lg:max-h-[calc(100vh-8rem)]">
+        <div class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain"
+             data-portal-theme-preview
+             data-portal-theme-preview-target="preview"
+             data-theme="<%= portal_theme_for(Current.organization) %>"
+             style="<%= portal_theme_preview_style(Current.organization) %>">
+          <%= render "org/portal_appearance/theme_preview",
+                organization: Current.organization,
+                services: portal_preview_services(Current.organization) %>
+        </div>
+      </div>
+
+      <div class="w-full shrink-0 space-y-5 lg:max-h-[calc(100vh-8rem)] lg:w-[380px] lg:overflow-y-auto xl:w-[420px]">
+        <div class="form-control">
+          <%= form.label :portal_theme, class: "label py-0 pb-1.5" do %>
+            <span class="label-text text-sm font-semibold">Color theme</span>
+          <% end %>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+            <% portal_theme_options.each do |label, theme| %>
+              <label class="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-base-200/50 has-checked:bg-primary/10">
+                <%= form.radio_button :portal_theme, theme,
+                      class: "radio-field",
+                      data: {
+                        portal_theme_preview_target: "themeInput",
+                        action: "change->portal-theme-preview#updatePreview"
+                      } %>
+                <span class="h-4 w-4 shrink-0 rounded-full <%= portal_theme_swatch_class(theme) %>"></span>
+                <span class="text-xs leading-tight"><%= label %></span>
+              </label>
+            <% end %>
+          </div>
+          <%= field_errors(Current.organization, :portal_theme) %>
+        </div>
+
+        <div class="<%= Current.organization.portal_theme == "custom" ? "" : "hidden" %>"
+             data-portal-theme-preview-target="customPanel">
+          <p class="mb-2 text-sm font-semibold">Custom colors</p>
+          <div class="divide-y divide-base-300/60">
+            <% portal_custom_color_groups.each do |group| %>
+              <div class="space-y-1 py-3 first:pt-0 last:pb-0">
+                <p class="text-[11px] font-semibold uppercase tracking-wide text-base-content/50"><%= group[:label] %></p>
+                <% group[:keys].each do |key| %>
+                  <% stored = Current.organization.portal_theme_custom&.dig(key).presence %>
+                  <% fallback = portal_custom_color_fallback(key) %>
+                  <label class="flex items-center gap-2.5 py-0.5"
+                         for="organization_portal_theme_custom_<%= key %>">
+                    <%= color_field_tag "organization[portal_theme_custom][#{key}]",
+                          hex_color_for_picker(stored || fallback),
+                          id: "organization_portal_theme_custom_#{key}",
+                          class: "h-8 w-10 shrink-0 cursor-pointer rounded-md border-0 bg-transparent p-0",
+                          data: {
+                            portal_theme_preview_target: "colorInput",
+                            color_key: key,
+                            action: "input->portal-theme-preview#updatePreview"
+                          } %>
+                    <span class="min-w-0 flex-1 text-xs text-base-content/80">
+                      <%= portal_custom_color_label(group[:label], key) %>
+                    </span>
+                    <span class="hidden font-mono text-[10px] text-base-content/40 sm:inline"
+                          data-portal-theme-preview-target="colorValue"
+                          data-color-key="<%= key %>">
+                      <%= stored || fallback %>
+                    </span>
+                  </label>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-2 text-sm font-semibold">Border radius</p>
+          <div class="space-y-2">
+            <% Organization::PORTAL_CUSTOM_RADIUS_KEYS.each do |key| %>
+              <% stored = Current.organization.portal_theme_custom&.dig(key).presence %>
+              <div class="form-control">
+                <%= label_tag "organization_portal_theme_custom_#{key}",
+                      Organization::PORTAL_CUSTOM_RADIUS_LABELS.fetch(key, key.humanize),
+                      class: "label py-0 pb-1" do %>
+                  <span class="label-text text-xs text-base-content/70"><%= Organization::PORTAL_CUSTOM_RADIUS_LABELS.fetch(key, key.humanize) %></span>
+                <% end %>
+                <%= select_tag "organization[portal_theme_custom][#{key}]",
+                      options_for_select(Organization::PORTAL_CUSTOM_RADIUS_OPTIONS, stored),
+                      class: "select-field select-sm w-full",
+                      data: {
+                        portal_theme_preview_target: "radiusInput",
+                        radius_key: key,
+                        action: "change->portal-theme-preview#updatePreview"
+                      } %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <% if Current.organization.errors[:portal_theme_custom].any? %>
+          <p class="text-sm text-error"><%= Current.organization.errors[:portal_theme_custom].first %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

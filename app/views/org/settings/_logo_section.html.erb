@@ -1,0 +1,7 @@
+<div class="mt-10">
+  <%= form_section_heading "Organization logo",
+        tooltips: true,
+        tip: "Shown on the kiosk, public portal, and portal printouts. New uploads require admin approval before they can be used." %>
+
+  <%= render "org/settings/logo_gallery", organization: Current.organization %>
+</div>

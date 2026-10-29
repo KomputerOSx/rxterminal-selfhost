@@ -1,0 +1,19 @@
+<turbo-frame id="email_change_frame">
+  <h3 class="font-bold text-lg mb-2">Confirm your new email</h3>
+  <p class="text-sm text-base-content/70 mb-4">
+    Enter the 6-digit code sent to <strong><%= current_user.unconfirmed_email %></strong>.
+  </p>
+
+  <div data-controller="two-factor">
+    <%= form_with url: confirm_new_profile_email_change_path, method: :post, html: { class: "space-y-4" } do %>
+      <div class="form-control">
+        <%= render "shared/otp_digits", error: current_user.errors[:code].any? %>
+        <%= field_errors(current_user, :code) %>
+      </div>
+
+      <div class="form-control mt-2">
+        <%= submit_tag "Confirm", class: "btn btn-primary w-full", data: { two_factor_target: "submitButton" } %>
+      </div>
+    <% end %>
+  </div>
+</turbo-frame>

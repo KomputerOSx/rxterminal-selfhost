@@ -1,0 +1,18 @@
+<% content_for :title, "Message Sent" %>
+<% content_for :meta_description, "Your message to the RxTerminal team has been sent." %>
+
+<main class="wire">
+  <section class="sec contact-sent">
+    <div class="contact-sent__icon" aria-hidden="true">
+      <%= material_icon("check_circle", size: 48) %>
+    </div>
+    <h1 class="h-display h-display--lg">Your message has been sent.</h1>
+    <p class="contact-sent__sub">Thanks <%= @name %>. We&rsquo;ve received your message and will get back to you within one working day at <strong>contact@strixon.co.uk</strong>.</p>
+    <div class="contact-sent__actions">
+      <%= link_to "Back to home", root_path, class: "btn btn-primary" %>
+      <%= link_to "Send another message", contact_path, class: "btn btn-outline" %>
+    </div>
+  </section>
+
+  <%= render "shared/public_footer" %>
+</main>

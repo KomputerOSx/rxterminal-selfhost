@@ -1,0 +1,45 @@
+<section class="mx-auto w-full max-w-md">
+  <div class="card bg-base-200 border border-base-300">
+    <div class="card-body">
+      <h1 class="card-title text-2xl font-bold">Set up authenticator app</h1>
+
+      <p class="text-sm text-base-content/70 mt-1">
+        Scan this QR code with an authenticator app (e.g. Google Authenticator, 1Password, Authy),
+        then enter the 6-digit code it generates below.
+      </p>
+
+      <div class="my-4 flex justify-center bg-white p-4 rounded-lg">
+        <%= sanitize @totp_qr_svg, tags: %w[svg path rect g], attributes: %w[xmlns viewBox width height d fill id class version shape-rendering transform] %>
+      </div>
+
+      <details class="text-xs text-base-content/60">
+        <summary class="cursor-pointer">Can't scan? Enter this key manually</summary>
+        <code class="block mt-2 break-all"><%= @totp_secret %></code>
+      </details>
+
+      <div data-controller="two-factor" data-two-factor-autosubmit-value="true">
+        <%= form_with url: profile_totp_path, method: :post, html: { class: "mt-4 space-y-4", data: { two_factor_target: "form" } } do %>
+          <div class="form-control">
+            <label class="label" for="current_password"><span class="label-text">Current password</span></label>
+            <input type="password" name="current_password" id="current_password" autocomplete="current-password" autofocus class="input-field w-full">
+          </div>
+
+          <div class="form-control">
+            <label class="label"><span class="label-text">6-digit code</span></label>
+            <%= render "shared/otp_digits", autofocus: false %>
+          </div>
+
+          <div class="form-control mt-2">
+            <%= submit_tag "Enable", class: "btn btn-primary w-full", data: { two_factor_target: "submitButton" } %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="text-sm text-center">
+        <%= link_to "Cancel setup", profile_path, class: "btn btn-ghost" %>
+      </div>
+    </div>
+  </div>
+</section>

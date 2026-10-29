@@ -1,0 +1,99 @@
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # Code is not reloaded between requests.
+  config.enable_reloading = false
+
+  # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
+  config.eager_load = true
+
+  # Full error reports are disabled.
+  config.consider_all_requests_local = false
+
+  # Turn on fragment caching in view templates.
+  config.action_controller.perform_caching = true
+
+  # Cache assets for far-future expiry since they are all digest stamped.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
+  # config.asset_host = "http://assets.example.com"
+
+  # Store uploaded files on the local file system (see config/storage.yml for options).
+  config.active_storage.service = :local
+
+  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  config.assume_ssl = true
+
+  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
+  config.force_ssl = true
+
+  # Skip http-to-https redirect for the default health check endpoint.
+  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+
+  # Log to STDOUT with the current request id as a default log tag.
+  config.log_tags = [ :request_id ]
+  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+
+  # Prevent health checks from clogging up the logs.
+  config.silence_healthcheck_path = "/up"
+
+  # Don't log any deprecations.
+  config.active_support.report_deprecations = false
+
+  # Replace the default in-process memory cache store with a durable alternative.
+  config.cache_store = :solid_cache_store
+
+  # Replace the default in-process and non-durable queuing backend for Active Job.
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Ignore bad email addresses and do not raise email delivery errors.
+  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Set host to be used by links generated in mailer templates. This can't call AppHost.primary_host
+  # (Zeitwerk's main autoloader isn't wired up until the Finisher stage, well after this file
+  # runs) or defer to config.after_initialize (ActionMailer::Base reads config.action_mailer via
+  # an ActiveSupport.on_load(:action_mailer) hook that fires during eager loading, which happens
+  # BEFORE after_initialize/finisher_hook - assigning it there is silently too late and never
+  # reaches ActionMailer::Base, causing "Missing host to link to!" on every mailer). So the same
+  # credentials/ENV fallback AppHost.primary_host uses is inlined here instead.
+  config.action_mailer.default_url_options = {
+    host: Rails.application.credentials.dig(:app, :host).presence || ENV["APP_HOST"].presence || "localhost",
+    protocol: "https"
+  }
+
+  # Azure Communication Services SMTP relay - see config/credentials.example for the
+  # azure_email credentials this reads.
+  config.action_mailer.smtp_settings = {
+    address:              "smtp.azurecomm.net",
+    port:                 587,
+    domain:               "rxterminal.co.uk",
+    user_name:            Rails.application.credentials.dig(:azure_email, :smtp_username),
+    password:             Rails.application.credentials.dig(:azure_email, :smtp_password),
+    authentication:       :login,
+    enable_starttls_auto: true
+  }
+
+  # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
+  # the I18n.default_locale when a translation cannot be found).
+  config.i18n.fallbacks = true
+
+  # Do not dump schema after migrations.
+  config.active_record.dump_schema_after_migration = false
+
+  # Only use :id for inspections in production.
+  config.active_record.attributes_for_inspect = [ :id ]
+
+  # Enable DNS rebinding protection while allowing Growth-plan custom domains.
+  config.hosts = ->(host) { AppHost.allowed_request_host?(host) }
+  config.host_authorization = { exclude: ->(request) {
+    request.path == "/up" || request.path.start_with?("/internal/")
+  } }
+end

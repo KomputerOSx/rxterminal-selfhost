@@ -1,0 +1,10 @@
+<%# locals: (object:) %>
+<% if object&.errors&.any? %>
+  <div class="alert alert-error mb-6">
+    <ul class="list-disc list-inside text-sm space-y-1">
+      <% object.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

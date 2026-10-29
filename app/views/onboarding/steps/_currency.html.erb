@@ -1,0 +1,12 @@
+<div class="form-control">
+  <%= label_tag "organization[service_currency]", class: "label" do %>
+    <%= form_label_text "Service currency",
+          tooltips: true,
+          tip: "Used to show service prices on your kiosk, booking portal and dashboard. You can change it later in Settings." %>
+  <% end %>
+  <%= select_tag "organization[service_currency]",
+        options_for_select(service_currency_options, @organization&.service_currency),
+        id: "onboarding_organization_service_currency",
+        class: error_class_for(@organization, :service_currency, "select-field w-full") %>
+  <%= field_errors(@organization, :service_currency) %>
+</div>

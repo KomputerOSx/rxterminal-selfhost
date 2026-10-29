@@ -1,0 +1,66 @@
+<header class="landing-topbar sticky top-0 z-50 md:backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 lg:px-6">
+    <div class="hidden h-16 items-center gap-4 md:flex">
+      <%= render "shared/rx_terminal_brand", class: "shrink-0 text-2xl lg:text-3xl" %>
+
+      <nav class="flex flex-1 items-center justify-center gap-6 text-sm text-base-content/80" aria-label="Primary">
+        <%= link_to "Home", root_path, class: "link link-hover no-underline" %>
+        <%= link_to "Features", features_path, class: "link link-hover no-underline" %>
+        <%= link_to "Security", security_path, class: "link link-hover no-underline" %>
+        <%= link_to "Pricing", pricing_path, class: "link link-hover no-underline" %>
+        <%= link_to "Contact us", contact_path, class: "link link-hover no-underline" %>
+      </nav>
+
+      <div class="flex shrink-0 items-center gap-2">
+        <%= render "shared/theme_toggle" %>
+        <%= link_to "Log in", login_path, class: "btn btn-ghost btn-sm" %>
+        <%= link_to "Start free trial", new_registration_path, class: "btn btn-primary btn-sm" %>
+      </div>
+    </div>
+
+    <div class="relative md:hidden">
+      <div class="absolute left-0 top-0 flex h-16 items-center">
+        <%= render "shared/rx_terminal_brand", class: "shrink-0 text-2xl" %>
+      </div>
+      <details class="group"
+               data-controller="public-navbar"
+               data-action="toggle->public-navbar#sync click@window->public-navbar#close">
+        <summary class="ml-auto flex h-16 w-fit cursor-pointer list-none items-center"
+                 aria-label="Open menu"
+                 aria-expanded="false"
+                 data-action="click->public-navbar#toggle"
+                 data-public-navbar-target="button">
+          <span class="btn btn-ghost btn-square btn-sm">
+            <span class="material-symbols-outlined !text-[22px]"
+                  data-public-navbar-target="icon">menu</span>
+          </span>
+        </summary>
+        <div class="public-mobile-backdrop"
+             aria-hidden="true"
+             data-action="click->public-navbar#dismiss"
+             data-public-navbar-target="backdrop"></div>
+        <nav class="public-mobile-menu"
+             aria-label="Mobile primary"
+             data-public-navbar-target="menu">
+          <div class="mx-auto max-w-6xl px-4 pb-5 pt-2">
+            <div class="flex flex-col">
+              <%= link_to "Home", root_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
+              <%= link_to "Features", features_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
+              <%= link_to "Security", security_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
+              <%= link_to "Pricing", pricing_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
+              <%= link_to "Contact us", contact_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
+            </div>
+            <div class="mt-2 flex items-center justify-between border-t border-base-300 px-3 py-3">
+              <span class="text-sm text-base-content/70">Theme</span>
+              <%= render "shared/theme_toggle" %>
+            </div>
+            <div class="mt-2 grid grid-cols-2 gap-3">
+              <%= link_to "Log in", login_path, class: "btn btn-ghost" %>
+              <%= link_to "Start free trial", new_registration_path, class: "btn btn-primary" %>
+            </div>
+          </div>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

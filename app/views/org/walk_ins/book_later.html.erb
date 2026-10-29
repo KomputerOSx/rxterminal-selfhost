@@ -1,0 +1,26 @@
+<div class="mx-auto w-full max-w-2xl text-center">
+  <div class="mb-8">
+    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-warning/10">
+      <span class="material-symbols-outlined text-4xl text-warning">event</span>
+    </div>
+    <h1 class="text-3xl font-semibold">Book for later</h1>
+    <p class="mt-2 text-base-content/60">
+      Queue <strong>#<%= @queue_number %></strong> is waiting.
+      Book an appointment for the upsell service while the customer waits.
+    </p>
+  </div>
+
+  <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+    <%= link_to new_org_appointment_path(
+          service_id: @suggested_service_id,
+          service_request_id: @service_request_id,
+          queue_number: @queue_number
+        ), class: "btn btn-primary btn-sm gap-1" do %>
+      <span class="material-symbols-outlined !text-[18px]">event_available</span>
+      Book appointment
+    <% end %>
+    <%= link_to org_queue_path, class: "btn btn-outline btn-sm" do %>
+      View queue
+    <% end %>
+  </div>
+</div>

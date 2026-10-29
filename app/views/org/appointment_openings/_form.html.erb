@@ -1,0 +1,58 @@
+<%= form_with model: opening, url: (opening.persisted? ? org_appointment_booking_opening_path(opening) : org_appointment_booking_openings_path),
+      scope: :appointment_opening, class: "mt-6 space-y-6" do |form| %>
+  <% if opening.errors.any? %>
+    <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <p class="font-medium">There were some problems with this opening:</p>
+      <ul class="mt-2 list-inside list-disc">
+        <% opening.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <%= form_section_heading "Details", tooltips: true,
+            tip: "Customers can book between the start and end dates, inside the bookable windows below. Blocked dates still apply." %>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="form-control sm:col-span-2">
+          <label class="label" for="appointment_opening_name"><%= form_label_text "Name" %></label>
+          <%= form.text_field :name, maxlength: 100, class: error_class_for(opening, :name, "input-field w-full") %>
+          <%= field_errors(opening, :name) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label" for="appointment_opening_start_date"><%= form_label_text "Start date", required: true %></label>
+          <%= form.date_field :start_date, class: error_class_for(opening, :start_date, "input-field w-full") %>
+          <%= field_errors(opening, :start_date) %>
+        </div>
+
+        <div class="form-control">
+          <label class="label" for="appointment_opening_end_date"><%= form_label_text "End date", required: true %></label>
+          <%= form.date_field :end_date, min: Date.current.iso8601, class: error_class_for(opening, :end_date, "input-field w-full") %>
+          <%= field_errors(opening, :end_date) %>
+        </div>
+
+        <%= render "org/appointment_booking/calendar_scope_field", organization: Current.organization, record: opening, scope_key: "appointment_opening" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5 p-0">
+      <div class="px-8 py-6">
+        <h2 class="text-lg font-semibold">Bookable windows</h2>
+        <%= field_errors(opening, :bookable_times) %>
+      </div>
+
+      <%= render "org/appointment_booking/bookable_windows_table", record: opening, field_name: "appointment_opening[bookable_times]" %>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <%= form.submit "Save opening", class: "btn btn-primary btn-sm" %>
+    <%= link_to "Back", org_appointment_booking_path, class: "btn btn-outline btn-sm" %>
+  </div>
+<% end %>

@@ -1,0 +1,137 @@
+<section class="w-full max-w-3xl">
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="text-sm font-medium text-base-content/60">
+        <%= link_to "Users", admin_users_path, class: "hover:text-base-content" %>
+        <span class="mx-1">/</span>
+        <span><%= @user.email %></span>
+      </p>
+      <%= render "admin/users/full_name_heading", user: @user %>
+    </div>
+    <%= link_to "Back", admin_users_path, class: "btn btn-outline btn-sm shrink-0" %>
+  </div>
+
+  <div class="mt-6 flex flex-wrap items-center gap-2">
+    <%= render "admin/users/info_editor", user: @user %>
+
+    <%= button_to "Send reset link", send_reset_link_admin_user_path(@user), method: :post,
+          class: "btn btn-sm btn-outline" %>
+  </div>
+
+  <%# ── User Information ── %>
+  <div class="mt-8 card border border-base-300">
+    <div class="card-body p-0">
+      <dl class="divide-y divide-base-300">
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Email</dt>
+          <%= render "admin/users/email_display", user: @user %>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">First Name</dt>
+          <%= render "admin/users/first_name_display", user: @user %>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Last Name</dt>
+          <%= render "admin/users/last_name_display", user: @user %>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Role</dt>
+          <dd class="flex flex-wrap gap-1">
+            <% if @user.roles.any? %>
+              <% @user.roles.each do |role| %>
+                <span class=""><%= role.name %> (<%= role.scope%>)</span>
+              <% end %>
+            <% else %>
+              <span class="text-base-content/50">-</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Account Status</dt>
+          <%= render "admin/users/status_badge", user: @user %>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Last Sign In</dt>
+          <dd class="font-medium">
+            <% if @user.last_sign_in_at %>
+              <%= @user.last_sign_in_at.strftime("%B %d, %Y at %I:%M %p") %>
+              <span class="text-base-content/60">(<%= time_ago_in_words(@user.last_sign_in_at) %> ago)</span>
+            <% else %>
+              <span class="text-base-content/50">-</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Created</dt>
+          <dd class="font-medium">
+            <%= @user.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+            <span class="text-base-content/60">(<%= time_ago_in_words(@user.created_at) %> ago)</span>
+          </dd>
+        </div>
+        <div class="flex items-center justify-between px-8 py-4">
+          <dt class="text-xs text-base-content/60 uppercase tracking-wide">Last Updated</dt>
+          <dd class="font-medium">
+            <%= @user.updated_at.strftime("%B %d, %Y at %I:%M %p") %>
+            <span class="text-base-content/60">(<%= time_ago_in_words(@user.updated_at) %> ago)</span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <%# ── Organisation Assignments ── %>
+  <div class="mt-10">
+    <h2 class="text-lg font-semibold">Organisation Assignments</h2>
+    <p class="mt-0.5 text-sm text-base-content/60">Organisations this user belongs to and their role in each.</p>
+
+    <% if @memberships.any? %>
+      <div class="card mt-4 border border-base-300">
+        <div class="card-body p-0">
+          <div class="overflow-x-auto">
+            <table class="table table-sm">
+              <thead class="text-sm font-semibold text-base-content bg-base-200">
+                <tr class="border-b border-base-300">
+                  <th>Organisation</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @memberships.each do |membership| %>
+                  <tr class="hover:bg-base-200">
+                    <td class="font-medium"><%= membership.organization.name %></td>
+                    <td class="text-base-content/60"><%= membership.roles.map(&:name).join(", ").presence || "-" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <p class="mt-4 text-sm text-base-content/60">This user does not belong to any organisation.</p>
+    <% end %>
+  </div>
+
+  <%# ── System Roles (grant/revoke) ── %>
+  <div class="mt-10">
+    <h2 class="text-lg font-semibold">System Roles</h2>
+    <p class="mt-0.5 text-sm text-base-content/60">System-scope roles grant admin-level access, independent of any organisation.</p>
+
+    <div class="card mt-4 border border-base-300">
+      <div class="card-body">
+        <%= render "admin/users/system_roles_panel", user: @user, roles: @roles %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Danger Zone ── %>
+  <div class="mt-10">
+    <h2 class="text-lg font-semibold">Danger Zone</h2>
+
+    <div class="card mt-4 border border-error">
+      <div class="card-body p-0">
+        <%= render "admin/users/danger_zone", user: @user %>
+      </div>
+    </div>
+  </div>
+</section>

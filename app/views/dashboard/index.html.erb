@@ -1,0 +1,154 @@
+<section class="w-full max-w-5xl">
+  <h1 class="text-2xl font-semibold">Dashboard</h1>
+
+  <% if Current.organization %>
+    <% if current_user.has_permission?("app.queue.view", organization: Current.organization) %>
+      <div class="mt-6">
+        <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Today at a glance</p>
+        <div class="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-base-300 bg-base-300 sm:grid-cols-4">
+          <div class="bg-base-100 px-4 py-3">
+            <div class="text-xs text-base-content/60">Waiting</div>
+            <div class="text-xl font-semibold tabular-nums text-primary"><%= @waiting_count %></div>
+          </div>
+          <div class="bg-base-100 px-4 py-3">
+            <div class="text-xs text-base-content/60">In progress</div>
+            <div class="text-xl font-semibold tabular-nums text-primary"><%= @in_progress_count %></div>
+          </div>
+          <div class="bg-base-100 px-4 py-3">
+            <div class="text-xs text-base-content/60">Completed</div>
+            <div class="text-xl font-semibold tabular-nums text-success"><%= @completed_today_count %></div>
+          </div>
+          <div class="bg-base-100 px-4 py-3">
+            <div class="text-xs text-base-content/60">Cancelled</div>
+            <div class="text-xl font-semibold tabular-nums text-base-content/50"><%= @cancelled_today_count %></div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <% if current_user.has_permission?("app.queue.view", organization: Current.organization) %>
+        <div class="card border border-base-300">
+          <div class="card-body gap-2">
+            <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Avg wait today</p>
+            <p class="text-2xl font-semibold">
+              <% if @average_wait_minutes %>
+                <%= @average_wait_minutes %> min
+              <% else %>
+                -
+              <% end %>
+            </p>
+          </div>
+        </div>
+      <% end %>
+
+      <% if current_user.has_permission?("app.appointments.view", organization: Current.organization) %>
+        <div class="card border border-base-300">
+          <div class="card-body gap-2">
+            <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Today's appointments</p>
+            <p class="text-2xl font-semibold"><%= @today_appointments_count %></p>
+            <div class="card-actions justify-start pt-1">
+              <%= link_to "Appointments", org_appointments_path, class: "btn btn-ghost btn-xs" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <% if current_user.has_permission?("app.services.manage", organization: Current.organization) %>
+        <div class="card border border-base-300">
+          <div class="card-body gap-2">
+            <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Active services</p>
+            <p class="text-2xl font-semibold"><%= @active_services_count %></p>
+            <div class="card-actions justify-start pt-1">
+              <%= link_to "Services", org_services_path, class: "btn btn-ghost btn-xs" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <% if current_user.has_permission?("app.upsells.manage", organization: Current.organization) %>
+        <div class="card border border-base-300">
+          <div class="card-body gap-2">
+            <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Upsell conversions today</p>
+            <p class="text-2xl font-semibold">
+              <%= @upsell_conversions_today %>
+              <span class="text-sm font-normal text-base-content/50">
+                (<%= number_to_currency(@upsell_revenue_today, unit: Current.organization.service_currency_symbol, separator: ".", delimiter: ",") %>)
+              </span>
+            </p>
+            <div class="card-actions justify-start pt-1">
+              <%= link_to "Upsell rules", org_upsell_rules_path, class: "btn btn-ghost btn-xs" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if current_user.has_permission?("app.analytics.view", organization: Current.organization) %>
+      <div class="mt-10">
+        <h2 class="text-lg font-semibold">Requests this week</h2>
+
+        <div class="card mt-4 border border-base-300">
+          <div class="card-body">
+            <div class="relative h-56">
+              <canvas data-controller="analytics-chart"
+                      data-analytics-chart-chart-type-value="line"
+                      data-analytics-chart-labels-value="<%= @week_chart[:labels].to_json %>"
+                      data-analytics-chart-datasets-value="<%= @week_chart[:datasets].to_json %>"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="mt-10">
+      <h2 class="text-lg font-semibold">Quick links</h2>
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        <% if current_user.has_permission?("app.queue.manage", organization: Current.organization) %>
+          <%= link_to org_new_walk_in_path, class: "btn btn-outline btn-sm gap-1" do %>
+            <span class="material-symbols-outlined !text-[18px]">person_add</span>
+            Walk-in
+          <% end %>
+        <% end %>
+
+        <% if current_user.has_permission?("app.queue.view", organization: Current.organization) %>
+          <%= link_to org_waiting_display_path, class: "btn btn-outline btn-sm gap-1", target: "_blank", rel: "noopener" do %>
+            <span class="material-symbols-outlined !text-[18px]">tv</span>
+            Waiting display
+          <% end %>
+        <% end %>
+
+        <% if current_user.has_permission?("app.analytics.view", organization: Current.organization) %>
+          <%= link_to org_analytics_path, class: "btn btn-outline btn-sm gap-1" do %>
+            <span class="material-symbols-outlined !text-[18px]">bar_chart</span>
+            Analytics
+          <% end %>
+        <% end %>
+
+        <% if current_user.has_permission?("app.kiosk.configure", organization: Current.organization) %>
+          <%= link_to org_kiosk_path, class: "btn btn-outline btn-sm gap-1" do %>
+            <span class="material-symbols-outlined !text-[18px]">tablet</span>
+            Kiosk
+          <% end %>
+        <% end %>
+
+        <% if current_user.has_permission?("app.devices.manage", organization: Current.organization) %>
+          <%= link_to org_devices_path, class: "btn btn-outline btn-sm gap-1" do %>
+            <span class="material-symbols-outlined !text-[18px]">devices</span>
+            Devices
+          <% end %>
+        <% end %>
+
+        <% if current_user.has_permission?("app.portal.configure", organization: Current.organization) %>
+          <%= link_to org_settings_path, class: "btn btn-outline btn-sm gap-1" do %>
+            <span class="material-symbols-outlined !text-[18px]">settings</span>
+            Settings
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <p class="mt-6 text-sm text-base-content/60">Select or create an organization to get started.</p>
+  <% end %>
+</section>

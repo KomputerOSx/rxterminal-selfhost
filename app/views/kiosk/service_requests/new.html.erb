@@ -1,0 +1,64 @@
+<div
+  data-controller="kiosk-service-request"
+  data-kiosk-service-request-service-id-value="<%= @service.id %>"
+  data-kiosk-service-request-submit-url-value="<%= kiosk_service_requests_path %>"
+  data-kiosk-service-request-home-url-value="<%= kiosk_root_path %>"
+  data-kiosk-service-request-has-eligibility-value="<%= @service.eligibility_requirements? %>"
+  data-kiosk-service-request-allows-private-consultation-value="<%= @service.allows_private_consultation? %>"
+  data-kiosk-service-request-postcode-region-value="<%= @organization.postcode_region.presence || 'uk' %>"
+  class="fixed inset-0 overflow-hidden bg-base-100"
+>
+  <div data-kiosk-service-request-target="eligibilityPanel"
+       data-active="<%= @service.eligibility_requirements? ? 'true' : 'false' %>"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/service_requests/step_eligibility", service: @service %>
+  </div>
+
+  <div data-kiosk-service-request-target="namePanel"
+       data-active="<%= @service.eligibility_requirements? ? 'false' : 'true' %>"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/service_requests/step_name", service: @service %>
+  </div>
+
+  <% if @organization.kiosk_collect_dob? %>
+    <div data-kiosk-service-request-target="dobPanel"
+         data-active="false"
+         class="kiosk-flow-panel">
+      <%= render "kiosk/service_requests/step_dob" %>
+    </div>
+  <% end %>
+
+  <% if @organization.kiosk_collect_postcode? %>
+    <div data-kiosk-service-request-target="postcodePanel"
+         data-active="false"
+         class="kiosk-flow-panel">
+      <%= render "kiosk/service_requests/step_postcode", region: @organization.postcode_region.presence || "uk" %>
+    </div>
+  <% end %>
+
+  <div data-kiosk-service-request-target="privacyPanel"
+       data-active="false"
+       class="kiosk-flow-panel">
+    <% if @service.allows_private_consultation? %>
+      <%= render "kiosk/service_requests/step_privacy" %>
+    <% end %>
+  </div>
+
+  <div data-kiosk-service-request-target="confirmPanel"
+       data-active="false"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/service_requests/step_confirm",
+          service: @service,
+          collect_dob: @organization.kiosk_collect_dob?,
+          collect_postcode: @organization.kiosk_collect_postcode?,
+          postcode_region: @organization.postcode_region.presence || "uk" %>
+  </div>
+
+  <div data-kiosk-service-request-target="confirmedPanel"
+       data-active="false"
+       class="kiosk-flow-panel">
+    <%= render "kiosk/service_requests/step_confirmed" %>
+  </div>
+</div>
+
+<%= render "kiosk/shared/idle_timer", timeout: 60_000, countdown: 10 %>

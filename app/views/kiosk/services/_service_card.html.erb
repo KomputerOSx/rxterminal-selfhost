@@ -1,0 +1,52 @@
+<% service = local_assigns[:service] %>
+<% preview = local_assigns.fetch(:preview, false) %>
+<% destination = kiosk_service_destination(service) %>
+<% mode = kiosk_service_mode(service) %>
+<% card_classes = kiosk_service_card_classes(service) %>
+
+<% card_body = capture do %>
+  <% if mode[:featured] %>
+    <div class="kiosk-service-badge kiosk-service-badge--featured">Featured</div>
+  <% end %>
+
+  <% if mode[:appointment_only] %>
+    <div class="kiosk-service-badge kiosk-service-badge--appointment">Appointment Only</div>
+  <% elsif mode[:both] %>
+    <div class="kiosk-service-badge kiosk-service-badge--both">Now or Appointment</div>
+  <% end %>
+
+  <div class="text-center">
+    <div class="<%= kiosk_service_icon_classes(service) %>">
+      <span class="material-symbols-outlined"><%= service.icon.presence || "medical_services" %></span>
+    </div>
+
+    <div class="kiosk-service-name"><%= service.display_name %></div>
+
+    <div class="mb-7 flex items-center justify-center gap-6">
+      <span class="text-xl"><%= service.estimated_duration %> min</span>
+      <%= kiosk_service_price_tag(service) %>
+    </div>
+
+    <div class="<%= kiosk_service_button_classes(service) %>">
+      <% if mode[:appointment_only] %>
+        <span class="material-symbols-outlined">calendar_add_on</span>
+        Book Appointment
+      <% else %>
+        <span class="material-symbols-outlined">chevron_right</span>
+        Select
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if preview %>
+  <div class="<%= card_classes %>">
+    <%= card_body %>
+  </div>
+<% else %>
+  <%= link_to destination,
+        data: { action: "click->kiosk-services#blockLink" },
+        class: card_classes do %>
+    <%= card_body %>
+  <% end %>
+<% end %>

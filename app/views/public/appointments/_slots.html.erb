@@ -1,0 +1,26 @@
+<% if appointment_date.present? %>
+  <p class="mb-3 text-sm font-medium">
+    Available times for <span class="font-semibold"><%= appointment_date.strftime("%A %-d %B") %></span>
+  </p>
+
+  <% if slots.any? %>
+    <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      <% slots.each do |slot| %>
+        <% is_selected = selected_slot == slot[:time] %>
+        <button type="button"
+                data-slot="<%= slot[:time] %>"
+                data-taken="<%= (!slot[:available]).to_s %>"
+                data-action="public-appointment#selectSlot"
+                class="rounded-lg border px-3 py-2 text-sm text-center transition
+                       <%= !slot[:available] ? 'cursor-not-allowed border-base-300 text-base-content/25 line-through' : 'cursor-pointer border-base-300 hover:border-primary' %>
+                       <%= is_selected ? 'border-primary bg-primary text-primary-content' : '' %>">
+          <%= portal_slot_label(slot[:time]) %>
+        </button>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-base-content/60">No available slots for this date.</p>
+  <% end %>
+<% else %>
+  <p class="text-sm text-base-content/60">Select a date above to see available time slots.</p>
+<% end %>

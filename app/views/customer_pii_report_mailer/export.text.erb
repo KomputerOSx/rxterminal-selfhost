@@ -1,0 +1,10 @@
+Your <%= @report_label.downcase %> export - RxTerminal
+
+Hello<%= @first_name.present? ? " #{@first_name}" : "" %>,
+
+Your <%= @report_label.downcase %> export is attached to this email.
+It contains <%= @total_records %> record<%= @total_records == 1 ? "" : "s" %> as of <%= @generated_at.strftime("%d %B %Y at %H:%M %Z") %>.
+
+If you did not expect this email, please contact the organisation that handled your request.
+
+<%= mailer_powered_by_text %>

@@ -1,0 +1,60 @@
+<nav class="navbar w-full px-4 lg:px-6">
+  <div class="flex-none md:hidden">
+    <button type="button" data-action="click->sidebar#openMobile" aria-label="Open sidebar" class="btn btn-square btn-ghost text-base-content">
+      <span class="material-symbols-outlined !text-[20px]">menu</span>
+    </button>
+  </div>
+
+  <div class="flex flex-1 items-center gap-3">
+    <% if authenticated? && current_user.organizations.any? %>
+      <% selected_org = Current.organization || current_user.organizations.first %>
+      <%= form_with url: org_switch_path, method: :post, data: { controller: "org-switch" } do %>
+        <%= hidden_field_tag :organization_id, selected_org&.id, data: { org_switch_target: "input" } %>
+        <div class="dropdown">
+          <div tabindex="0" role="button" class="btn btn-ghost text-lg font-normal normal-case gap-1">
+            <%= render "shared/org_nav_label", organization: selected_org %>
+            <span class="material-symbols-outlined !text-[18px]">expand_more</span>
+          </div>
+          <ul tabindex="0" class="dropdown-content menu bg-base-200 border border-base-300 rounded-box z-10 w-56 p-2 shadow-lg">
+            <% current_user.organizations.each do |o| %>
+              <li>
+                <a data-action="click->org-switch#select" data-org-switch-id-param="<%= o.id %>" data-org-switch-name-param="<%= o.name %>">
+                  <%= render "shared/org_nav_item_label", organization: o %>
+                </a>
+              </li>
+            <% end %>
+            <li class="mt-1 border-t border-base-300 pt-1">
+              <%= link_to new_org_organization_path, class: "gap-2" do %>
+                <span class="material-symbols-outlined !text-[18px]">add</span>
+                Create organization
+              <% end %>
+            </li>
+          </ul>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Right side: theme toggle and notifications -->
+  <div class="flex items-center gap-2">
+    <button data-controller="theme" data-action="click->theme#toggle" class="btn btn-ghost btn-square btn-sm" aria-label="Toggle theme">
+      <span class="material-symbols-outlined !text-[20px]" data-theme-target="icon">light_mode</span>
+    </button>
+    <% if authenticated? %>
+      <%= link_to notification_recipients_path, class: "btn btn-ghost btn-square btn-sm", aria: { label: "Notifications" } do %>
+        <div class="indicator">
+          <%= render "shared/notification_badge", unread_count: current_user.unread_notification_count %>
+          <span class="material-symbols-outlined !text-[20px]">notifications</span>
+        </div>
+      <% end %>
+
+    <% else %>
+            <!-- Login/Sign up for unauthenticated users -->
+      <div class="flex gap-2">
+        <%= link_to "Login", login_path, class: "btn btn-ghost" %>
+        <%= link_to "Sign up", new_registration_path, class: "btn btn-primary" %>
+      </div>
+
+    <% end %>
+  </div>
+</nav>

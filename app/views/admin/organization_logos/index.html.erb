@@ -1,0 +1,71 @@
+<section class="w-full max-w-4xl">
+  <p class="text-sm font-medium text-base-content/60">Admin</p>
+  <h1 class="mt-3 text-4xl font-semibold tracking-normal">Organization logos</h1>
+
+  <%= turbo_frame_tag "admin_organization_logos_index_frame" do %>
+    <%= form_with url: admin_organization_logos_path, method: :get, html: { class: "mt-6 flex flex-wrap items-end gap-2" } do %>
+      <div class="form-control">
+        <label class="label"><span class="label-text text-xs">Status</span></label>
+        <select name="status" class="select-field">
+          <% [ [ "Pending", "pending" ], [ "Approved", "approved" ], [ "Declined", "declined" ], [ "All", "all" ] ].each do |label, value| %>
+            <option value="<%= value %>" <%= "selected" if @status == value %>><%= label %></option>
+          <% end %>
+        </select>
+      </div>
+      <%= submit_tag "Filter", class: "btn btn-sm btn-primary" %>
+    <% end %>
+
+    <div class="card mt-4 border border-base-300">
+      <div class="card-body p-0">
+        <div class="overflow-x-auto">
+          <table class="table table-sm">
+            <thead class="text-sm font-semibold text-base-content bg-base-200">
+              <tr class="border-b border-base-300">
+                <th></th>
+                <th>Organization</th>
+                <th>Uploaded by</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @organization_logos.each do |organization_logo| %>
+                <tr class="hover:bg-base-200">
+                  <td>
+                    <div class="flex h-10 w-10 items-center justify-center rounded border border-base-300 bg-base-200/30 p-1">
+                      <%= image_tag organization_logo.image, class: "max-h-full max-w-full object-contain", alt: "Logo submission" %>
+                    </div>
+                  </td>
+                  <td class="font-medium"><%= organization_logo.organization.name %></td>
+                  <td class="text-base-content/60"><%= organization_logo.uploaded_by.email %></td>
+                  <td class="text-base-content/60"><%= time_ago_in_words(organization_logo.created_at) %> ago</td>
+                  <td>
+                    <% if organization_logo.pending? %>
+                      <span class="badge badge-warning badge-sm">Pending review</span>
+                    <% elsif organization_logo.approved? %>
+                      <span class="badge badge-success badge-sm">Approved</span>
+                    <% elsif organization_logo.declined? %>
+                      <span class="badge badge-error badge-sm">Declined</span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <div class="flex justify-end">
+                      <%= link_to admin_organization_logo_path(organization_logo),
+                            class: "btn btn-ghost btn-xs btn-square tooltip", data: { tip: "View", turbo_frame: "_top" }, aria: { label: "View" } do %>
+                        <span class="material-symbols-outlined !text-[18px]">visibility</span>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <% if @organization_logos.none? %>
+            <p class="px-8 py-6 text-sm text-base-content/60">No logos match this filter.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

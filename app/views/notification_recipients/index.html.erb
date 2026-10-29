@@ -1,0 +1,11 @@
+<section class="w-full max-w-4xl">
+  <div class="mt-3 flex items-center gap-3">
+    <h1 class="text-4xl font-semibold tracking-normal">Notifications</h1>
+  </div>
+
+  <div class="mt-8 card border border-base-300">
+    <div class="card-body">
+      <%= render "notification_recipients/inbox", notification_recipients: @notification_recipients %>
+    </div>
+  </div>
+</section>

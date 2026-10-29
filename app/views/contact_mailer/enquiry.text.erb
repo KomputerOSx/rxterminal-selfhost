@@ -1,0 +1,10 @@
+New enquiry from the RxTerminal website.
+
+Name: <%= @name %>
+Email: <%= @email %>
+Phone: <%= @phone.present? ? @phone : "-" %>
+
+Message:
+<%= @message %>
+
+<%= mailer_powered_by_text %>

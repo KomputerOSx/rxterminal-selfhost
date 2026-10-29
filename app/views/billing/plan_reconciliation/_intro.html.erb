@@ -1,0 +1,46 @@
+<h2 class="text-lg font-semibold">Before you continue</h2>
+
+<div class="mt-4 space-y-4 text-sm text-base-content/80">
+  <p>
+    You are moving to the <strong><%= target_plan.name %></strong> plan.
+    Starter has lower limits than your current plan, so you need to choose what stays active
+    and what will be archived or deactivated.
+  </p>
+
+  <p class="font-medium text-base-content">What you will do in the next steps:</p>
+  <ul class="list-disc space-y-2 pl-5">
+    <% if wizard.required_steps.include?(:members) %>
+      <li>Review team members who will be removed (the account owner always stays).</li>
+    <% end %>
+    <% if wizard.required_steps.include?(:services) %>
+      <li>Choose up to <%= wizard.service_selection_limit %> services to keep active. Others are archived and hidden from booking.</li>
+    <% end %>
+    <% if wizard.required_steps.include?(:upsell_rules) %>
+      <li>Choose one upsell rule to keep active. Rules that rely on archived services cannot be kept.</li>
+    <% end %>
+    <% if wizard.required_steps.include?(:kiosk_devices) %>
+      <li>Confirm that all kiosk devices will be deactivated.</li>
+    <% end %>
+    <% if wizard.required_steps.include?(:appointments) %>
+      <li>Confirm that new appointment booking will be disabled. Existing appointments remain manageable.</li>
+    <% end %>
+    <li>Review a summary and confirm before changes are applied.</li>
+  </ul>
+
+  <p>
+    <% if mode == :scheduled %>
+      Changes take effect when your scheduled downgrade starts at the end of your current billing period.
+      Until then, you keep full access to your current plan.
+    <% else %>
+      Changes apply as soon as you finish this setup. Archived services and upsell rules can be restored if you upgrade again later.
+    <% end %>
+  </p>
+</div>
+
+<%= form_with url: billing_plan_reconciliation_path, method: :patch do %>
+  <%= hidden_field_tag :step, :intro %>
+  <%= render "billing/plan_reconciliation/step_actions",
+        wizard: wizard,
+        step: step,
+        continue: button_tag("Continue", class: "btn btn-primary btn-sm") %>
+<% end %>

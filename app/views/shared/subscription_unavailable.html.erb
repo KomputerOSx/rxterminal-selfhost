@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Temporarily unavailable - RxTerminal</title>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= render "shared/fonts" %>
+  </head>
+  <body class="flex min-h-screen items-center justify-center bg-base-100 px-4 text-base-content antialiased">
+    <main class="w-full max-w-md text-center">
+      <span class="material-symbols-outlined text-5xl text-warning">pause_circle</span>
+      <h1 class="mt-4 text-2xl font-semibold">Temporarily unavailable</h1>
+      <p class="mt-3 text-sm text-base-content/60"><%= message %></p>
+      <% if current_user %>
+        <div class="mt-8">
+          <%= link_to "Go to billing", billing_path, class: "btn btn-primary btn-sm" %>
+        </div>
+      <% end %>
+    </main>
+  </body>
+</html>

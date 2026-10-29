@@ -1,0 +1,57 @@
+<tr id="<%= dom_id(service) %>" class="hover:bg-base-200">
+  <td>
+    <div class="flex items-center gap-3">
+      <%= service_icon_tag(service.icon, size: 22, extra_class: "text-primary shrink-0") %>
+      <div>
+        <div class="font-medium"><%= service.display_name %></div>
+        <div class="font-mono text-xs text-base-content/50"><%= service.internal_name %></div>
+      </div>
+    </div>
+  </td>
+  <td class="text-base-content/80"><%= service.estimated_duration %> min</td>
+  <td><%= service_price_label(service) %></td>
+  <td>
+    <% if service.active? %>
+      <span class="badge badge-success badge-sm">Active</span>
+    <% else %>
+      <span class="badge badge-error badge-sm">Inactive</span>
+    <% end %>
+  </td>
+  <td>
+    <div class="flex justify-end gap-1">
+      <%= link_to org_service_path(service),
+            class: "btn btn-ghost btn-xs btn-square",
+            title: "View" do %>
+        <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
+      <% end %>
+      <%= link_to edit_org_service_path(service),
+            class: "btn btn-ghost btn-xs btn-square",
+            title: "Edit" do %>
+        <span class="material-symbols-outlined" style="font-size:18px">edit</span>
+      <% end %>
+      <% if service.active? %>
+        <%= button_to toggle_org_service_path(service), method: :post,
+              class: "btn btn-ghost btn-xs btn-square text-error",
+              title: "Deactivate",
+              data: {
+                controller: "confirm-modal",
+                action: "click->confirm-modal#confirm",
+                confirm_modal_message_value: "Deactivate this service? It will no longer be available to customers."
+              } do %>
+          <span class="material-symbols-outlined" style="font-size:18px">block</span>
+        <% end %>
+      <% else %>
+        <%= button_to toggle_org_service_path(service), method: :post,
+              class: "btn btn-ghost btn-xs btn-square text-success",
+              title: "Activate",
+              data: {
+                controller: "confirm-modal",
+                action: "click->confirm-modal#confirm",
+                confirm_modal_message_value: "Activate this service?"
+              } do %>
+          <span class="material-symbols-outlined" style="font-size:18px">check_circle</span>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+</tr>

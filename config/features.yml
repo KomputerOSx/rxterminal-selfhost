@@ -1,0 +1,34 @@
+waiting_time:
+  name: "Waiting time"
+  description: "Show average wait time on the queue dashboard and waiting display, with optional reset."
+  org_opt_in_required: true
+
+public_portal:
+  name: "Public booking portal"
+  description: "Enables the public-facing portal at /:slug. Must be on for any portal sub-feature to work."
+  org_opt_in_required: false
+
+online_appointment_booking:
+  name: "Online appointment booking"
+  description: "Allows customers to book an appointment online through the public portal. Requires the public portal to be enabled."
+  org_opt_in_required: true
+
+mobile_service_request:
+  name: "Mobile service request"
+  description: "Allows customers to submit a walk-in service request from their phone by scanning the in-store QR code. Requires the public portal to be enabled."
+  org_opt_in_required: true
+
+online_appointment_check:
+  name: "Online appointment check-in"
+  description: "Allows customers to check in for a pre-booked appointment using their phone. Requires the public portal to be enabled."
+  org_opt_in_required: true
+
+portal_opening_times:
+  name: "Opening times page"
+  description: "Shows an opening times page in the public portal navigation. Requires the public portal to be enabled."
+  org_opt_in_required: true
+
+portal_contact_page:
+  name: "Contact page"
+  description: "Shows a contact page with your address, phone and email in the public portal navigation. Requires the public portal to be enabled."
+  org_opt_in_required: true

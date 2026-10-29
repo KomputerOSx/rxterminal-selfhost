@@ -1,0 +1,67 @@
+<%= render "public/shared/page_header",
+      title: "Check in",
+      back_path: portal_arrive_path %>
+
+<div class="mt-6 space-y-4">
+  <div class="card border border-base-300">
+    <div class="card-body gap-4">
+      <h2 class="flex items-center gap-2 text-base font-semibold">
+        <%= material_icon("tag", size: 18, class: "text-primary") %>
+        Booking reference
+      </h2>
+
+      <%= form_with url: portal_appointment_checkin_path, method: :post, scope: nil, class: "space-y-4" do |f| %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Reference</span></label>
+          <%= f.text_field :booking_reference,
+                maxlength: 6,
+                autocomplete: "off",
+                value: @reference_checkin.booking_reference,
+                class: error_class_for(@reference_checkin, :booking_reference, "input-field w-full font-mono uppercase tracking-widest") %>
+          <%= field_errors(@reference_checkin, :booking_reference) %>
+        </div>
+        <%= f.submit "Check in", class: "btn btn-primary btn-sm w-full" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="h-px flex-1 bg-base-300"></div>
+    <span class="text-xs font-medium uppercase tracking-widest text-base-content/50">or</span>
+    <div class="h-px flex-1 bg-base-300"></div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-4">
+      <h2 class="flex items-center gap-2 text-base font-semibold">
+        <%= material_icon("person", size: 18, class: "text-primary") %>
+        <% if @organization.kiosk_collect_dob? %>
+          Last name & date of birth
+        <% else %>
+          Last name
+        <% end %>
+      </h2>
+
+      <%= form_with url: portal_appointment_checkin_path, method: :post, scope: nil, class: "space-y-4" do |f| %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Last name</span></label>
+          <%= f.text_field :last_name,
+                autocomplete: "family-name",
+                value: @identity_checkin.last_name,
+                class: error_class_for(@identity_checkin, :last_name, "input-field w-full") %>
+          <%= field_errors(@identity_checkin, :last_name) %>
+        </div>
+
+        <% if @organization.kiosk_collect_dob? %>
+          <%= render "public/shared/dob_field",
+                form: f,
+                object: @identity_checkin,
+                required: true,
+                value: @display_dob || @identity_checkin.dob %>
+        <% end %>
+
+        <%= f.submit "Check in", class: "btn btn-primary btn-sm w-full" %>
+      <% end %>
+    </div>
+  </div>
+</div>

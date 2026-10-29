@@ -1,0 +1,17 @@
+<h1 style="margin:0 0 8px;font-size:28px;font-weight:400;color:<%= MailerTheme::HEADING_TEXT %>;line-height:1.2;">
+  Your trial has ended
+</h1>
+
+<p style="margin:0 0 16px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Hi <%= @owner.first_name.presence || "there" %>, the <%= @trial_plan&.name || "trial" %> period for
+  <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= @organization.name %></strong> is over.
+</p>
+
+<p style="margin:0 0 24px;font-size:15px;color:<%= MailerTheme::BODY_TEXT %>;">
+  Subscribe on Billing to restore operational features. Your data is still there — nothing has been deleted.
+</p>
+
+<p style="margin:0;">
+  <%= link_to "Subscribe now", billing_url, style: "display:inline-block;padding:12px 20px;background:#{MailerTheme::PRIMARY};color:#{MailerTheme::PRIMARY_CONTENT};text-decoration:none;border-radius:8px;font-size:15px;font-weight:600;" %>
+</p>
+<%= render "shared/mailer/link_fallback", url: billing_url %>

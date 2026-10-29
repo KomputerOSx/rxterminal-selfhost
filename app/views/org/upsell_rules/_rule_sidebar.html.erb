@@ -1,0 +1,95 @@
+<%# locals: (rule:) %>
+<div id="<%= dom_id(rule, :sidebar) %>" class="space-y-4">
+  <div class="card border border-base-300">
+    <div class="card-body gap-4 p-5">
+      <h2 class="text-sm font-semibold">Configuration</h2>
+      <dl class="space-y-3 text-sm">
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Frequency</dt>
+          <dd class="mt-0.5 font-medium"><%= upsell_frequency_label(rule) %></dd>
+        </div>
+        <% if Current.organization.kiosk_collect_dob? && rule.visit_type != "any" %>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Audience</dt>
+            <dd class="mt-0.5 font-medium"><%= upsell_visit_type_label(rule.visit_type) %></dd>
+          </div>
+        <% end %>
+        <% if rule.active_hours_start.present? && rule.active_hours_end.present? %>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Active hours</dt>
+            <dd class="mt-0.5 font-medium">
+              <%= format("%02d:00", rule.active_hours_start) %> - <%= format("%02d:00", rule.active_hours_end) %>
+            </dd>
+          </div>
+        <% end %>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Cooldown</dt>
+          <dd class="mt-0.5 font-medium"><%= rule.cooldown_days %> days</dd>
+        </div>
+        <% if Current.organization.kiosk_collect_dob? && (rule.min_age.present? || rule.max_age.present?) %>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Age range</dt>
+            <dd class="mt-0.5 font-medium">
+              <%= rule.min_age.presence || "0" %> - <%= rule.max_age.presence || "∞" %> yrs
+            </dd>
+          </div>
+        <% end %>
+        <% if rule.active_from.present? || rule.active_until.present? %>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Active dates</dt>
+            <dd class="mt-0.5 font-medium">
+              <%= rule.active_from&.strftime("%d %b %Y") || "-" %><br>
+              to <%= rule.active_until&.strftime("%d %b %Y") || "-" %>
+            </dd>
+          </div>
+        <% end %>
+        <% if rule.daily_limit.present? %>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Daily cap</dt>
+            <dd class="mt-0.5 font-medium"><%= rule.daily_limit %> conversions</dd>
+          </div>
+        <% end %>
+        <% if rule.hourly_limit.present? %>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Hourly cap</dt>
+            <dd class="mt-0.5 font-medium"><%= rule.hourly_limit %> conversions</dd>
+          </div>
+        <% end %>
+        <% if rule.upsell_templates.size > 1 %>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-base-content/50">Variants</dt>
+            <dd class="mt-0.5 font-medium"><%= rule.upsell_templates.size %> (A/B testing)</dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-2 p-5">
+      <% if rule.active? %>
+        <%= button_to toggle_org_upsell_rule_path(rule), method: :post,
+              class: "btn btn-warning btn-sm w-full gap-1",
+              data: {
+                controller: "confirm-modal",
+                action: "click->confirm-modal#confirm",
+                confirm_modal_message_value: "Deactivate \"#{rule.name}\"? It will no longer be offered to customers."
+              } do %>
+          <span class="material-symbols-outlined !text-[18px]">block</span>
+          Deactivate
+        <% end %>
+      <% else %>
+        <%= button_to toggle_org_upsell_rule_path(rule), method: :post,
+              class: "btn btn-success btn-sm w-full gap-1",
+              data: {
+                controller: "confirm-modal",
+                action: "click->confirm-modal#confirm",
+                confirm_modal_message_value: "Activate \"#{rule.name}\"?"
+              } do %>
+          <span class="material-symbols-outlined !text-[18px]">check_circle</span>
+          Activate
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

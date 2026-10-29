@@ -1,0 +1,93 @@
+<% content_for :title, "Pricing" %>
+<% content_for :meta_description, "Simple monthly pricing for RxTerminal. Choose Starter or Business and start your free trial with queue management and online booking." %>
+<% content_for :head do %>
+<script type="application/ld+json" nonce="<%= content_security_policy_nonce %>">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is there a free trial?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your account's first organization gets a <%= Organization::TRIAL_DAYS %>-day free trial on Starter or Business — no card required. When the trial ends, subscribe to keep using RxTerminal." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a minimum contract length?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. RxTerminal is billed monthly with no long-term commitment. You can cancel at any time with 30 days' notice." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I run multiple branches?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Each branch is a separate organization. Business includes custom domains and oversight for teams managing multiple sites." }
+    }<% if billing_collect_vat? %>,
+    {
+      "@type": "Question",
+      "name": "Are prices VAT inclusive?",
+      "acceptedAnswer": { "@type": "Answer", "text": "All prices shown are exclusive of VAT. UK VAT at the standard rate will be added to your invoice." }
+    }<% end %>
+  ]
+}
+</script>
+<% end %>
+
+<main class="wire">
+  <section class="sec pricing-hero">
+    <h1 class="h-display h-display--lg">Simple, transparent pricing.</h1>
+    <p class="lead lead--mt">Choose the plan that fits your team. Get a <%= Organization::TRIAL_DAYS %>-day free trial. No card required.</p>
+  </section>
+
+  <section class="sec pricing-main">
+    <div class="pricing-plans">
+      <% @plans.each do |plan| %>
+        <article class="pricing-tier<%= " pricing-tier--featured" if plan.key == "business" %>">
+          <div class="pricing-tier__head">
+            <div class="pricing-tier__title-row">
+              <h2 class="pricing-tier__name"><%= plan.name %></h2>
+              <% if plan.key == "business" %>
+                <div class="pricing-tier__badge">Most popular</div>
+              <% end %>
+            </div>
+            <div class="pricing-tier__price">
+              <%= plan.formatted_price(@currency) %>
+              <span class="pricing-tier__period">/ mo</span>
+            </div>
+            <p class="pricing-tier__meta"><%= billing_collect_vat? ? "Excluding VAT · " : "" %>billed monthly</p>
+          </div>
+
+          <ul class="pricing-incl">
+            <% marketing_plan_features(plan).each do |feature| %>
+              <li>
+                <span class="pricing-check"><%= material_icon("check", size: 10) %></span>
+                <%= feature %>
+              </li>
+            <% end %>
+          </ul>
+
+          <div class="pricing-tier__actions">
+            <%= link_to "Start your free trial", new_registration_path, class: "btn btn-primary w-full" %>
+            <%= link_to "Contact us", contact_path, class: "btn btn-outline w-full" %>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  </section>
+
+  <%= render "roi_calculator" %>
+
+  <%= render "faq" %>
+
+  <section class="sec">
+    <div class="final-cta">
+      <div>
+        <h2>Promote More Services Today</h2>
+        <p>See how RxTerminal can help your team manage queues, promote services, and improve the customer experience.</p>
+      </div>
+      <div class="final-cta__actions">
+        <%= link_to "Start your free trial", new_registration_path, class: "btn btn-primary" %>
+      </div>
+    </div>
+  </section>
+
+  <%= render "shared/public_footer" %>
+</main>

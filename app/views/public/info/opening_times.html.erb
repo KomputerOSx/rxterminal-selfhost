@@ -1,0 +1,34 @@
+<% content_for :title, "Opening times - #{@organization.name}" %>
+
+<div class="flex flex-wrap items-center justify-between gap-4">
+  <h1 class="text-2xl font-semibold">Opening times</h1>
+  <% if @organization.open_now? %>
+    <span class="badge badge-success">Open now</span>
+  <% else %>
+    <span class="badge badge-ghost">Closed now</span>
+  <% end %>
+</div>
+
+<div class="card mt-6 border border-base-300">
+  <div class="card-body p-0">
+    <div class="overflow-x-auto">
+      <table class="table table-sm">
+        <thead class="bg-base-200 text-sm font-semibold text-base-content">
+          <tr class="border-b border-base-300">
+            <th>Day</th>
+            <th class="text-right">Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% Organization::WEEKDAYS.each do |day| %>
+            <% hours = @organization.operating_hours[day] %>
+            <tr class="hover:bg-base-200" <%= 'aria-current="date"'.html_safe if day == @today %>>
+              <td class="<%= day == @today ? "font-semibold text-primary" : "font-medium" %>"><%= day.capitalize %></td>
+              <td class="text-right <%= hours.present? ? "" : "text-base-content/60" %>"><%= portal_hours_label(hours) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

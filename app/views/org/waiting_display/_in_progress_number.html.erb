@@ -1,0 +1,7 @@
+<%= turbo_frame_tag dom_id(request, :waiting_display_in_progress) do %>
+  <div data-service-id="<%= request.service_id %>">
+    <div class="rounded-lg border border-primary/40 bg-primary px-4 py-3 text-6xl font-black text-primary-content lg:text-7xl">
+      <%= request.queue_number %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,6 @@
+<div data-controller="modal">
+  <button data-action="click->modal#open" class="btn btn-sm btn-outline">Edit</button>
+  <dialog id="<%= dom_id(user, :dialog) %>" data-modal-target="dialog" class="modal">
+    <%= render "admin/users/info_dialog_content", user: user %>
+  </dialog>
+</div>

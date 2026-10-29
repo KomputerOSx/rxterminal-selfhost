@@ -1,0 +1,121 @@
+<%# Shared upsell offer panel — used on kiosk + org theme preview %>
+<%
+  preview = local_assigns.fetch(:preview, false)
+  title = local_assigns.fetch(:title, "Add a health check?")
+  description = local_assigns[:description]
+  cta_text = local_assigns.fetch(:cta_text, "Yes, add it to my visit")
+  icon = local_assigns.fetch(:icon, "medical_services")
+  price = local_assigns[:price]
+  currency_symbol = local_assigns.fetch(:currency_symbol, "£")
+  duration = local_assigns.fetch(:duration, 5)
+  requires_appointment = local_assigns.fetch(:requires_appointment, true)
+  free_offer = price.nil? || price.to_f.zero?
+%>
+
+<div class="kiosk-upsell-header-in container mx-auto px-6 pt-10 pb-6 text-center">
+  <h2 class="kiosk-upsell-page-title">One more thing&hellip;</h2>
+</div>
+
+<div class="container mx-auto px-6 pb-12">
+  <div class="mx-auto max-w-2xl">
+
+    <div class="kiosk-upsell-card-pop card border-4 border-primary bg-base-200 shadow-none">
+      <div class="p-10 text-center">
+
+        <div class="mb-6">
+          <div class="kiosk-upsell-icon-pulse mx-auto flex h-32 w-32 items-center justify-center rounded-3xl bg-primary">
+            <span class="material-symbols-outlined !text-[64px] text-primary-content"><%= icon %></span>
+          </div>
+        </div>
+
+        <h1 class="kiosk-upsell-title text-base-content"><%= title %></h1>
+
+        <% if description.present? %>
+          <p class="kiosk-upsell-description mx-auto max-w-lg text-base-content/70"><%= description %></p>
+        <% end %>
+
+        <div class="mb-8">
+          <% if free_offer %>
+            <span class="kiosk-upsell-badge kiosk-upsell-badge--free">
+              <span class="material-symbols-outlined">sell</span>
+              Completely FREE
+            </span>
+          <% else %>
+            <span class="kiosk-upsell-badge kiosk-upsell-badge--price">
+              <span class="material-symbols-outlined">sell</span>
+              Only <%= number_to_currency(price, unit: currency_symbol) %>
+            </span>
+          <% end %>
+        </div>
+
+        <div class="kiosk-upsell-meta text-base-content/60">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined">schedule</span>
+            <span class="kiosk-upsell-meta-copy"><%= duration %> minutes</span>
+          </div>
+          <div class="kiosk-upsell-meta-divider bg-base-300"></div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined">location_on</span>
+            <span class="kiosk-upsell-meta-copy">Same visit</span>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <% accept_classes = "kiosk-upsell-cta-btn kiosk-upsell-cta-btn--pulse btn btn-primary btn-lg h-auto min-h-0 w-full rounded-2xl border-0 py-6 text-2xl font-bold" %>
+          <% if preview %>
+            <span class="<%= accept_classes %> inline-flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined !text-[32px]">add_circle</span>
+              <%= cta_text %>
+            </span>
+          <% else %>
+            <%= button_to kiosk_accept_upsell_path,
+                  method: :post,
+                  class: accept_classes,
+                  data: { kiosk_upsell_target: "acceptBtn", action: "pointerdown->kiosk-upsell#press" },
+                  form: { data: { action: "submit->kiosk-upsell#confirmAccept" } } do %>
+              <span class="material-symbols-outlined !text-[32px]">add_circle</span>
+              <%= cta_text %>
+            <% end %>
+          <% end %>
+
+          <% if requires_appointment %>
+            <% book_later_classes = "kiosk-upsell-cta-btn kiosk-upsell-cta-btn--appointment kiosk-upsell-cta-btn--pulse btn btn-accent btn-lg h-auto min-h-0 w-full rounded-2xl border-0 py-6 text-2xl font-bold" %>
+            <% if preview %>
+              <span class="<%= book_later_classes %> inline-flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined !text-[32px]">calendar_add_on</span>
+                Book for Later
+              </span>
+            <% else %>
+              <%= button_to kiosk_book_later_upsell_path,
+                    method: :post,
+                    class: book_later_classes,
+                    data: { kiosk_upsell_target: "bookLaterBtn", action: "pointerdown->kiosk-upsell#press" },
+                    form: { data: { action: "submit->kiosk-upsell#confirmBookLater" } } do %>
+                <span class="material-symbols-outlined !text-[32px]">calendar_add_on</span>
+                Book for Later
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% decline_classes = "kiosk-upsell-decline-btn btn btn-outline btn-lg mt-4 h-auto min-h-0 w-full rounded-2xl bg-base-100 py-4 text-lg font-medium" %>
+        <% if preview %>
+          <span class="<%= decline_classes %> inline-flex items-center justify-center">
+            No thanks, continue to my queue number
+          </span>
+        <% else %>
+          <%= button_to kiosk_decline_upsell_path,
+                method: :post,
+                class: decline_classes,
+                data: { kiosk_upsell_target: "declineBtn", action: "pointerdown->kiosk-upsell#press" },
+                form: { data: { action: "submit->kiosk-upsell#confirmDecline" } } do %>
+            No thanks, continue to my queue number
+          <% end %>
+        <% end %>
+
+      </div>
+    </div>
+
+    <p class="kiosk-upsell-note">Your original request is already saved. This is completely optional.</p>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<%
+  status_options = device.status == "revoked" ? [ [ "Revoked", "revoked" ] ] : [ [ "Active", "active" ], [ "Inactive", "inactive" ] ]
+%>
+
+<%= form_with model: [:org, device],
+      class: "space-y-6",
+      data: {
+        controller: "device-form",
+        device_form_server_ip_value: request.remote_ip,
+        device_form_org_slug_value: Current.organization.slug
+      } do |form| %>
+  <% if device.errors.any? %>
+    <div class="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">
+      <p class="font-medium">There were some problems with your device:</p>
+      <ul class="mt-2 list-inside list-disc">
+        <% device.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card border border-base-300">
+    <div class="card-body gap-5">
+      <h2 class="text-lg font-semibold">Device details</h2>
+
+      <% if device.new_record? %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Device ID *</span></label>
+          <div class="flex flex-wrap gap-2">
+            <%= form.text_field :device_id,
+                  class: "input-field min-w-0 flex-1 font-mono",
+                  required: true,
+                  data: { device_form_target: "deviceId" } %>
+            <button type="button" class="btn btn-outline btn-sm shrink-0" data-action="device-form#generateDeviceId">
+              Generate
+            </button>
+          </div>
+        </div>
+      <% else %>
+        <div class="form-control">
+          <label class="label"><span class="label-text">Device ID</span></label>
+          <p class="font-mono text-sm"><%= device.device_id %></p>
+        </div>
+      <% end %>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Name</span></label>
+        <%= form.text_field :name, class: "input-field w-full" %>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Serial number</span></label>
+        <%= form.text_field :serial_number, class: "input-field w-full font-mono" %>
+      </div>
+
+      <div class="form-control">
+        <label class="label"><span class="label-text">Registered IP</span></label>
+        <div class="flex flex-wrap gap-2">
+          <%= form.text_field :registered_ip,
+                class: "input-field min-w-0 flex-1 font-mono",
+                data: { device_form_target: "registeredIp" } %>
+          <button type="button" class="btn btn-outline btn-sm shrink-0 gap-1" data-action="device-form#useMyIp">
+            <span class="material-symbols-outlined !text-[16px]">wifi</span>
+            Use my IP
+          </button>
+        </div>
+      </div>
+
+      <div class="form-control max-w-xs">
+        <label class="label"><span class="label-text">Status *</span></label>
+        <%= form.select :status, status_options, {}, class: "select-field w-full", required: true, disabled: device.status == "revoked" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= form.submit device.new_record? ? "Create device" : "Save changes", class: "btn btn-primary btn-sm" %>
+    <%= link_to "Cancel", device.new_record? ? org_devices_path : org_device_path(device), class: "btn btn-outline btn-sm" %>
+  </div>
+<% end %>

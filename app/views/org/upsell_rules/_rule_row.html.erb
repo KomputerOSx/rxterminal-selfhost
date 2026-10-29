@@ -1,0 +1,71 @@
+<%
+  stats = rule_stats(rule)
+%>
+<tr id="<%= dom_id(rule) %>" class="hover:bg-base-200 <%= 'opacity-60' unless rule.active? %>">
+  <td>
+    <div class="flex flex-col gap-0.5">
+      <% unless rule == rules.first %>
+        <%= button_to move_up_org_upsell_rule_path(rule), method: :patch,
+              class: "btn btn-ghost btn-xs btn-square",
+              title: "Move up (higher priority)" do %>
+          <span class="material-symbols-outlined" style="font-size:16px">keyboard_arrow_up</span>
+        <% end %>
+      <% end %>
+      <% unless rule == rules.last %>
+        <%= button_to move_down_org_upsell_rule_path(rule), method: :patch,
+              class: "btn btn-ghost btn-xs btn-square",
+              title: "Move down (lower priority)" do %>
+          <span class="material-symbols-outlined" style="font-size:16px">keyboard_arrow_down</span>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+  <td>
+    <%= link_to org_upsell_rule_path(rule), class: "font-medium hover:text-primary" do %>
+      <%= rule.name %>
+    <% end %>
+    <%
+      row_details = []
+      row_details << upsell_visit_type_label(rule.visit_type) if Current.organization.kiosk_collect_dob?
+      row_details << "#{rule.cooldown_days}d cooldown" if rule.cooldown_days.positive?
+    %>
+    <% if row_details.any? %>
+      <div class="mt-0.5 text-xs text-base-content/50"><%= row_details.join(" · ") %></div>
+    <% end %>
+  </td>
+  <td>
+    <div class="text-sm">
+      <span class="text-base-content/60"><%= rule.trigger_service.display_name %></span>
+      <span class="mx-1 text-base-content/40">→</span>
+      <span class="font-medium"><%= rule.suggested_service.display_name %></span>
+    </div>
+  </td>
+  <td class="text-sm text-base-content/80"><%= upsell_frequency_label(rule) %></td>
+  <td>
+    <% if stats[:triggered].positive? %>
+      <span class="badge badge-outline badge-sm <%= stats[:rate] >= 20 ? 'badge-success' : stats[:rate] >= 10 ? 'badge-warning' : '' %>">
+        <%= stats[:rate] %>%
+      </span>
+      <span class="text-xs text-base-content/50">(<%= stats[:triggered] %>)</span>
+    <% else %>
+      <span class="text-xs text-base-content/40">-</span>
+    <% end %>
+  </td>
+  <td>
+    <% if rule.active? %>
+      <span class="badge badge-success badge-sm">Active</span>
+    <% else %>
+      <span class="badge badge-error badge-sm">Inactive</span>
+    <% end %>
+  </td>
+  <td>
+    <div class="flex justify-end gap-1">
+      <%= link_to org_upsell_rule_path(rule),
+            class: "btn btn-ghost btn-xs btn-square",
+            title: "View" do %>
+        <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
+      <% end %>
+    
+    </div>
+  </td>
+</tr>

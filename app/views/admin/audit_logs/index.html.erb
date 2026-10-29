@@ -1,0 +1,29 @@
+<section class="w-full max-w-7xl">
+  <div class="flex items-start justify-between">
+    <div>
+      <h1 class="text-4xl font-semibold tracking-normal">Audit Logs</h1>
+    </div>
+  </div>
+
+  <%= form_with url: admin_audit_logs_path,
+        method: :get,
+        data: {
+          turbo_frame: "admin_audit_logs_results_frame",
+          controller: "audit-log-filters"
+        },
+        class: "mt-6" do %>
+    <%= render "audit_logs/filter_panel",
+          form_url: admin_audit_logs_path,
+          clear_url: admin_audit_logs_path,
+          results_frame: "admin_audit_logs_results_frame",
+          show_organization_filter: true,
+          organizations: @organizations %>
+  <% end %>
+
+  <%= turbo_frame_tag "admin_audit_logs_results_frame", class: "mt-2 block" do %>
+    <%= render "audit_logs/results",
+          path_prefix: :admin,
+          results_frame: "admin_audit_logs_results_frame",
+          show_organization_columns: true %>
+  <% end %>
+</section>

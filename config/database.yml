@@ -1,0 +1,47 @@
+# SQLite for development/test and for Solid Cache/Queue/Cable in all environments.
+# Production primary (application data) uses PostgreSQL via credentials.database.url.
+#
+default_sqlite: &default_sqlite
+  adapter: sqlite3
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  primary:
+    <<: *default_sqlite
+    database: storage/development.sqlite3
+  queue:
+    <<: *default_sqlite
+    database: storage/development_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default_sqlite
+    database: storage/development_cable.sqlite3
+    migrations_paths: db/cable_migrate
+
+test:
+  primary:
+    <<: *default_sqlite
+    database: storage/test.sqlite3
+  queue:
+    <<: *default_sqlite
+    database: storage/test_queue.sqlite3
+    migrations_paths: db/queue_migrate
+
+production:
+  primary:
+    adapter: postgresql
+    url: <%= Rails.application.credentials.dig(:database, :url) %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  cache:
+    <<: *default_sqlite
+    database: storage/production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default_sqlite
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default_sqlite
+    database: storage/production_cable.sqlite3
+    migrations_paths: db/cable_migrate

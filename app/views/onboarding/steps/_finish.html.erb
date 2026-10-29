@@ -1,0 +1,28 @@
+<%
+  confetti_colors = %w[bg-primary bg-secondary bg-accent bg-success bg-warning]
+  confetti_count = 16
+%>
+<div class="flex flex-col items-center gap-4 py-6 text-center">
+  <div class="onboarding-celebrate-burst relative flex h-28 w-28 items-center justify-center">
+    <% confetti_count.times do |i| %>
+      <% angle = (360.0 / confetti_count * i) + rand(-10..10) %>
+      <% distance = rand(70..130) %>
+      <% radians = angle * Math::PI / 180 %>
+      <% tx = (Math.cos(radians) * distance).round(1) %>
+      <% ty = (Math.sin(radians) * distance).round(1) %>
+      <% rotation = rand(180..320) %>
+      <% delay = (rand(0..8) * 0.02).round(2) %>
+      <span class="onboarding-confetti-piece <%= confetti_colors[i % confetti_colors.size] %>"
+            style="--tx: <%= tx %>px; --ty: <%= ty %>px; --rot: <%= rotation %>deg; animation-delay: <%= delay %>s;"></span>
+    <% end %>
+
+    <span class="material-symbols-outlined onboarding-celebrate-star onboarding-celebrate-star--left text-warning !text-[22px]">star</span>
+    <span class="material-symbols-outlined onboarding-celebrate-star onboarding-celebrate-star--right text-warning !text-[18px]">star</span>
+
+    <span class="material-symbols-outlined onboarding-celebrate-icon relative z-10 text-primary !text-[64px]">celebration</span>
+  </div>
+
+  <p class="text-base-content/80">
+    Click Finish to head to your dashboard.
+  </p>
+</div>

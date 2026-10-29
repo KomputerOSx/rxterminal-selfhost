@@ -1,0 +1,45 @@
+<div class="kiosk-confirmed-page"
+     data-controller="kiosk-idle kiosk-home"
+     data-kiosk-idle-timeout-value="0"
+     data-kiosk-idle-countdown-value="30"
+     data-kiosk-idle-mode-value="auto-redirect"
+     data-kiosk-idle-interruptible-value="false"
+     data-kiosk-idle-redirect-url-value="<%= kiosk_root_path %>">
+
+  <div class="kiosk-confirmed-header-row">
+    <span class="material-symbols-outlined kiosk-confirmed-icon">check_circle</span>
+    <div>
+      <h1 class="kiosk-confirmed-heading">Request Confirmed!</h1>
+      <p class="kiosk-confirmed-subtext">You are now in the queue</p>
+      <p class="kiosk-confirmed-subtext kiosk-confirmed-subtext-muted">Please wait for your number to be called</p>
+    </div>
+  </div>
+
+  <div class="kiosk-confirmed-number-card">
+    <p class="kiosk-confirmed-service-label">
+      <%= @queue_numbers.size > 1 ? "Your Queue Numbers" : "Your Queue Number" %>
+    </p>
+
+    <div class="kiosk-confirmed-queue-list">
+      <% @queue_numbers.each_with_index do |queue_number, index| %>
+        <div class="kiosk-confirmed-queue-item">
+          <div class="kiosk-confirmed-service-name">
+            <%= @service_names[index].presence || "Service #{index + 1}" %>
+          </div>
+          <div class="kiosk-confirmed-queue-num"><%= queue_number %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= link_to kiosk_root_path,
+        class: "kiosk-confirmed-home-btn",
+        data: { action: "pointerdown->kiosk-home#start", url: kiosk_root_path } do %>
+    <span class="material-symbols-outlined">home</span>
+    Main Screen
+  <% end %>
+
+  <p class="kiosk-confirmed-countdown" data-kiosk-idle-target="countdownText">
+    Returning to home screen in 30 seconds&hellip;
+  </p>
+</div>

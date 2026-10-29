@@ -1,0 +1,32 @@
+<h2 class="text-lg font-semibold">Confirm</h2>
+
+<ul class="mt-4 list-disc space-y-2 pl-5 text-sm text-base-content/80">
+  <% if wizard.required_steps.include?(:members) %>
+    <li><%= wizard.members_to_remove.size %> member<%= wizard.members_to_remove.size == 1 ? "" : "s" %> will be removed.</li>
+  <% end %>
+  <% if wizard.required_steps.include?(:services) %>
+    <li><%= Array(wizard.choices["service_ids"]).size %> service<%= Array(wizard.choices["service_ids"]).size == 1 ? "" : "s" %> stay active; the rest are archived.</li>
+  <% end %>
+  <% if wizard.required_steps.include?(:upsell_rules) %>
+    <li>One upsell rule stays active; the rest are archived.</li>
+  <% end %>
+  <% if wizard.required_steps.include?(:kiosk_devices) %>
+    <li>All kiosk devices will be deactivated.</li>
+  <% end %>
+  <% if wizard.required_steps.include?(:appointments) %>
+    <li>New appointment booking will be disabled; existing appointments stay manageable.</li>
+  <% end %>
+  <% if mode == :scheduled %>
+    <li>Changes take effect at the end of your current billing period once the downgrade is scheduled.</li>
+  <% else %>
+    <li>Changes apply immediately once you finish.</li>
+  <% end %>
+</ul>
+
+<%= form_with url: billing_plan_reconciliation_path, method: :patch do %>
+  <%= hidden_field_tag :step, :confirm %>
+  <%= render "billing/plan_reconciliation/step_actions",
+        wizard: wizard,
+        step: step,
+        continue: button_tag((mode == :scheduled ? "Schedule downgrade" : "Finish setup"), class: "btn btn-primary btn-sm") %>
+<% end %>

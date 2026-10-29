@@ -1,0 +1,27 @@
+<h2 class="text-lg font-semibold">Services</h2>
+
+<% services = wizard.selectable_services %>
+<%= form_with url: billing_plan_reconciliation_path,
+      method: :patch,
+      class: "mt-4",
+      data: (service_options_filter_enabled?(services.size) ? { controller: "options-filter" } : {}) do %>
+  <%= hidden_field_tag :step, :services %>
+  <% if service_options_filter_enabled?(services.size) %>
+    <%= render "shared/options_filter_search", label: "Search services" %>
+  <% end %>
+  <div class="mt-4 space-y-2 max-h-64 overflow-y-auto">
+    <% services.each do |service| %>
+      <label class="flex items-center gap-3 rounded-lg border border-base-300 px-3 py-2 text-sm"
+             <%= tag.attributes(data: { options_filter_target: "item", label: service.display_name }) if service_options_filter_enabled?(services.size) %>>
+        <%= check_box_tag "service_ids[]", service.id, Array(wizard.choices["service_ids"]).map(&:to_i).include?(service.id),
+              class: "checkbox-field" %>
+        <span><%= service.display_name %></span>
+      </label>
+    <% end %>
+  </div>
+  <%= render "billing/plan_reconciliation/step_actions",
+        wizard: wizard,
+        step: step,
+        class: "mt-4",
+        continue: button_tag("Continue", class: "btn btn-primary btn-sm") %>
+<% end %>

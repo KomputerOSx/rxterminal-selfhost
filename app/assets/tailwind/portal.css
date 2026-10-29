@@ -1,0 +1,114 @@
+/* Public portal: upsell screen, chrome, theme preview. */
+
+/* Public portal upsell — prominent offer screen */
+@keyframes portal-upsell-header-in {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes portal-upsell-card-pop {
+  0%   { opacity: 0; transform: scale(0.94) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.portal-upsell-header-in {
+  animation: portal-upsell-header-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.portal-upsell-card-pop {
+  animation: portal-upsell-card-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+.portal-upsell-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  @apply rounded-full px-5 py-2.5 text-base font-bold sm:text-lg;
+}
+
+.portal-upsell-badge--free {
+  @apply bg-success text-success-content;
+}
+
+.portal-upsell-badge--price {
+  @apply bg-primary text-primary-content;
+}
+
+.portal-upsell-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.5rem;
+}
+
+.portal-upsell-meta-divider {
+  width: 1px;
+  height: 1.25rem;
+}
+
+.portal-upsell-note {
+  @apply mt-6 text-center text-sm text-base-content/50 sm:text-base;
+}
+
+/* Public portal — surface (base-200) on chrome and bordered panels */
+[data-portal-app] .portal-chrome {
+  @apply bg-base-200;
+}
+
+[data-portal-app] header.portal-chrome {
+  @apply bg-base-200/95;
+}
+
+[data-portal-app] .card.border:not(.bg-primary),
+[data-portal-app] .card.border-2:not(.bg-primary),
+[data-portal-app] .portal-surface {
+  @apply bg-base-200;
+}
+
+[data-portal-app] a.card.border:hover {
+  @apply border-primary;
+}
+
+[data-portal-app] .input-field,
+[data-portal-app] .textarea-field,
+[data-portal-app] .select-field:not([multiple]) {
+  @apply bg-base-200;
+}
+
+[data-portal-app] .checkbox-field:not(:checked):not(:disabled) {
+  @apply bg-base-200;
+}
+
+/* Org settings — live portal theme preview */
+.portal-theme-preview-label {
+  margin-bottom: 0.5rem;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  @apply text-base-content/45;
+}
+
+.portal-theme-preview-section {
+  @apply space-y-0;
+}
+
+.portal-theme-preview-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: var(--color-base-100);
+}
+
+.portal-theme-preview-canvas {
+  width: 672px;
+  transform-origin: top left;
+  pointer-events: none;
+  user-select: none;
+}
+
+[data-portal-theme-preview] .portal-theme-preview {
+  min-height: 0 !important;
+}

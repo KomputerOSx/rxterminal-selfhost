@@ -1,0 +1,14 @@
+<% label = local_assigns.fetch(:label, "One-time code") %>
+<div style="background:<%= MailerTheme::CARD_BG %>;border-radius:12px;padding:28px 24px;">
+  <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:<%= MailerTheme::MUTED_TEXT %>;letter-spacing:0.08em;text-transform:uppercase;">
+    <%= label %>
+  </p>
+  <p style="margin:0;font-size:32px;font-weight:700;letter-spacing:8px;color:<%= MailerTheme::PRIMARY %>;line-height:1.1;">
+    <%= code %>
+  </p>
+  <% if local_assigns[:expires_in_minutes].present? %>
+    <p style="margin:12px 0 0;font-size:14px;color:<%= MailerTheme::MUTED_TEXT %>;">
+      Expires in <strong style="color:<%= MailerTheme::HEADING_TEXT %>;"><%= expires_in_minutes %> minutes</strong>
+    </p>
+  <% end %>
+</div>

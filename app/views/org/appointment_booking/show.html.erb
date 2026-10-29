@@ -1,0 +1,15 @@
+<section class="w-full max-w-4xl" data-controller="booking-mode">
+  <div class="mt-3">
+    <h1 class="text-2xl font-semibold">Appointment booking</h1>
+  </div>
+
+  <%= render "org/appointment_booking/conflicts", appointments: @conflicting_appointments %>
+
+  <%= render "form" %>
+
+  <div class="<%= "hidden" unless Current.organization.booking_mode_openings? %>" data-booking-mode-target="openings">
+    <%= render "org/appointment_booking/openings", organization: Current.organization %>
+  </div>
+
+  <%= render "org/appointment_booking/blocked_dates", organization: Current.organization, blocked_date: nil %>
+</section>

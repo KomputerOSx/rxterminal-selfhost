@@ -1,0 +1,128 @@
+<%# Step 3: Postcode %>
+<% region = local_assigns.fetch(:region, "uk") %>
+<% postcode_label = { "uk" => "Postcode", "us" => "ZIP Code", "ca" => "Postal Code", "au" => "Postcode" }.fetch(region, "Postcode") %>
+<% numeric_only = %w[us au].include?(region) %>
+
+<div class="flex min-h-full flex-col items-center justify-center gap-6 p-5">
+
+  <div class="flex w-full max-w-3xl items-center gap-4">
+    <button data-action="pointerdown->kiosk-service-request#postcodeBack"
+            class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="flex-1 text-center">
+      <div class="mb-1 text-5xl font-bold tracking-tight text-base-content md:text-6xl"><%= postcode_label %></div>
+      <div class="text-xl text-base-content/70">Step 3 of 4</div>
+    </div>
+    <button data-action="pointerdown->kiosk-service-request#postcodeReset"
+            class="btn btn-outline h-[54px] min-h-0 w-[70px] shrink-0 rounded-xl p-0 text-xs font-bold uppercase tracking-widest">
+      Clear
+    </button>
+  </div>
+
+  <div class="card w-full border border-base-300 bg-base-200 <%= numeric_only ? "max-w-sm" : "max-w-3xl" %>">
+    <div class="card-body <%= numeric_only ? "p-8" : "p-9" %>">
+
+      <% if numeric_only %>
+        <div class="mb-5 flex items-end justify-center">
+          <div data-kiosk-service-request-target="postcodeField"
+               data-state="idle"
+               class="postcode-field flex w-full flex-col items-center rounded-2xl border-2 p-5">
+            <div class="mb-1 text-xs font-bold uppercase tracking-widest text-base-content/60"><%= postcode_label %></div>
+            <div class="flex min-h-[60px] items-center justify-center text-5xl font-black tracking-widest">
+              <span data-kiosk-service-request-target="postcodeEmpty" class="text-base-content/40">
+                <%= region == "au" ? "_ _ _ _" : "_ _ _ _ _" %>
+              </span>
+              <span data-kiosk-service-request-target="postcodeFilledDisplay"
+                    class="hidden text-base-content">
+                <span data-kiosk-service-request-target="postcodeOutwardText"></span>
+              </span>
+            </div>
+            <div data-kiosk-service-request-target="postcodeError"
+                 class="mt-1 hidden text-sm font-semibold text-error"></div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2.5">
+          <% [["1","2","3"],["4","5","6"],["7","8","9"],["⌫","0","✓"]].each do |row| %>
+            <div class="flex gap-2.5">
+              <% row.each do |key| %>
+                <% is_confirm = key == "✓" %>
+                <% is_back    = key == "⌫" %>
+                <% klass = is_confirm ? "btn btn-disabled" : is_back ? "btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete" : "btn btn-lg kiosk-keyboard-key" %>
+                <button data-action="pointerdown->kiosk-service-request#postcodeKey"
+                        data-key="<%= key %>"
+                        <%= is_confirm ? 'data-kiosk-service-request-target="postcodeConfirmBtn"' : "" %>
+                        class="<%= klass %> h-16 min-h-0 flex-1 rounded-2xl px-0 text-2xl font-bold">
+                  <% if is_back %>
+                    <span class="material-symbols-outlined">backspace</span>
+                  <% elsif is_confirm %>
+                    <span class="material-symbols-outlined">check</span>
+                  <% else %>
+                    <%= key %>
+                  <% end %>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+      <% else %>
+        <div data-kiosk-service-request-target="postcodeField"
+             data-state="idle"
+             class="postcode-field mb-5 rounded-2xl border-2 p-5">
+          <div class="flex min-h-[54px] items-center">
+            <span data-kiosk-service-request-target="postcodeEmpty" class="text-3xl font-black tracking-widest text-base-content/40">_ _ _ _ _ _</span>
+            <div data-kiosk-service-request-target="postcodeFilledDisplay" class="hidden">
+              <span data-kiosk-service-request-target="postcodeOutwardText" class="text-3xl font-black tracking-widest text-base-content"></span>
+            </div>
+          </div>
+          <div data-kiosk-service-request-target="postcodeError" class="mt-1 hidden text-sm font-semibold text-error"></div>
+        </div>
+
+        <div class="flex flex-col items-center gap-2">
+          <div class="grid grid-cols-10 gap-2">
+            <% %w[1 2 3 4 5 6 7 8 9 0].each do |k| %>
+              <button data-action="pointerdown->kiosk-service-request#postcodeKey" data-key="<%= k %>"
+                      class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+            <% end %>
+          </div>
+          <div class="my-0.5 h-px w-full max-w-[692px] bg-base-300"></div>
+          <div class="grid grid-cols-10 gap-2">
+            <% %w[Q W E R T Y U I O P].each do |k| %>
+              <button data-action="pointerdown->kiosk-service-request#postcodeKey" data-key="<%= k %>"
+                      class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+            <% end %>
+          </div>
+          <div class="grid grid-cols-9 gap-2 pl-6">
+            <% %w[A S D F G H J K L].each do |k| %>
+              <button data-action="pointerdown->kiosk-service-request#postcodeKey" data-key="<%= k %>"
+                      class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+            <% end %>
+          </div>
+          <div class="grid grid-cols-8 gap-2 pl-12">
+            <% %w[Z X C V B N M].each do |k| %>
+              <button data-action="pointerdown->kiosk-service-request#postcodeKey" data-key="<%= k %>"
+                      class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+            <% end %>
+            <button data-action="pointerdown->kiosk-service-request#postcodeKey" data-key="⌫"
+                    class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete h-14 w-14 min-h-0 px-0">
+              <span class="material-symbols-outlined">backspace</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-center">
+          <button data-kiosk-service-request-target="postcodeConfirmBtn"
+                  data-action="pointerdown->kiosk-service-request#postcodeKey"
+                  data-key="✓"
+                  class="btn btn-disabled h-[62px] min-h-0 w-[172px] gap-2 rounded-2xl text-sm font-bold uppercase tracking-widest">
+            <span class="material-symbols-outlined">check</span>
+            Confirm
+          </button>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>

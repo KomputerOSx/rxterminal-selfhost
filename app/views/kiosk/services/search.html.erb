@@ -1,0 +1,147 @@
+<div data-controller="service-search" class="kiosk-search-shell">
+
+  <div class="kiosk-search-topbar">
+    <div class="mx-auto flex max-w-[1100px] items-center justify-between">
+      <%= link_to kiosk_services_path,
+            data: { turbo_prefetch: false },
+            class: "kiosk-services-back-btn" do %>
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back
+      <% end %>
+
+      <div class="text-center">
+        <div class="kiosk-search-title">Find a Service</div>
+        <div class="kiosk-search-subtitle">Type to search all available services</div>
+      </div>
+
+      <div class="w-[120px]" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="kiosk-search-displaybar">
+    <div class="mx-auto max-w-[900px] kiosk-search-display-field">
+      <span class="material-symbols-outlined kiosk-search-display-icon">search</span>
+      <div class="min-w-0 flex-1">
+        <div class="kiosk-search-display-label">Search</div>
+        <div data-service-search-target="display"
+             class="kiosk-search-display-text kiosk-search-display-text--empty">&middot;</div>
+      </div>
+      <button type="button"
+              data-action="pointerdown->service-search#clearSearch"
+              data-service-search-target="clearBtn"
+              class="kiosk-search-clear-btn hidden">Clear</button>
+    </div>
+  </div>
+
+  <div class="kiosk-search-results">
+    <div class="mx-auto max-w-[900px]">
+      <%= form_with url: kiosk_search_services_path, method: :get,
+            data: { "service-search-target": "form", turbo_frame: "search-results" } do |f| %>
+        <%= f.hidden_field :q, value: @query, data: { "service-search-target": "input" } %>
+      <% end %>
+
+      <turbo-frame id="search-results">
+        <% if @query.blank? %>
+          <div class="kiosk-search-empty">
+            <div class="kiosk-search-empty-icon">
+              <span class="material-symbols-outlined">search</span>
+            </div>
+            <div class="kiosk-search-empty-title">What would you like to find today?</div>
+            <div class="kiosk-search-empty-copy">Start typing on the keyboard below</div>
+          </div>
+
+        <% elsif @results.empty? %>
+          <div class="kiosk-search-empty">
+            <div class="kiosk-search-empty-icon kiosk-search-empty-icon--muted">
+              <span class="material-symbols-outlined">search_off</span>
+            </div>
+            <div class="kiosk-search-empty-title">Nothing found for &ldquo;<%= @query %>&rdquo;</div>
+            <div class="kiosk-search-empty-copy">Try a different word, or ask a member of staff</div>
+          </div>
+
+        <% else %>
+          <div class="kiosk-search-results-count">
+            <%= @results.size %> service<%= @results.size == 1 ? "" : "s" %> found
+          </div>
+
+          <div class="flex flex-col gap-3.5">
+            <% @results.each do |service| %>
+              <% mode = kiosk_service_mode(service) %>
+              <% card_class = mode[:appointment_only] ? "kiosk-search-result-card kiosk-search-result-card--appt" : "kiosk-search-result-card" %>
+              <% icon_class = mode[:appointment_only] ? "kiosk-search-result-icon kiosk-search-result-icon--appt" : "kiosk-search-result-icon" %>
+
+              <%= link_to kiosk_service_destination(service),
+                    data: { turbo_frame: "_top" },
+                    class: "#{card_class} no-underline" do %>
+                <div class="<%= icon_class %>">
+                  <span class="material-symbols-outlined"><%= service.icon.presence || "medical_services" %></span>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="kiosk-search-result-name"><%= service.display_name %></div>
+                  <div class="kiosk-search-result-meta">
+                    <span class="kiosk-search-result-duration">
+                      <span class="material-symbols-outlined">schedule</span>
+                      <%= service.estimated_duration %> min
+                    </span>
+                    <% if service.price.present? && service.price.positive? %>
+                      <span class="kiosk-search-result-price"><%= kiosk_service_price_display(service) %></span>
+                    <% else %>
+                      <span class="kiosk-search-result-price-free">Free</span>
+                    <% end %>
+                    <% if mode[:appointment_only] %>
+                      <span class="badge badge-accent">Appointment Only</span>
+                    <% elsif mode[:both] %>
+                      <span class="badge badge-primary">Now or Appointment</span>
+                    <% end %>
+                  </div>
+                </div>
+
+                <span class="material-symbols-outlined kiosk-search-result-chevron">chevron_right</span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </turbo-frame>
+    </div>
+  </div>
+
+  <div class="kiosk-search-keyboard-shell">
+    <div class="mx-auto flex max-w-[900px] flex-col items-center gap-2">
+      <div class="grid grid-cols-10 gap-2">
+        <% %w[Q W E R T Y U I O P].each do |k| %>
+          <button type="button" data-action="pointerdown->service-search#pressKey" data-key="<%= k %>"
+                  class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+        <% end %>
+      </div>
+
+      <div class="grid grid-cols-9 gap-2 pl-6">
+        <% %w[A S D F G H J K L].each do |k| %>
+          <button type="button" data-action="pointerdown->service-search#pressKey" data-key="<%= k %>"
+                  class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+        <% end %>
+      </div>
+
+      <div class="grid grid-cols-8 gap-2 pl-12">
+        <% %w[Z X C V B N M].each do |k| %>
+          <button type="button" data-action="pointerdown->service-search#pressKey" data-key="<%= k %>"
+                  class="btn btn-lg kiosk-keyboard-key h-14 w-14 min-h-0 px-0 text-lg font-bold"><%= k %></button>
+        <% end %>
+        <button type="button" data-action="pointerdown->service-search#pressKey" data-key="⌫"
+                class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--delete h-14 w-14 min-h-0 px-0">
+          <span class="material-symbols-outlined">backspace</span>
+        </button>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="button" data-action="pointerdown->service-search#pressKey" data-key="SPACE"
+                class="btn btn-lg kiosk-keyboard-key h-14 min-h-0 w-64 text-sm font-bold uppercase tracking-widest">Space</button>
+        <button type="button" data-action="pointerdown->service-search#pressKey" data-key="-"
+                class="btn btn-lg kiosk-keyboard-key kiosk-keyboard-key--accent h-14 min-h-0 w-14 text-lg font-bold">-</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<%= render "kiosk/shared/idle_timer", timeout: 60_000, countdown: 30 %>

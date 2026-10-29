@@ -1,0 +1,93 @@
+<div class="min-h-screen px-6 py-8 lg:px-10"
+     data-controller="waiting-display queue-filter"
+     data-waiting-display-poll-url-value="<%= org_poll_waiting_display_path %>"
+     data-waiting-display-poll-interval-value="4000"
+     data-queue-filter-service-ids-value="<%= (@service_ids || []).to_json %>">
+  <%= turbo_stream_from "organization_#{@organization.id}_waiting_display" %>
+
+  <div class="flex items-start justify-between gap-6">
+    <div>
+      <h1 class="text-4xl font-bold lg:text-6xl"><%= @organization.name %></h1>
+      <p class="mt-2 text-2xl text-base-content/60 lg:text-4xl"><%= Date.current.strftime("%A, %B %d, %Y") %></p>
+    </div>
+
+    <div class="flex items-start gap-4">
+      <% if @organization.waiting_time_enabled? %>
+        <div class="rounded-2xl border border-base-300 bg-base-200 px-6 py-3 text-center">
+          <div class="text-sm font-medium uppercase tracking-wide text-base-content/50">Avg wait</div>
+          <div id="stat-avg-wait" class="text-4xl font-bold lg:text-6xl"><%= @avg_wait_display || "N/A" %></div>
+        </div>
+      <% end %>
+
+      <% if @services.any? %>
+        <div class="dropdown dropdown-end">
+          <button type="button" tabindex="0" class="btn btn-ghost btn-xs gap-1 border border-base-300 opacity-60 hover:opacity-100">
+            <span class="material-symbols-outlined !text-[16px]">filter_list</span>
+            <span data-queue-filter-label>
+              <% if @service_ids&.any? %>
+                <%= @service_ids.length %> <%= "service".pluralize(@service_ids.length) %>
+              <% else %>
+                All services
+              <% end %>
+            </span>
+          </button>
+          <div tabindex="0" class="dropdown-content z-50 mt-1 min-w-56 rounded-lg border border-base-300 bg-base-100 p-3 shadow-none">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-xs font-semibold text-base-content/60">Filter by service</span>
+              <button type="button"
+                      class="text-xs text-base-content/50 underline underline-offset-2 hover:text-base-content"
+                      data-action="click->queue-filter#clear">
+                Clear
+              </button>
+            </div>
+            <div <%= tag.attributes(data: { controller: "options-filter" }) if service_options_filter_enabled?(@services.size) %>>
+              <% if service_options_filter_enabled?(@services.size) %>
+                <%= render "shared/options_filter_search", label: "Search services" %>
+              <% end %>
+              <div class="space-y-1 <%= "mt-2 max-h-64 overflow-y-auto" if service_options_filter_enabled?(@services.size) %>">
+                <% @services.each do |service| %>
+                  <label class="flex cursor-pointer items-center gap-2 rounded-lg px-1 py-1.5 hover:bg-base-200"
+                         <%= tag.attributes(data: { options_filter_target: "item", label: service.display_name }) if service_options_filter_enabled?(@services.size) %>>
+                    <input type="checkbox"
+                           value="<%= service.id %>"
+                           class="checkbox-field"
+                           data-queue-filter-checkbox
+                           data-action="change->queue-filter#toggleCheckbox"
+                           <%= "checked" if @service_ids&.include?(service.id) %>>
+                    <span class="text-sm"><%= service.display_name %></span>
+                  </label>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-12 text-center sm:grid-cols-2 lg:col-span-3">
+      <div>
+        <h2 class="mb-6 flex items-center justify-center gap-3 text-3xl font-bold lg:text-4xl">
+          Waiting
+          <span id="waitingCount" class="rounded-lg border border-base-300 bg-base-content px-4 py-1 text-2xl font-bold text-base-100 lg:text-3xl">
+            <%= @waiting.size %>
+          </span>
+        </h2>
+        <%= render partial: "waiting_cards_list", locals: { waiting: @waiting } %>
+      </div>
+
+      <div>
+        <h2 class="mb-6 flex items-center justify-center gap-3 text-3xl font-bold lg:text-4xl">
+          In progress
+          <span id="inProgressCount" class="rounded-lg border border-base-300 bg-base-content px-4 py-1 text-2xl font-bold text-base-100 lg:text-3xl">
+            <%= @in_progress.size %>
+          </span>
+        </h2>
+        <%= render partial: "in_progress_cards_list", locals: { in_progress: @in_progress } %>
+      </div>
+    </div>
+
+    <%= render "qr_code" %>
+  </div>
+</div>
