@@ -105,6 +105,6 @@ group :test do
   gem "minitest-mock"
 end
 
-gem "mission_control-jobs", "~> 1.1"
+gem "mission_control-jobs", "~> 1.3"
 
 gem "holidays", "~> 11.6"
