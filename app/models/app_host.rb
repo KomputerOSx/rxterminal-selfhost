@@ -36,14 +36,10 @@ module AppHost
   end
 
   def primary_host
-    Rails.application.credentials.dig(:app, :host).presence ||
-      ENV["APP_HOST"].presence ||
-      "localhost"
+    ENV["APP_HOST"].presence || "localhost"
   end
 
   def server_ip
-    Rails.application.credentials.dig(:app, :server_ip).presence ||
-      ENV["APP_SERVER_IP"].presence ||
-      "YOUR_SERVER_IP"
+    ENV["APP_SERVER_IP"].presence || "YOUR_SERVER_IP"
   end
 end

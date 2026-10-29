@@ -1,7 +1,35 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
+# Generate any missing secrets into storage/secrets.env on first boot, then load them.
+# Environment variables always win over the file.
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  SECRETS_FILE="${SECRETS_FILE:-/rails/storage/secrets.env}"
+  mkdir -p "$(dirname "$SECRETS_FILE")"
+  touch "$SECRETS_FILE"
+  chmod 600 "$SECRETS_FILE"
+
+  gen() { openssl rand -hex 32; }
+
+  ensure_secret() {
+    local name="$1"
+    if [ -z "${!name}" ] && ! grep -q "^${name}=" "$SECRETS_FILE"; then
+      echo "${name}=$(gen)" >> "$SECRETS_FILE"
+    fi
+  }
+
+  for name in SECRET_KEY_BASE JWT_SECRET_KEY \
+      ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY \
+      ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY \
+      ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT; do
+    ensure_secret "$name"
+  done
+
+  # Export file values only for variables that are not already set.
+  while IFS='=' read -r key value; do
+    [ -z "$key" ] && continue
+    if [ -z "${!key}" ]; then export "$key=$value"; fi
+  done < "$SECRETS_FILE"
+
   ./bin/rails db:prepare
 fi
 

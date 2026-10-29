@@ -1,13 +1,11 @@
 Rails.application.config.middleware.use OmniAuth::Builder do
-  provider :google_oauth2,
-    Rails.application.credentials.dig(:google, :client_id),
-    Rails.application.credentials.dig(:google, :client_secret),
-    scope: "email,profile"
+  if ENV["GOOGLE_CLIENT_ID"].present? && ENV["GOOGLE_CLIENT_SECRET"].present?
+    provider :google_oauth2, ENV["GOOGLE_CLIENT_ID"], ENV["GOOGLE_CLIENT_SECRET"], scope: "email,profile"
+  end
 
-  provider :github,
-    Rails.application.credentials.dig(:github, :client_id),
-    Rails.application.credentials.dig(:github, :client_secret),
-    scope: "user:email"
+  if ENV["GITHUB_CLIENT_ID"].present? && ENV["GITHUB_CLIENT_SECRET"].present?
+    provider :github, ENV["GITHUB_CLIENT_ID"], ENV["GITHUB_CLIENT_SECRET"], scope: "user:email"
+  end
 end
 
 # omniauth-rails_csrf_protection requires the request phase (/auth/:provider) to be a

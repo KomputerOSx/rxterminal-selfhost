@@ -87,6 +87,10 @@
           <%= render "shared/past_due_banner" %>
         <% end %>
 
+        <% if current_user && controller_path.start_with?("admin/") && !email_configured? %>
+          <%= render "shared/email_not_configured_banner" %>
+        <% end %>
+
         <%= render "shared/confirm_modal" %>
 
         <main class="flex w-full flex-col items-center px-4 py-8 lg:px-8">

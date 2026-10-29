@@ -1,5 +1,6 @@
 # SQLite for development/test and for Solid Cache/Queue/Cable in all environments.
-# Production primary (application data) uses PostgreSQL via credentials.database.url.
+# Production primary (application data) is SQLite in storage/ by default, or any database
+# Rails can infer from DATABASE_URL (e.g. postgres://...).
 #
 default_sqlite: &default_sqlite
   adapter: sqlite3
@@ -30,9 +31,13 @@ test:
 
 production:
   primary:
-    adapter: postgresql
-    url: <%= Rails.application.credentials.dig(:database, :url) %>
+<% if ENV["DATABASE_URL"].present? %>
+    url: <%= ENV["DATABASE_URL"] %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+<% else %>
+    <<: *default_sqlite
+    database: storage/production.sqlite3
+<% end %>
   cache:
     <<: *default_sqlite
     database: storage/production_cache.sqlite3

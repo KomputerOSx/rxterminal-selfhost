@@ -45,17 +45,8 @@ Rails.application.configure do
     { host: "localhost", port: 3000 }
   end
 
-  # Azure Communication Services SMTP relay - see config/credentials.example for the
-  # azure_email credentials this reads.
-  config.action_mailer.smtp_settings = {
-    address:              "smtp.azurecomm.net",
-    port:                 587,
-    domain:               "rxterminal.co.uk",
-    user_name:            Rails.application.credentials.dig(:azure_email, :smtp_username),
-    password:             Rails.application.credentials.dig(:azure_email, :smtp_password),
-    authentication:       :login,
-    enable_starttls_auto: true
-  }
+  config.action_mailer.delivery_method = ENV["SMTP_ADDRESS"].present? ? :smtp : :logger
+  config.action_mailer.smtp_settings = { address: ENV["SMTP_ADDRESS"], port: ENV.fetch("SMTP_PORT", 587).to_i, user_name: ENV["SMTP_USERNAME"], password: ENV["SMTP_PASSWORD"] } if ENV["SMTP_ADDRESS"].present?
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

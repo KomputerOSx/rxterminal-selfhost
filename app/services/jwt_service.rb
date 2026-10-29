@@ -5,8 +5,9 @@ class JwtService
 
   class << self
     def secret_key
-      key = Rails.application.credentials.jwt_secret_key
-      raise "jwt_secret_key is not configured in Rails credentials" if key.blank?
+      key = ENV["JWT_SECRET_KEY"].presence
+      key ||= "dev-only-jwt-secret-key" if Rails.env.local?
+      raise "JWT_SECRET_KEY is not configured" if key.blank?
 
       key
     end

@@ -290,4 +290,9 @@ module ApplicationHelper
       tag.span(label, class: "badge badge-info badge-xs shrink-0")
     end
   end
+
+  # Email delivery is logged only in production until SMTP_ADDRESS is set.
+  def email_configured?
+    !Rails.env.production? || ENV["SMTP_ADDRESS"].present?
+  end
 end

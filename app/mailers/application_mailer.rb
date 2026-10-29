@@ -3,7 +3,7 @@
 class ApplicationMailer < ActionMailer::Base
   helper MailerHelper
 
-  default from: "RxTerminal <no-reply@rxterminal.co.uk>"
+  default from: -> { ENV["MAIL_FROM"].presence || "RxTerminal <no-reply@localhost>" }
   layout "mailer"
 
   before_action :attach_rxterminal_logo

@@ -105,7 +105,9 @@ class BillingSubscriptionsTest < ActionDispatch::IntegrationTest
     Stripe::Subscription.stub(:create, ->(params, _opts) { captured_params = params; fake_stripe_subscription }) do
       Pay::Stripe::Subscription.stub(:sync, fake_pay_subscription) do
         with_resolvable_price(Billing::Plans::STARTER) do
-          post billing_subscription_path(plan: "starter")
+          Billing::Tax.stub(:collect_vat?, true) do
+            post billing_subscription_path(plan: "starter")
+          end
         end
       end
     end

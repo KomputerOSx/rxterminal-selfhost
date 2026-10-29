@@ -3,7 +3,7 @@
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t rxterminal .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name rxterminal rxterminal
+# docker run -d -p 80:80 -e --name rxterminal rxterminal
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 

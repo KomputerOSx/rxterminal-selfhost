@@ -51,3 +51,6 @@ CUsersramya**
 # real master key; not the team's actual test secrets - never meant to be shared/committed).
 /config/credentials/test.yml.enc
 
+
+!/.env.example
+/config/credentials.yml.enc
