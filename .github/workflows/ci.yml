@@ -114,7 +114,7 @@ jobs:
           printf '%s' "${{ secrets.PROD_KEY }}" > config/credentials/production.key
 
       - name: Set up SSH for Kamal
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
