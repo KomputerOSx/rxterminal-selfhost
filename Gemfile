@@ -110,4 +110,4 @@ end
 
 gem "mission_control-jobs", "~> 1.1"
 
-gem "holidays", "~> 11.6"
+gem "holidays", "~> 11.7"
