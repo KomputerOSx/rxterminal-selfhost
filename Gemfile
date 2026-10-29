@@ -30,7 +30,7 @@ gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 2.2"
 
 # OmniAuth for "Sign in with Google/GitHub"
-gem "omniauth", "~> 2.1"
+gem "omniauth", "~> 2.3"
 gem "omniauth-google-oauth2", "~> 1.1"
 gem "omniauth-github", "~> 2.0"
 gem "omniauth-rails_csrf_protection", "~> 2.0"
