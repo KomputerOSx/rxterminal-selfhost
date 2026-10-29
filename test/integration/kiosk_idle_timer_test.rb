@@ -79,10 +79,8 @@ class KioskIdleTimerTest < ActionDispatch::IntegrationTest
   private
 
   def with_authenticated_kiosk
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      authenticate_kiosk!
-      yield
-    end
+    authenticate_kiosk!
+    yield
   end
 
   def authenticate_kiosk!

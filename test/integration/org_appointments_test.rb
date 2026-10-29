@@ -53,20 +53,18 @@ class OrgAppointmentsTest < ActionDispatch::IntegrationTest
   test "a member with app.appointments.manage can create an appointment" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference -> { @organization.appointments.count }, 1 do
-        post org_appointments_path, params: {
-          appointment: {
-            service_id: @service.id,
-            first_name: "jane",
-            last_name: "doe",
-            dob: "20-05-1985",
-            postcode: "SW1A 2AA",
-            appointment_date: (Date.current + 2.days).strftime("%d-%m-%Y"),
-            appointment_time: "11:00"
-          }
+    assert_difference -> { @organization.appointments.count }, 1 do
+      post org_appointments_path, params: {
+        appointment: {
+          service_id: @service.id,
+          first_name: "jane",
+          last_name: "doe",
+          dob: "20-05-1985",
+          postcode: "SW1A 2AA",
+          appointment_date: (Date.current + 2.days).strftime("%d-%m-%Y"),
+          appointment_time: "11:00"
         }
-      end
+      }
     end
 
     created = @organization.appointments.order(:id).last

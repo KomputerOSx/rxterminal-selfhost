@@ -15,8 +15,5 @@ module InvitationResumption
     log_audit(:organization_invitation_accepted, user: user, resource: invitation.organization,
       metadata: { invitation_id: invitation.id, role: invitation.role.name })
     invitation
-  rescue OrganizationInvitation::MemberLimitReached
-    flash[:toast] = { message: "#{invitation.organization.name} is at its plan's member limit. Ask an owner to upgrade before you can join.", type: "error" }
-    nil
   end
 end

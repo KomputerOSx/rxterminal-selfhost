@@ -3,10 +3,6 @@ module Org
     def create
       authorize Current.organization, :create?, policy_class: OrganizationInvitationPolicy
 
-      if Current.organization.at_member_limit?
-        return render_member_limit_reached
-      end
-
       role = Role.find_by!(scope: :app, name: Role::APP_USER) # invite form always grants `user`; promotion is a separate action
       invitation, raw_token = OrganizationInvitation.generate_for!(
         organization: Current.organization, email: params[:email], role: role, invited_by: current_user
@@ -49,19 +45,6 @@ module Org
 
     def pending_invitations
       Current.organization.organization_invitations.outstanding.includes(:role, :invited_by)
-    end
-
-    def render_member_limit_reached
-      plan_name = Current.organization.current_plan&.name || Billing::Plans::STARTER.name
-      message = "#{plan_name} plan is limited to #{Current.organization.member_limit} " \
-        "#{"member".pluralize(Current.organization.member_limit)}. Upgrade to invite more people."
-      respond_to do |format|
-        format.turbo_stream do
-          flash.now[:toast] = { message: message, type: "error" }
-          render turbo_stream: turbo_stream.update("flash_messages", partial: "shared/flash")
-        end
-        format.html { redirect_to org_members_path, alert: message }
-      end
     end
   end
 end

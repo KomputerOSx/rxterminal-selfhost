@@ -26,7 +26,6 @@ class Service < ApplicationRecord
   scope :not_archived, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
   scope :plan_active, -> { visible.not_archived }
-  scope :counting_toward_plan_limit, -> { plan_active }
   scope :by_display_order, -> { order(:display_order, :display_name) }
   scope :featured_first, -> { order(featured: :desc, display_order: :asc, display_name: :asc) }
   scope :immediate, -> { where(allows_immediate: true) }

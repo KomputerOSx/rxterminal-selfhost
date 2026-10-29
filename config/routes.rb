@@ -39,17 +39,6 @@ Rails.application.routes.draw do
   post "confirmations",     to: "confirmations#create", as: :confirmations
 
   resource :profile, only: [ :show, :update, :destroy ], controller: "profile"
-  resource :billing, only: [ :show ], controller: "billing" do
-    resource :checkout_session, only: [ :create ], controller: "billing/checkout_sessions"
-    resource :billing_portal_session, only: [ :create ], controller: "billing/billing_portal_sessions"
-    resource :subscription, only: [ :create, :destroy ], controller: "billing/subscriptions" do
-      resource :resume, only: [ :create ], controller: "billing/subscription_resumes"
-      resource :scheduled_change, only: [ :destroy ], controller: "billing/scheduled_changes"
-    end
-    resource :currency, only: [ :update ], controller: "billing/currencies"
-    resource :promo_code, only: [ :create, :destroy ], controller: "billing/promo_codes"
-    resource :plan_reconciliation, only: [ :show, :update ], controller: "billing/plan_reconciliations"
-  end
   get    "profile/totp/new",     to: "profile#new_totp",          as: :new_profile_totp
   post   "profile/totp",         to: "profile#create_totp",       as: :profile_totp
   delete "profile/totp",         to: "profile#destroy_totp"
@@ -68,7 +57,6 @@ Rails.application.routes.draw do
   # the request format - constrain it so those requests 404 instead of
   # hitting the controller with a format we have no template for.
   get "sitemap.xml", to: "sitemaps#show", as: :sitemap, constraints: { format: "xml" }
-  get "pricing", to: "pricing#index", as: :pricing
   get "features", to: "pages#features", as: :features
   get "security", to: "pages#security", as: :security
   get "contact", to: "contact#new", as: :contact
@@ -112,7 +100,6 @@ Rails.application.routes.draw do
     resources :permissions
     resources :features, only: [ :index, :edit, :update ]
     resources :audit_logs, only: [ :index, :show ]
-    resources :webhook_events, only: [ :index, :show ]
     mount MissionControl::Jobs::Engine, at: "/jobs"
     resources :notifications, only: [ :index, :new, :create ] do
       member do
@@ -129,13 +116,9 @@ Rails.application.routes.draw do
     resource :maintenance_mode, only: [ :edit, :update ], controller: "maintenance_mode" do
       post :force_logout_all
     end
-    resources :price_migrations, only: [ :new, :create ]
     resources :customer_erasures, only: [ :new, :create ]
     resources :subject_access_requests, only: [ :new, :create ]
     get "customer_pii_exports/:token", to: "customer_pii_exports#show", as: :customer_pii_export
-    resources :organizations, only: [] do
-      resource :grandfather, only: [ :create, :destroy ], controller: "organization_grandfathers"
-    end
     resources :organization_logos, only: [ :index, :show ] do
       member do
         patch :approve

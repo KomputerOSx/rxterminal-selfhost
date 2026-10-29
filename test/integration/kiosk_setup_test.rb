@@ -60,14 +60,12 @@ class KioskSetupTest < ActionDispatch::IntegrationTest
     }
     assert_redirected_to kiosk_setup_path
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post kiosk_setup_authenticate_path
-      assert_redirected_to kiosk_root_path
-      follow_redirect!
-      assert_response :success
-      assert_match @organization.name, response.body
-      assert_match "Browse Services", response.body
-    end
+    post kiosk_setup_authenticate_path
+    assert_redirected_to kiosk_root_path
+    follow_redirect!
+    assert_response :success
+    assert_match @organization.name, response.body
+    assert_match "Browse Services", response.body
   end
 
   test "kiosk home requires authentication" do
@@ -76,16 +74,14 @@ class KioskSetupTest < ActionDispatch::IntegrationTest
   end
 
   test "authenticated kiosk can browse services" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      authenticate_kiosk!
+    authenticate_kiosk!
 
-      get kiosk_services_path
-      assert_response :success
-      assert_match @service.display_name, response.body
-      assert_match "kiosk-services-shell", response.body
-      assert_match "kiosk-service-card", response.body
-      assert_match "Select a service to get started", response.body
-    end
+    get kiosk_services_path
+    assert_response :success
+    assert_match @service.display_name, response.body
+    assert_match "kiosk-services-shell", response.body
+    assert_match "kiosk-service-card", response.body
+    assert_match "Select a service to get started", response.body
   end
 
   test "invalid api key is rejected during authenticate" do

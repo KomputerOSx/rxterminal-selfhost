@@ -3,8 +3,6 @@ class ApplicationController < ActionController::Base
   include MaintenanceGate
   include CurrentOrganization
   include OnboardingGate
-  include SubscriptionGate
-  include PlanReconciliationGate
   include Pundit::Authorization
   include AuditLogging
   include ActionView::RecordIdentifier

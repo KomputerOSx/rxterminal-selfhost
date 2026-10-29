@@ -19,8 +19,6 @@ module Org
     end
 
     def create
-      return if block_if_at_service_limit!
-
       @service = Current.organization.services.build(service_params)
       @service.display_order = next_display_order
       @calendars = active_calendars
@@ -137,8 +135,6 @@ module Org
         :calendar_id,
         eligibility_requirements: { eligible: [], not_eligible: [], additional: [] }
       )
-      permitted.delete(:requires_appointment) unless Current.organization.appointments_enabled?
-      permitted.delete(:calendar_id) unless Current.organization.calendars_enabled?
       filter_eligibility_requirements(permitted)
     end
 

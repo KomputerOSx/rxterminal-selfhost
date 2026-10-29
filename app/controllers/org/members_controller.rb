@@ -1,6 +1,6 @@
 module Org
   class MembersController < BaseController
-    include SoleOwnerSubscriptionGuard
+    include SoleOwnerGuard
 
     SORT_COLUMNS    = %w[email role].freeze
     SORT_DIRECTIONS = %w[asc desc].freeze
@@ -77,8 +77,6 @@ module Org
           log_audit(:owner_removal_blocked, resource: organization, metadata: { target_user_id: current_user.id, self_removal: true })
           redirect_to org_settings_path, alert: "Step down as owner before leaving the organization." and return
         end
-
-        return if block_leave_for_active_subscription!(organization)
 
         destroy_sole_member_organization!(organization)
         log_audit(:membership_destroyed, resource: organization,

@@ -192,9 +192,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_equal "branch@example.com", second.contact_email
     assert_equal "020 1234 5678", second.contact_phone
     assert second.memberships.exists?(user: @owner)
-    assert second.locked?
-    assert_not second.on_trial?
-    assert_redirected_to billing_path
+    assert_redirected_to dashboard_path
     assert_equal second.id, session[:current_organization_id]
   end
 
@@ -228,7 +226,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
 
     second = Organization.order(:id).last
     assert_equal "branch-pharmacy", second.slug
-    assert_redirected_to billing_path
+    assert_redirected_to dashboard_path
   end
 
   test "create organization rejects a taken slug" do
@@ -343,16 +341,14 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_not @organization.reload.kiosk_logo.attached?
   end
 
-  test "org switcher shows create link and status badges" do
-    second = Organization.create_for!(@owner, name: "Locked Branch")
+  test "org switcher shows create link and other organizations" do
+    second = Organization.create_for!(@owner, name: "Second Branch")
     post login_path, params: { email: @owner.email, password: "password123" }
 
     get dashboard_path
 
     assert_response :success
     assert_match "Create organization", response.body
-    assert_match "days left", response.body
-    assert_match "Locked", response.body
     assert_match second.name, response.body
   end
 end

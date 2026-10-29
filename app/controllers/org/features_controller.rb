@@ -8,15 +8,6 @@ module Org
       portal_contact_page
     ].freeze
 
-    # These features are meaningless without appointments, which is itself a Business-only
-    # plan capability (Organization#appointments_enabled?) - block toggling them on for orgs
-    # whose plan doesn't include appointments, matching the enforcement in the public booking
-    # and check-in controllers.
-    APPOINTMENT_DEPENDENT_FEATURES = %w[
-      online_appointment_booking
-      online_appointment_check
-    ].freeze
-
     def index
       authorize Current.organization, :update?, policy_class: OrganizationPolicy
 
@@ -35,7 +26,6 @@ module Org
         next unless available_keys.include?(key)
 
         enabled = ActiveModel::Type::Boolean.new.cast(attrs["enabled"])
-        next if enabled && APPOINTMENT_DEPENDENT_FEATURES.include?(key) && !Current.organization.appointments_enabled?
 
         Current.organization.update_feature!(key, enabled: enabled)
       end

@@ -3,8 +3,6 @@
 module Public
   class BaseController < ApplicationController
     include Public::PortalPathsHelper
-    include SubscriptionLockout
-    include PlanLimitEnforcement
 
     allow_unauthenticated_access
     layout "public"
@@ -17,7 +15,6 @@ module Public
 
     before_action :load_and_verify_organization
     around_action :use_organization_time_zone
-    before_action :enforce_public_subscription_lockout!
     before_action :require_privacy_accepted
 
     private
@@ -52,10 +49,5 @@ module Public
       session[:public_privacy_return_to] = request.fullpath
       redirect_to portal_privacy_path
     end
-
-    def subscription_lockout_organization
-      @organization
-    end
-    alias_method :enforce_public_subscription_lockout!, :enforce_subscription_lockout!
   end
 end

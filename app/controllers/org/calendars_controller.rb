@@ -15,8 +15,6 @@ module Org
     end
 
     def create
-      return if block_unless_calendars_enabled!
-
       @calendar = Current.organization.calendars.build(calendar_params)
 
       if @calendar.save

@@ -25,22 +25,20 @@ class OrgAppointmentBookingTest < ActionDispatch::IntegrationTest
   test "an owner can update appointment booking settings" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      patch org_appointment_booking_path, params: {
-        organization: {
-          appointment_days_ahead: 21,
-          bookable_times: {
-            "monday" => {
-              bookable_day: "1",
-              "0" => { start: "11:00", end: "12:00" }
-            },
-            "sunday" => { bookable_day: "0" }
-          }
+    patch org_appointment_booking_path, params: {
+      organization: {
+        appointment_days_ahead: 21,
+        bookable_times: {
+          "monday" => {
+            bookable_day: "1",
+            "0" => { start: "11:00", end: "12:00" }
+          },
+          "sunday" => { bookable_day: "0" }
         }
       }
+    }
 
-      assert_redirected_to org_appointment_booking_path
-    end
+    assert_redirected_to org_appointment_booking_path
 
     @organization.reload
     assert_equal 21, @organization.appointment_days_ahead
@@ -51,22 +49,20 @@ class OrgAppointmentBookingTest < ActionDispatch::IntegrationTest
   test "invalid bookable windows are rejected" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      patch org_appointment_booking_path, params: {
-        organization: {
-          appointment_days_ahead: 14,
-          bookable_times: {
-            "tuesday" => {
-              bookable_day: "1",
-              "0" => { start: "15:00", end: "14:00" }
-            }
+    patch org_appointment_booking_path, params: {
+      organization: {
+        appointment_days_ahead: 14,
+        bookable_times: {
+          "tuesday" => {
+            bookable_day: "1",
+            "0" => { start: "15:00", end: "14:00" }
           }
         }
       }
+    }
 
-      assert_response :unprocessable_entity
-      assert_match(/Tuesday window 1 must end after it starts/i, response.body)
-    end
+    assert_response :unprocessable_entity
+    assert_match(/Tuesday window 1 must end after it starts/i, response.body)
   end
 
   test "the page shows booking mode, blocked dates and openings" do
@@ -86,9 +82,7 @@ class OrgAppointmentBookingTest < ActionDispatch::IntegrationTest
   test "an owner can switch to openings mode" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      patch org_appointment_booking_path, params: { organization: { appointment_booking_mode: "openings" } }
-    end
+    patch org_appointment_booking_path, params: { organization: { appointment_booking_mode: "openings" } }
 
     assert_redirected_to org_appointment_booking_path
     assert @organization.reload.booking_mode_openings?
@@ -110,9 +104,7 @@ class OrgAppointmentBookingTest < ActionDispatch::IntegrationTest
       appointment_time: Time.zone.parse("10:00"), status: "booked"
     )
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      patch org_appointment_booking_path, params: { organization: { appointment_booking_mode: "openings" } }
-    end
+    patch org_appointment_booking_path, params: { organization: { appointment_booking_mode: "openings" } }
 
     assert_match "outside your booking schedule", flash[:toast][:message]
     follow_redirect!
@@ -124,9 +116,7 @@ class OrgAppointmentBookingTest < ActionDispatch::IntegrationTest
   test "an unknown booking mode is rejected" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      patch org_appointment_booking_path, params: { organization: { appointment_booking_mode: "sometimes" } }
-    end
+    patch org_appointment_booking_path, params: { organization: { appointment_booking_mode: "sometimes" } }
 
     assert_response :unprocessable_entity
     assert @organization.reload.booking_mode_rolling?
@@ -185,13 +175,11 @@ class OrgAppointmentBookingTest < ActionDispatch::IntegrationTest
     assert_match "Customer emails", response.body
     assert_match "Please arrive 5 minutes before your scheduled appointment.", response.body
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      patch org_appointment_booking_path, params: {
-        organization: { require_appointment_email: "1", appointment_email_message: "Bring your inhaler." }
-      }
+    patch org_appointment_booking_path, params: {
+      organization: { require_appointment_email: "1", appointment_email_message: "Bring your inhaler." }
+    }
 
-      assert_redirected_to org_appointment_booking_path
-    end
+    assert_redirected_to org_appointment_booking_path
 
     @organization.reload
     assert @organization.require_appointment_email?

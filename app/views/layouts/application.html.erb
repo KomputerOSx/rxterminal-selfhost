@@ -83,10 +83,6 @@
           <%= render "shared/navbar" %>
         </header>
 
-        <% if current_user && Current.organization&.past_due? %>
-          <%= render "shared/past_due_banner" %>
-        <% end %>
-
         <% if current_user && controller_path.start_with?("admin/") && !email_configured? %>
           <%= render "shared/email_not_configured_banner" %>
         <% end %>

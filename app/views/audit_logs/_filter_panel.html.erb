@@ -1,4 +1,4 @@
-<%# locals: (form_url:, clear_url:, results_frame:, show_organization_filter: false, organizations: [], max_retention_days: nil) %>
+<%# locals: (form_url:, clear_url:, results_frame:, show_organization_filter: false, organizations: []) %>
 <div class="grid grid-cols-1 gap-6 <%= show_organization_filter ? "xl:grid-cols-2" : "" %>">
   <div class="card border border-base-300" data-controller="checkboxes-filter">
     <div class="card-body flex h-80 flex-col gap-3 p-4">
@@ -101,22 +101,19 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
       <div>
         <h3 class="text-sm font-semibold">Time range</h3>
-        <% if max_retention_days %>
-          <p class="mt-1 text-xs text-base-content/60">Limited to the last <%= max_retention_days %> days on your current plan.</p>
-        <% end %>
         <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
           <%= render "audit_logs/datetime_filter_field",
                 name: :date_from,
                 value: @filter_params[:date_from],
                 label: "From",
-                min_date: (max_retention_days ? audit_log_retention_cutoff(max_retention_days).to_date : nil) %>
+                min_date: nil %>
           <%= render "audit_logs/datetime_filter_field",
                 name: :date_to,
                 value: @filter_params[:date_to],
                 label: "To" %>
         </div>
         <div class="mt-3 flex flex-wrap gap-2">
-          <% audit_log_quick_ranges(max_retention_days: max_retention_days).each do |label, from, to| %>
+          <% audit_log_quick_ranges.each do |label, from, to| %>
             <button type="button"
                     class="btn btn-outline btn-xs"
                     data-action="click->audit-log-filters#applyRange"

@@ -6,15 +6,13 @@ class InternalDomainValidationsTest < ActionDispatch::IntegrationTest
   end
 
   test "returns OK for a Growth org custom domain from an internal IP" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      @organization.update!(custom_domain: "shop.example.com")
+    @organization.update!(custom_domain: "shop.example.com")
 
-      get internal_domain_validations_path, params: { domain: "shop.example.com" },
-          headers: { "REMOTE_ADDR" => "127.0.0.1" }
+    get internal_domain_validations_path, params: { domain: "shop.example.com" },
+        headers: { "REMOTE_ADDR" => "127.0.0.1" }
 
-      assert_response :ok
-      assert_equal "OK", response.body
-    end
+    assert_response :ok
+    assert_equal "OK", response.body
   end
 
   test "returns not found when the domain is unknown" do
@@ -24,26 +22,12 @@ class InternalDomainValidationsTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "returns not found when the org is not on Growth" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      @organization.update!(custom_domain: "shop.example.com")
-    end
-    @organization.payment_processor.subscription.update!(status: "canceled", ends_at: 1.day.ago)
+  test "rejects non-internal remote IPs" do
+    @organization.update!(custom_domain: "shop.example.com")
 
     get internal_domain_validations_path, params: { domain: "shop.example.com" },
-        headers: { "REMOTE_ADDR" => "172.18.0.2" }
+        env: { "REMOTE_ADDR" => "8.8.8.8", "HTTP_X_FORWARDED_FOR" => "8.8.8.8" }
 
-    assert_response :not_found
-  end
-
-  test "rejects non-internal remote IPs" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      @organization.update!(custom_domain: "shop.example.com")
-
-      get internal_domain_validations_path, params: { domain: "shop.example.com" },
-          env: { "REMOTE_ADDR" => "8.8.8.8", "HTTP_X_FORWARDED_FOR" => "8.8.8.8" }
-
-      assert_response :unauthorized
-    end
+    assert_response :unauthorized
   end
 end

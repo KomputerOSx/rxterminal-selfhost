@@ -279,18 +279,6 @@ module ApplicationHelper
     current_user.has_permission?("app.members.demote_owner", organization: Current.organization)
   end
 
-  def org_switcher_status_badge(organization)
-    if organization.locked?
-      tag.span("Locked", class: "badge badge-error badge-xs shrink-0")
-    elsif organization.past_due?
-      tag.span("Payment due", class: "badge badge-warning badge-xs shrink-0")
-    elsif organization.on_trial?
-      days = organization.trial_days_remaining
-      label = days == 1 ? "1 day left" : "#{days} days left"
-      tag.span(label, class: "badge badge-info badge-xs shrink-0")
-    end
-  end
-
   # Email delivery is logged only in production until SMTP_ADDRESS is set.
   def email_configured?
     !Rails.env.production? || ENV["SMTP_ADDRESS"].present?

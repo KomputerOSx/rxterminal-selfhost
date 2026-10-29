@@ -11,7 +11,7 @@ class AdminMissionControlTest < ActionDispatch::IntegrationTest
     Rails.application.config.solid_queue.connects_to = { database: { writing: :queue } }
     SolidQueue::Record.establish_connection(:queue)
     ActiveJob::Base.queue_adapter = :solid_queue
-    sign_in_as_billing_admin(@admin)
+    sign_in_as_system_admin(@admin)
   end
 
   teardown do
@@ -20,13 +20,13 @@ class AdminMissionControlTest < ActionDispatch::IntegrationTest
     SolidQueue::Record.establish_connection(:primary)
   end
 
-  test "billing admin can access job inspector" do
+  test "system admin can access job inspector" do
     get "/admin/jobs"
 
     assert_response :success
   end
 
-  test "user without system.billing.manage cannot access job inspector" do
+  test "user without system.jobs.manage cannot access job inspector" do
     sign_out
     user = users(:two)
     role = Role.find_or_create_by!(scope: :system, name: Role::SYSTEM_USER) { |r| r.permanent = true }
@@ -38,25 +38,15 @@ class AdminMissionControlTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  test "failed jobs page is reachable for billing admins" do
+  test "failed jobs page is reachable for system admins" do
     get "/admin/jobs/failed/jobs"
 
     assert_response :success
   end
 
-  test "enqueued reconcile job is recorded in solid queue" do
-    SolidQueue::FailedExecution.delete_all
-    SolidQueue::Job.delete_all
-
-    Billing::ReconcileOrganizationJob.perform_later(@organization.id)
-
-    job = SolidQueue::Job.find_by!(class_name: "Billing::ReconcileOrganizationJob")
-    assert_equal "default", job.queue_name
-  end
-
   private
 
-  def sign_in_as_billing_admin(user)
+  def sign_in_as_system_admin(user)
     role = Role.find_or_create_by!(scope: :system, name: Role::SYSTEM_ADMIN) { |r| r.permanent = true }
     user.grant_role!(role)
     post login_path, params: { email: user.email, password: "password123" }

@@ -11,8 +11,6 @@ module Notifications
       Notifications::Rules::PasswordChanged,
       Notifications::Rules::EmailChanged,
       Notifications::Rules::NewDeviceLogin,
-      Notifications::Rules::PaymentFailed,
-      Notifications::Rules::SubscriptionCancelled,
       Notifications::Rules::AppointmentBookedOnline,
       Notifications::Rules::OrganizationLogoSubmitted,
       Notifications::Rules::OrganizationLogoApproved,

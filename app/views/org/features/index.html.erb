@@ -7,22 +7,14 @@
         <%= form_with url: org_features_path, method: :patch do %>
           <div class="divide-y divide-base-300">
             <% @features.each do |feature| %>
-              <% plan_locked = Org::FeaturesController::APPOINTMENT_DEPENDENT_FEATURES.include?(feature.key) &&
-                    !Current.organization.appointments_enabled? %>
               <div class="flex items-center justify-between gap-4 px-8 py-4">
                 <div>
                   <p class="font-medium"><%= feature.name %></p>
                   <p class="text-sm text-base-content/60">
-                    <% if plan_locked %>
-                      <%= plan_feature_upgrade_message(feature.name.downcase) %>
-                    <% else %>
-                      <%= feature.description %>
-                    <% end %>
+                    <%= feature.description %>
                   </p>
                 </div>
-                <% if plan_locked %>
-                  <%= plan_gated_nav_badge %>
-                <% elsif feature.org_opt_in_required? %>
+                <% if feature.org_opt_in_required? %>
                   <label class="label cursor-pointer gap-2">
                     <input type="hidden" name="features[<%= feature.key %>][enabled]" value="0">
                     <input type="checkbox" name="features[<%= feature.key %>][enabled]" value="1"

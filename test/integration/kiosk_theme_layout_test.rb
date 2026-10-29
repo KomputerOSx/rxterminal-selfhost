@@ -19,24 +19,20 @@ class KioskThemeLayoutTest < ActionDispatch::IntegrationTest
   end
 
   test "kiosk layout uses organization theme and does not read staff localStorage theme" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get kiosk_root_path
+    get kiosk_root_path
 
-      assert_response :success
-      assert_match 'data-theme="kiosk-pastel"', response.body
-      assert_no_match 'localStorage.getItem("theme")', response.body
-    end
+    assert_response :success
+    assert_match 'data-theme="kiosk-pastel"', response.body
+    assert_no_match 'localStorage.getItem("theme")', response.body
   end
 
   test "radius overrides apply on kiosk layout for preset themes" do
     @organization.update!(kiosk_theme_custom: { "radius_box" => "1.5rem" })
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get kiosk_root_path
+    get kiosk_root_path
 
-      assert_response :success
-      assert_match "--radius-box: 1.5rem;", response.body
-    end
+    assert_response :success
+    assert_match "--radius-box: 1.5rem;", response.body
   end
 
   test "custom kiosk theme applies inline css variables" do
@@ -49,26 +45,22 @@ class KioskThemeLayoutTest < ActionDispatch::IntegrationTest
       }
     )
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get kiosk_root_path
+    get kiosk_root_path
 
-      assert_response :success
-      assert_match 'data-theme="kiosk-custom"', response.body
-      assert_match "--color-primary: #445566;", response.body
-      assert_match "--color-base-100: #fafafa;", response.body
-      assert_match "--color-upsell-bg: #112233;", response.body
-    end
+    assert_response :success
+    assert_match 'data-theme="kiosk-custom"', response.body
+    assert_match "--color-primary: #445566;", response.body
+    assert_match "--color-base-100: #fafafa;", response.body
+    assert_match "--color-upsell-bg: #112233;", response.body
   end
 
   test "new kiosk theme preset resolves on layout" do
     @organization.update!(kiosk_theme: "kiosk-acid")
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get kiosk_root_path
+    get kiosk_root_path
 
-      assert_response :success
-      assert_match 'data-theme="kiosk-acid"', response.body
-    end
+    assert_response :success
+    assert_match 'data-theme="kiosk-acid"', response.body
   end
 
   private

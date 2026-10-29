@@ -1,10 +1,7 @@
 # Seed data for the onboarding "business_type" step. Loaded by
 # Onboarding::BusinessPresets - edit this file to add/change presets, no code changes needed.
 #
-# Each preset (other than "general") may list up to 3 services and one upsell_rule - kept to
-# that cap so a fresh preset fits Starter's plan limits (Billing::Plans::STARTER_LIMITS).
-# Onboarding::PresetApplier still caps at whatever room the organization actually has, so a
-# preset listing more than 3 services is safe to add but won't fully apply on Starter.
+# Each preset (other than "general") may list services and one upsell_rule.
 #
 # Service fields: internal_name, display_name, icon (Material Symbols name), estimated_duration
 # (minutes), allows_immediate, requires_appointment.

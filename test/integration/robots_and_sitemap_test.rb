@@ -4,9 +4,7 @@ class RobotsAndSitemapTest < ActionDispatch::IntegrationTest
   setup do
     @plain_organization = Organization.create_personal_for!(users(:one))
     @custom_domain_organization = Organization.create_personal_for!(users(:two))
-    with_active_subscription(@custom_domain_organization, Billing::Plans::BUSINESS) do
-      @custom_domain_organization.update!(custom_domain: "shop.acme.test")
-    end
+    @custom_domain_organization.update!(custom_domain: "shop.acme.test")
     FeatureRegistry.sync!
     Feature.find_by!(key: "public_portal").update!(enabled: true, applies_to_all_organizations: true)
   end
@@ -39,7 +37,6 @@ class RobotsAndSitemapTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "application/xml", response.media_type
     assert_match "http://www.example.com/", response.body
-    assert_match "http://www.example.com/pricing", response.body
     assert_match "http://www.example.com/#{@plain_organization.slug}", response.body
     assert_no_match "shop.acme.test", response.body
   end

@@ -17,8 +17,6 @@ module Kiosk
       return
     end
 
-    return if block_if_at_monthly_request_limit!(public_facing: true)
-
     @service_request = ServiceRequest.new(service_request_params)
       @service_request.organization = @organization
       @service_request.service = @service

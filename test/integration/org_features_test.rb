@@ -48,30 +48,6 @@ class OrgFeaturesTest < ActionDispatch::IntegrationTest
     assert @organization.reload.feature_enabled?(@feature.key)
   end
 
-  test "online appointment booking shows a Business lock instead of a toggle on starter" do
-    @organization.switch_trial_plan!(Billing::Plans::STARTER)
-
-    booking = Feature.find_or_create_by!(key: "online_appointment_booking") do |feature|
-      feature.name = "Online appointment booking"
-      feature.org_opt_in_required = true
-    end
-    booking.update!(enabled: true)
-    booking.feature_organization_accesses.find_or_create_by!(organization: @organization) { |access| access.enabled = true }
-
-    post login_path, params: { email: @owner.email, password: "password123" }
-
-    get org_features_path
-
-    assert_response :success
-    assert_match "Business", response.body
-    assert_no_match "features[online_appointment_booking][enabled]", response.body
-
-    patch org_features_path, params: { features: { booking.key => { enabled: "1" } } }
-
-    assert_redirected_to org_features_path
-    refute @organization.reload.feature_enabled?(booking.key)
-  end
-
   test "an org with no access row sees and can opt in to an applies_to_all_organizations feature" do
     all_org_feature = Feature.create!(key: "all_org_widget", name: "All Org Widget", enabled: true,
                                        org_opt_in_required: true, applies_to_all_organizations: true)

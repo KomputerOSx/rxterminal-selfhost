@@ -46,11 +46,11 @@ class AuditLogTest < ActiveSupport::TestCase
 
   test "log! creates the audit record" do
     assert_difference -> { AuditLog.count }, 1 do
-      AuditLog.log!(event_type: :subscription_cancelled, user: users(:one))
+      AuditLog.log!(event_type: :owner_promoted, user: users(:one))
     end
 
     log = AuditLog.recent.first
-    assert_equal "subscription_cancelled", log.event_type
+    assert_equal "owner_promoted", log.event_type
     assert_equal users(:one), log.user
   end
 
@@ -58,10 +58,10 @@ class AuditLogTest < ActiveSupport::TestCase
     organization = Organization.create_personal_for!(users(:one))
 
     assert_enqueued_with(job: NotificationDispatchJob, args: [ {
-      event_type: "subscription_cancelled", actor_id: nil, resource_type: "Organization",
+      event_type: "owner_promoted", actor_id: nil, resource_type: "Organization",
       resource_id: organization.id, organization_id: organization.id, metadata: {}
     } ]) do
-      AuditLog.log!(event_type: :subscription_cancelled, resource: organization, organization: organization)
+      AuditLog.log!(event_type: :owner_promoted, resource: organization, organization: organization)
     end
   end
 
@@ -71,8 +71,8 @@ class AuditLogTest < ActiveSupport::TestCase
     end
   end
 
-  test "log! accepts every event type introduced for the billing, security, and appointments notification categories" do
-    %i[payment_failed new_device_login appointment_booked_online].each do |event_type|
+  test "log! accepts every event type introduced for the security and appointments notification categories" do
+    %i[new_device_login appointment_booked_online].each do |event_type|
       assert_nothing_raised { AuditLog.log!(event_type: event_type, user: users(:one)) }
     end
   end

@@ -1,5 +1,5 @@
 class ProfileController < ApplicationController
-  include SoleOwnerSubscriptionGuard
+  include SoleOwnerGuard
 
   def show
   end
@@ -44,14 +44,6 @@ class ProfileController < ApplicationController
       flash[:toast] = { message: "You're the only owner of #{other_member_orgs.map(&:name).to_sentence}, " \
         "which still has other members. Promote a co-owner or remove the other members before deleting your account.",
         type: "error" }
-      redirect_to profile_path and return
-    end
-
-    subscription_orgs = organizations_blocking_account_deletion_for_active_subscription
-    if subscription_orgs.any?
-      log_audit(:account_deletion_blocked,
-        metadata: { organization_ids: subscription_orgs.map(&:id), active_subscription: true })
-      flash[:toast] = { message: active_subscription_guard_message(subscription_orgs), type: "error" }
       redirect_to profile_path and return
     end
 

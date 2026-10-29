@@ -63,10 +63,6 @@ class User < ApplicationRecord
 
   after_update :save_password_to_history, if: :saved_change_to_password_digest?
 
-  def trial_available?
-    trial_granted_at.nil?
-  end
-
   # --- Account lockout ---
 
   def locked?

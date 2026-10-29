@@ -1,7 +1,5 @@
 module Org
   class BaseController < ApplicationController
-    include PlanLimitEnforcement
-
     before_action :require_current_organization!
     around_action :use_organization_time_zone
     after_action :verify_authorized

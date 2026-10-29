@@ -17,8 +17,6 @@ module Org
     end
 
     def create
-      return if block_unless_kiosk_enabled!
-
       raw_key = SecureRandom.hex(32)
       @device = Current.organization.devices.build(device_params)
       @device.api_key = raw_key

@@ -3,9 +3,7 @@ require "test_helper"
 class SitesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @organization = Organization.create_personal_for!(users(:one))
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      @organization.update!(custom_domain: "shop.acme.test")
-    end
+    @organization.update!(custom_domain: "shop.acme.test")
   end
 
   test "renders public portal on a configured custom domain root" do
@@ -23,15 +21,13 @@ class SitesControllerTest < ActionDispatch::IntegrationTest
     enable_public_portal!(:online_appointment_booking)
     host! "shop.acme.test"
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get "/"
-      post "/privacy/accept"
+    get "/"
+    post "/privacy/accept"
 
-      get "/appointments"
+    get "/appointments"
 
-      assert_response :success
-      assert_no_match "Public site placeholder", response.body
-    end
+    assert_response :success
+    assert_no_match "Public site placeholder", response.body
   end
 
   test "returns not found for an unknown custom domain" do

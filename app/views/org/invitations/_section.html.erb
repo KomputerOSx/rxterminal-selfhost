@@ -27,8 +27,8 @@
   <%= form_with url: org_invitations_path, method: :post, html: { class: "mt-6 flex items-end gap-2" } do %>
     <div class="form-control">
       <label class="label"><span class="label-text">Invite by email</span></label>
-      <input type="email" name="email" required class="input-field" <%= "disabled" if Current.organization.at_member_limit? %>>
+      <input type="email" name="email" required class="input-field">
     </div>
-    <%= submit_tag "Invite", class: "btn btn-sm btn-primary", disabled: Current.organization.at_member_limit? %>
+    <%= submit_tag "Invite", class: "btn btn-sm btn-primary" %>
   <% end %>
 </div>

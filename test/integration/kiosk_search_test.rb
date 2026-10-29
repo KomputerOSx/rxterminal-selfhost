@@ -36,34 +36,28 @@ class KioskSearchTest < ActionDispatch::IntegrationTest
   end
 
   test "search page renders shell and keyboard" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get kiosk_search_services_path
-      assert_response :success
-      assert_match "kiosk-search-shell", response.body
-      assert_match "Find a Service", response.body
-      assert_match "btn btn-lg kiosk-keyboard-key", response.body
-      assert_match "What would you like to find today?", response.body
-    end
+    get kiosk_search_services_path
+    assert_response :success
+    assert_match "kiosk-search-shell", response.body
+    assert_match "Find a Service", response.body
+    assert_match "btn btn-lg kiosk-keyboard-key", response.body
+    assert_match "What would you like to find today?", response.body
   end
 
   test "query filtering returns matching service" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get kiosk_search_services_path, params: { q: "flu" }
-      assert_response :success
-      assert_match @flu_service.display_name, response.body
-      assert_no_match @bp_service.display_name, response.body
-      assert_match "1 service found", response.body
-    end
+    get kiosk_search_services_path, params: { q: "flu" }
+    assert_response :success
+    assert_match @flu_service.display_name, response.body
+    assert_no_match @bp_service.display_name, response.body
+    assert_match "1 service found", response.body
   end
 
   test "nonsense query shows no results message" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get kiosk_search_services_path, params: { q: "!!!" }
-      assert_response :success
-      assert_match "Nothing found", response.body
-      assert_no_match @flu_service.display_name, response.body
-      assert_no_match @bp_service.display_name, response.body
-    end
+    get kiosk_search_services_path, params: { q: "!!!" }
+    assert_response :success
+    assert_match "Nothing found", response.body
+    assert_no_match @flu_service.display_name, response.body
+    assert_no_match @bp_service.display_name, response.body
   end
 
   private

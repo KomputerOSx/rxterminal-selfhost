@@ -28,45 +28,41 @@ class KioskServiceRequestBroadcastTest < ActionDispatch::IntegrationTest
   end
 
   test "kiosk create broadcasts to the organization queue stream" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_broadcasts("organization_#{@organization.id}_queue", 5) do
-        post kiosk_service_requests_path,
-          params: {
-            service_id: @service.id,
-            service_request: {
-              first_name: "john",
-              last_name: "smith",
-              dob: "1990-05-15",
-              postcode: "SW1A 1AA",
-              privacy_requested: false
-            }
-          },
-          as: :json
-      end
-
-      assert_response :success
+    assert_broadcasts("organization_#{@organization.id}_queue", 5) do
+      post kiosk_service_requests_path,
+        params: {
+          service_id: @service.id,
+          service_request: {
+            first_name: "john",
+            last_name: "smith",
+            dob: "1990-05-15",
+            postcode: "SW1A 1AA",
+            privacy_requested: false
+          }
+        },
+        as: :json
     end
+
+    assert_response :success
   end
 
   test "kiosk create broadcasts to the waiting display stream" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_broadcasts("organization_#{@organization.id}_waiting_display", 3) do
-        post kiosk_service_requests_path,
-          params: {
-            service_id: @service.id,
-            service_request: {
-              first_name: "jane",
-              last_name: "doe",
-              dob: "1985-03-20",
-              postcode: "EC1A 1BB",
-              privacy_requested: false
-            }
-          },
-          as: :json
-      end
-
-      assert_response :success
+    assert_broadcasts("organization_#{@organization.id}_waiting_display", 3) do
+      post kiosk_service_requests_path,
+        params: {
+          service_id: @service.id,
+          service_request: {
+            first_name: "jane",
+            last_name: "doe",
+            dob: "1985-03-20",
+            postcode: "EC1A 1BB",
+            privacy_requested: false
+          }
+        },
+        as: :json
     end
+
+    assert_response :success
   end
 
   private

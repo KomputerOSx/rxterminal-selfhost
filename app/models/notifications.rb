@@ -1,7 +1,6 @@
 module Notifications
   CATEGORIES = {
     "membership"   => { label: "Membership & invitations", always_on: false },
-    "billing"      => { label: "Billing & payments", always_on: false },
     "security"     => { label: "Security alerts", always_on: true },
     "appointments" => { label: "Appointments", always_on: false },
     "admin"        => { label: "Admin & system", always_on: false }

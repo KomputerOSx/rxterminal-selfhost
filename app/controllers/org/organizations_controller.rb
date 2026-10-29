@@ -28,8 +28,8 @@ module Org
       )
       session[:current_organization_id] = organization.id
 
-      redirect_to billing_path,
-        notice: "#{organization.name} created. Choose a plan to start using it."
+      redirect_to dashboard_path,
+        notice: "#{organization.name} created."
     rescue ActiveRecord::RecordInvalid => e
       @organization = e.record
       @organization.assign_attributes(organization_params)
@@ -56,11 +56,6 @@ module Org
 
       organization = Current.organization
 
-      # Warm the Pay::Customer association before a possible validation failure below - the
-      # settings view checks plan/billing state (e.g. custom_domain_allowed?) on re-render, and
-      # Pay's lazy payment_processor auto-vivification uses with_lock, which raises if called
-      # on a record with unsaved changes (the invalid attributes we're about to assign).
-      organization.payment_processor
       organization.enforce_slug_change_limit = true
 
       if organization.update(permitted)

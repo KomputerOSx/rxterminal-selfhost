@@ -3,16 +3,12 @@
 module KioskAuthentication
   extend ActiveSupport::Concern
   include KioskPreviewMode
-  include SubscriptionLockout
-  include PlanLimitEnforcement
 
   KIOSK_AUTH_COOKIE = :kiosk_jwt_token
 
   included do
     before_action :authenticate_kiosk_device
     before_action :set_kiosk_organization
-    before_action :enforce_kiosk_subscription_lockout!
-    before_action :enforce_kiosk_plan_access!
   end
 
   private
@@ -146,36 +142,5 @@ module KioskAuthentication
 
   def current_device
     @device
-  end
-
-  def subscription_lockout_organization
-    @organization
-  end
-
-  def enforce_kiosk_subscription_lockout!
-    enforce_subscription_lockout!
-  end
-
-  def enforce_kiosk_plan_access!
-    return unless @organization
-    return if @organization.kiosk_enabled?
-
-    message = if kiosk_preview_mode?
-      plan_feature_upgrade_message("kiosk devices", organization: @organization)
-    else
-      "This kiosk is temporarily unavailable. Please contact the pharmacy."
-    end
-
-    if kiosk_preview_mode?
-      redirect_to org_kiosk_path, alert: message
-    elsif request.format.json?
-      render json: { error: message }, status: :forbidden
-    else
-      redirect_to kiosk_setup_path, alert: message
-    end
-  end
-
-  def subscription_lockout_layout
-    false
   end
 end

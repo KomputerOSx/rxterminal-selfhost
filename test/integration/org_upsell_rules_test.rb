@@ -54,33 +54,31 @@ class OrgUpsellRulesTest < ActionDispatch::IntegrationTest
   test "a member with app.upsells.manage can create an upsell rule with multiple variants" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference -> { @organization.upsell_rules.count }, 1 do
-        post org_upsell_rules_path, params: {
-          upsell_rule: {
-            name: "BP to flu A/B",
-            trigger_service_id: @suggested.id,
-            suggested_service_id: @trigger.id,
-            frequency_type: "percentage_based",
-            frequency_value: 25,
-            visit_type: "returning",
-            cooldown_days: 14,
-            active: true,
-            upsell_templates_attributes: {
-              "0" => {
-                title: "Seasonal flu jab",
-                description: "Protect yourself this winter.",
-                cta_text: "Add flu jab"
-              },
-              "1" => {
-                title: "Stay protected",
-                description: "Quick flu jab while you wait.",
-                cta_text: "Book flu jab"
-              }
+    assert_difference -> { @organization.upsell_rules.count }, 1 do
+      post org_upsell_rules_path, params: {
+        upsell_rule: {
+          name: "BP to flu A/B",
+          trigger_service_id: @suggested.id,
+          suggested_service_id: @trigger.id,
+          frequency_type: "percentage_based",
+          frequency_value: 25,
+          visit_type: "returning",
+          cooldown_days: 14,
+          active: true,
+          upsell_templates_attributes: {
+            "0" => {
+              title: "Seasonal flu jab",
+              description: "Protect yourself this winter.",
+              cta_text: "Add flu jab"
+            },
+            "1" => {
+              title: "Stay protected",
+              description: "Quick flu jab while you wait.",
+              cta_text: "Book flu jab"
             }
           }
         }
-      end
+      }
     end
 
     created = @organization.upsell_rules.find_by!(name: "BP to flu A/B")
@@ -92,28 +90,26 @@ class OrgUpsellRulesTest < ActionDispatch::IntegrationTest
   test "a member with app.upsells.manage can create an upsell rule" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference -> { @organization.upsell_rules.count }, 1 do
-        post org_upsell_rules_path, params: {
-          upsell_rule: {
-            name: "BP to flu",
-            trigger_service_id: @suggested.id,
-            suggested_service_id: @trigger.id,
-            frequency_type: "percentage_based",
-            frequency_value: 25,
-            visit_type: "returning",
-            cooldown_days: 14,
-            active: true,
-            upsell_templates_attributes: {
-              "0" => {
-                title: "Seasonal flu jab",
-                description: "Protect yourself this winter.",
-                cta_text: "Add flu jab"
-              }
+    assert_difference -> { @organization.upsell_rules.count }, 1 do
+      post org_upsell_rules_path, params: {
+        upsell_rule: {
+          name: "BP to flu",
+          trigger_service_id: @suggested.id,
+          suggested_service_id: @trigger.id,
+          frequency_type: "percentage_based",
+          frequency_value: 25,
+          visit_type: "returning",
+          cooldown_days: 14,
+          active: true,
+          upsell_templates_attributes: {
+            "0" => {
+              title: "Seasonal flu jab",
+              description: "Protect yourself this winter.",
+              cta_text: "Add flu jab"
             }
           }
         }
-      end
+      }
     end
 
     created = @organization.upsell_rules.find_by!(name: "BP to flu")

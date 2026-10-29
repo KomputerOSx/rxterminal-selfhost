@@ -77,35 +77,6 @@ class OrgMembersTest < ActionDispatch::IntegrationTest
     assert AuditLog.exists?(event_type: :membership_destroyed)
   end
 
-  test "sole owner as the only member cannot leave while the org has an active subscription" do
-    post login_path, params: { email: @owner.email, password: "password123" }
-
-    assert_no_difference [ "Organization.count", "Membership.count" ] do
-      delete leave_org_members_path
-    end
-
-    assert_redirected_to org_settings_path
-    assert_match "active subscription", flash[:alert]
-    assert_match "/billing", flash[:alert]
-    assert AuditLog.exists?(event_type: :owner_removal_blocked)
-  end
-
-  test "sole owner as the only member can leave after the subscription has ended" do
-    post login_path, params: { email: @owner.email, password: "password123" }
-
-    with_active_subscription(@organization, Billing::Plans::STARTER) do
-      @organization.payment_processor.subscription.update!(status: "canceled", ends_at: 1.day.ago)
-      assert_not @organization.active_subscription?
-
-      assert_difference [ "Organization.count", "Membership.count" ], -1 do
-        delete leave_org_members_path
-      end
-    end
-
-    assert_redirected_to dashboard_path
-    assert_not Organization.exists?(@organization.id)
-  end
-
   test "a plain user can view the members list but cannot remove members" do
     user_role = Role.find_or_create_by!(scope: :app, name: Role::APP_USER)
     plain_member = @organization.memberships.create!(user: users(:two))
@@ -129,10 +100,8 @@ class OrgMembersTest < ActionDispatch::IntegrationTest
 
     post login_path, params: { email: users(:two).email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference "OrganizationInvitation.count", 1 do
-        post org_invitations_path, params: { email: "invitee@example.com" }
-      end
+    assert_difference "OrganizationInvitation.count", 1 do
+      post org_invitations_path, params: { email: "invitee@example.com" }
     end
 
     patch promote_org_member_path(admin_membership)

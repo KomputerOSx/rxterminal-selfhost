@@ -55,7 +55,6 @@ gem "sentry-rails"
 gem "pundit", "~> 2.3"
 
 # Stripe subscription billing
-gem "pay", ">= 11.6.2"
 gem "stripe", ">= 19.3"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

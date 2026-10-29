@@ -2,7 +2,6 @@
 
 module Org
   class WaitingDisplayController < ApplicationController
-    include SubscriptionLockout
     include PortalQrCode
 
     layout "waiting_display"
@@ -21,7 +20,6 @@ module Org
 
     before_action :authenticate_for_display
     before_action :load_display_organization
-    before_action :enforce_waiting_display_subscription_lockout!
     before_action :authorize_staff_display_setup, only: [ :index ]
     before_action :stamp_display_token, only: [ :index ]
     # On both index and poll - the QR rotates hourly now, and a display can sit open for a
@@ -135,18 +133,6 @@ module Org
       return nil if ids.blank?
 
       Array(ids).map(&:to_i).select(&:positive?)
-    end
-
-    def subscription_lockout_organization
-      @organization
-    end
-
-    def enforce_waiting_display_subscription_lockout!
-      enforce_subscription_lockout!
-    end
-
-    def subscription_lockout_public_message
-      "This waiting display is temporarily unavailable."
     end
   end
 end

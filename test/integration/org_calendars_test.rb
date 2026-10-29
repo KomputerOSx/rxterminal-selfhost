@@ -19,12 +19,10 @@ class OrgCalendarsTest < ActionDispatch::IntegrationTest
   test "a member with app.calendars.manage can create an additional calendar" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference -> { @organization.calendars.count }, 1 do
-        post org_calendars_path, params: {
-          calendar: { name: "Room B", color: "#22c55e" }
-        }
-      end
+    assert_difference -> { @organization.calendars.count }, 1 do
+      post org_calendars_path, params: {
+        calendar: { name: "Room B", color: "#22c55e" }
+      }
     end
 
     created = @organization.calendars.find_by!(name: "Room B")

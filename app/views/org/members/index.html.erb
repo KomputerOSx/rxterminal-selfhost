@@ -49,10 +49,6 @@
   <% end %>
 
   <% if current_user.has_permission?("app.members.invite", organization: Current.organization) %>
-    <% if Current.organization.at_member_limit? %>
-      <%= render "shared/plan_upgrade_banner",
-            message: plan_limit_upgrade_message("member", organization: Current.organization) %>
-    <% end %>
     <%= render "org/invitations/section", pending_invitations: @pending_invitations %>
   <% end %>
 </section>

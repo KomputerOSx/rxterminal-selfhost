@@ -1,8 +1,8 @@
 permissions:
   system.users.manage: "Manage user accounts"
+  system.jobs.manage: "View the background job inspector"
   system.roles.manage: "View/manage roles and permissions"
   system.audit_logs.view: "View audit logs"
-  system.billing.manage: "Manage platform-wide billing (price migrations, grandfathering)"
   system.email_campaigns.manage: "Compose and send platform-wide email campaigns"
   system.customer_erasure.manage: "GDPR customer erasure tool"
   system.subject_access.manage: "GDPR subject access request export"
@@ -13,7 +13,6 @@ permissions:
   app.members.promote_owner: "Promote a member to co-owner of the organization"
   app.members.demote_owner: "Demote an owner to admin"
   app.organization.manage: "Manage organization settings"
-  app.billing.manage: "Manage billing and subscription"
   app.queue.view: "View live queue and waiting display"
   app.queue.manage: "Call, complete, cancel, revert queue entries"
   app.appointments.view: "View appointment list and detail"
@@ -32,7 +31,7 @@ roles:
     system_admin:
       permanent: true
       description: "Permanent platform operator role"
-      permissions: [system.users.manage, system.roles.manage, system.audit_logs.view, system.billing.manage, system.email_campaigns.manage, system.customer_erasure.manage, system.subject_access.manage, system.organization_logos.manage]
+      permissions: [system.users.manage, system.jobs.manage, system.roles.manage, system.audit_logs.view, system.email_campaigns.manage, system.customer_erasure.manage, system.subject_access.manage, system.organization_logos.manage]
     system_user:
       permanent: true
       description: "Permanent basic platform operator role"
@@ -41,7 +40,7 @@ roles:
     owner:
       permanent: true
       description: "Organization owner - full control; cannot be removed while sole owner"
-      permissions: [app.members.invite, app.members.remove, app.members.promote, app.members.promote_owner, app.members.demote_owner, app.organization.manage, app.billing.manage, app.queue.view, app.queue.manage, app.appointments.view, app.appointments.manage, app.services.manage, app.calendars.manage, app.upsells.manage, app.devices.manage, app.kiosk.configure, app.analytics.view, app.portal.configure, app.audit_logs.view]
+      permissions: [app.members.invite, app.members.remove, app.members.promote, app.members.promote_owner, app.members.demote_owner, app.organization.manage, app.queue.view, app.queue.manage, app.appointments.view, app.appointments.manage, app.services.manage, app.calendars.manage, app.upsells.manage, app.devices.manage, app.kiosk.configure, app.analytics.view, app.portal.configure, app.audit_logs.view]
     admin:
       permanent: false
       description: "Organization admin - day-to-day management"

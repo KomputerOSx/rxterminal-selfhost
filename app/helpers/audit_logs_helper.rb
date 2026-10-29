@@ -22,11 +22,7 @@ module AuditLogsHelper
     time.in_time_zone.strftime(FILTER_DATETIME_FORMAT)
   end
 
-  def audit_log_retention_cutoff(max_retention_days)
-    max_retention_days.days.ago
-  end
-
-  def audit_log_quick_ranges(max_retention_days: nil)
+  def audit_log_quick_ranges
     now = Time.current
     ranges = [
       [ "Last hour", 1.hour.ago, now ],
@@ -34,11 +30,6 @@ module AuditLogsHelper
       [ "Last 7 days", 7.days.ago, now ],
       [ "Last 30 days", 30.days.ago, now ]
     ]
-
-    if max_retention_days
-      cutoff = audit_log_retention_cutoff(max_retention_days)
-      ranges.select! { |_, from, _| from >= cutoff }
-    end
 
     ranges.map do |label, from, to|
       [ label, audit_log_filter_datetime(from), audit_log_filter_datetime(to) ]

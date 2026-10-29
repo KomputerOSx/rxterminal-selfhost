@@ -40,12 +40,7 @@ module Org
     def require_business_plan!
       return if Current.organization.custom_domain_allowed?
 
-      alert = "Custom domains require the Business plan."
-      if current_user.has_permission?("app.billing.manage", organization: Current.organization)
-        redirect_to billing_path, alert: alert
-      else
-        redirect_to org_settings_path, alert: alert
-      end
+      redirect_to org_settings_path, alert: "Custom domains are not available."
     end
 
     def authorize_manage
