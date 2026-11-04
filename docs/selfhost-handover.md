@@ -69,6 +69,23 @@ watch out for. The plan text itself is the source of truth for scope.
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
 
+### Phase 4: Docker and releases (branch `phase-4-docker`) - NOT RUN, see below
+- `Dockerfile`: `SOLID_QUEUE_IN_PUMA=true` (jobs run inside the web process), `/rails/storage` created
+  and owned by the non-root user and declared a `VOLUME`, `HEALTHCHECK` on `/up`. `/up` is excluded
+  from the force-SSL redirect so it answers 200 over plain HTTP inside the container.
+- `docker-compose.yml`: `app` (image `ghcr.io/komputerosx/rxterminal-selfhost`, override with
+  `RXTERMINAL_IMAGE`, or `build: .`), plus optional profiles `https` (Caddy, `docker/Caddyfile`),
+  `backup` (Litestream, `docker/litestream.yml`, replicates `production.sqlite3` only) and `postgres`
+  (needs `POSTGRES_PASSWORD` and `DATABASE_URL` in `.env`). `.env` is required (`cp .env.example .env`).
+- `.github/workflows/release.yml`: on `v*` tags builds amd64+arm64 and pushes to GHCR (`latest` only
+  for tags without a `-`). Dependabot now also watches the Dockerfile.
+- **Verified:** `docker compose config` passes for every profile combination; a production boot with
+  `SOLID_QUEUE_IN_PUMA=true` runs Solid Queue inside Puma and `/up` returns 200 over plain HTTP.
+- **NOT verified (no Docker daemon access in the session):** `docker build`, `docker compose up`,
+  the Caddy certificate flow, Litestream replicate/restore, the Postgres profile, and the release
+  workflow. Do these in Phase 7. Known gaps: Litestream does not cover uploaded files or
+  `storage/secrets.env`; Postgres has not been tried with the baseline migration.
+
 ### Phase 3: one business per install (branch `phase-3-single-business`)
 - `/setup` (first run, first come first served, deliberately no token): creates the owner, the
   organization and the system admin role in one transaction; every page redirects to it until a
@@ -196,7 +213,7 @@ watch out for. The plan text itself is the source of truth for scope.
   arrival links still work. No host-based routing and no separate staff subdomain): close sign-up (remove `RegistrationsController` and routes;
   OAuth only for existing users), first-run `/setup`, branch creation limited to system role or
   owners, rename `/admin` to "Instance settings", new root-URL behaviour.
-- **4 Docker and releases:** `SOLID_QUEUE_IN_PUMA=true`, `docker-compose.yml` with `https`,
+- **4 Docker and releases (files written, unrun, see above):** `SOLID_QUEUE_IN_PUMA=true`, `docker-compose.yml` with `https`,
   `backup` (Litestream) and `postgres` profiles, Caddyfile, `litestream.yml`, a `/up` healthcheck,
   and a GitHub Actions workflow publishing amd64 and arm64 images to GHCR on `v*` tags.
 - **5 debranding, docs, licence:** `APP_NAME`, `SUPPORT_EMAIL`, `LOGO_URL`; remove about 24
