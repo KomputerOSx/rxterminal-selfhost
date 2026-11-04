@@ -69,7 +69,7 @@ class OrgWaitingDisplayTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     get org_waiting_display_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "waiting display shows a scan-to-join QR code when only walk-in is enabled" do

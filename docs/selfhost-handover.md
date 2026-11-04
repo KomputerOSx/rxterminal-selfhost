@@ -69,7 +69,7 @@ watch out for. The plan text itself is the source of truth for scope.
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
 
-### Phase 3a: closed sign-up, /setup, no OAuth (branch `phase-3-single-business`, WIP)
+### Phase 3: one business per install (branch `phase-3-single-business`)
 - `/setup` (first run, first come first served, deliberately no token): creates the owner, the
   organization and the system admin role in one transaction; every page redirects to it until a
   user exists (`SetupGate`, `Setup.required?`). Race guard: re-check inside the transaction
@@ -81,7 +81,22 @@ watch out for. The plan text itself is the source of truth for scope.
   `Identity` model/table, `GOOGLE_*`/`GITHUB_*` env vars). Email + password (plus optional TOTP
   two-factor) is the only sign-in method.
 - Creating another organization (branch) requires the system admin role or an owner role.
-- Still to do in Phase 3: root-URL portal, `/admin` renamed "Instance settings".
+- **Root portal:** `/` serves the public portal of `Organization.primary` (lowest id), with
+  root-relative links (`/appointments`, `/walk-in`, `/arrive`, ...; routes in
+  `config/routes/public_portal_root.rb`). Branches keep `/:slug` portals, and `/:slug` still works
+  for the primary org too (no redirect was added, so printed QR codes keep working). QR/portal URLs
+  and the sitemap for the primary org now point at the root. The root redirects to `/login` when no
+  organization exists. `HomeController` is gone.
+- `root_path` now means the public portal, so internal "go home" redirects (unauthorized, sidebar
+  Dashboard link, notifications) use `dashboard_path`. Words used by root portal paths are reserved
+  slugs.
+- The root-level legal pages (`/privacy-policy`, `/terms`, ...) are the app-wide ones (still say
+  "Strixon Ltd" until Phase 5 templates them); the portal's per-org legal pages exist only under
+  `/:slug/`.
+- "Admin" labels renamed "Instance settings" (paths remain `/admin`).
+- Verified on a fresh production SQLite DB: `/` and `/login` redirect to `/setup`; posting setup
+  creates the owner and lands on onboarding; `/setup` then redirects to login; `/` serves the portal;
+  `/signup` redirects to login.
 
 ### Phase 2f: schema squash (branch `phase-2f-schema-squash`, on top of the simplify branch)
 - The 98 migrations are replaced by `db/migrate/20261104000000_baseline_schema.rb`, built from the

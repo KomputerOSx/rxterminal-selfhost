@@ -31,6 +31,6 @@ class ApplicationController < ActionController::Base
 
   def deny_authorization!
     log_audit(:authorization_denied, metadata: { path: request.path })
-    redirect_to root_path, alert: "You are not authorized to access this page."
+    redirect_to main_app.dashboard_path, alert: "You are not authorized to access this page."
   end
 end

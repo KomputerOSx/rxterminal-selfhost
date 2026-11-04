@@ -140,7 +140,8 @@ module Public
     private
 
     def portal_path(suffix, **options)
-      path = [ "/#{portal_slug}", suffix ].reject(&:blank?).join("/")
+      base = request.path_parameters[:organization_slug].present? ? "/#{portal_slug}" : ""
+      path = [ base, suffix ].reject(&:blank?).join("/")
       path = "/#{path.delete_prefix("/")}"
       query = options.except(:only_path).to_query
       query.present? ? "#{path}?#{query}" : path

@@ -82,7 +82,7 @@ class AdminSubjectAccessRequestTest < ActionDispatch::IntegrationTest
     sign_in_as_system_user(users(:two))
 
     get new_admin_subject_access_request_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   private

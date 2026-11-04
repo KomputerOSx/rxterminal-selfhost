@@ -135,7 +135,7 @@ class OrgAppointmentBlockedDatesTest < ActionDispatch::IntegrationTest
 
     post org_appointment_booking_blocked_dates_path, params: { appointment_blocked_date: { start_date: @date.iso8601 } }
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert_not @organization.appointment_blocked_dates.exists?
   end
 end

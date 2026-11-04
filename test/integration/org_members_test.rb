@@ -90,7 +90,7 @@ class OrgMembersTest < ActionDispatch::IntegrationTest
     assert_no_difference "Membership.count" do
       delete org_member_path(@owner.memberships.first)
     end
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "an admin can invite and remove members but cannot promote/demote" do
@@ -105,7 +105,7 @@ class OrgMembersTest < ActionDispatch::IntegrationTest
     end
 
     patch promote_org_member_path(admin_membership)
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "an owner can promote another member to co-owner with valid confirmation" do
@@ -168,7 +168,7 @@ class OrgMembersTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     patch promote_to_owner_org_member_path(plain_member), params: { typed_confirmation: third_user.email, code: "000000".chars }
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert_not plain_member.reload.has_role?(Role::APP_OWNER, scope: :app)
   end
 
@@ -257,7 +257,7 @@ class OrgMembersTest < ActionDispatch::IntegrationTest
     own_membership = @owner.memberships.first
     patch demote_owner_org_member_path(own_membership), params: { typed_confirmation: @owner.email, code: "000000".chars }
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert own_membership.reload.has_role?(Role::APP_OWNER, scope: :app)
   end
 

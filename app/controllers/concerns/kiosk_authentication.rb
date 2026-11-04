@@ -79,7 +79,7 @@ module KioskAuthentication
       @organization = Organization.find_by(id: session[:kiosk_preview_organization_id])
       unless @organization
         invalidate_kiosk_preview!
-        redirect_to root_path, alert: "Preview session expired. Please try again."
+        redirect_to dashboard_path, alert: "Preview session expired. Please try again."
       end
       return
     end

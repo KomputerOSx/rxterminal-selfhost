@@ -22,7 +22,7 @@ class RobotsAndSitemapTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "application/xml", response.media_type
     assert_match "http://www.example.com/", response.body
-    assert_match "http://www.example.com/#{@plain_organization.slug}", response.body
+    assert_match "<loc>http://www.example.com/</loc>", response.body
   end
 
   test "sitemap.xml lists enabled info pages" do
@@ -31,8 +31,8 @@ class RobotsAndSitemapTest < ActionDispatch::IntegrationTest
     @plain_organization.update_feature!(:portal_opening_times, enabled: true)
 
     get "/sitemap.xml"
-    assert_match "http://www.example.com/#{@plain_organization.slug}/opening-times", response.body
-    assert_no_match "http://www.example.com/#{@plain_organization.slug}/contact", response.body
+    assert_match "http://www.example.com/opening-times", response.body
+    assert_no_match "http://www.example.com/contact", response.body
   end
 
   test "sitemap.xml.gz 404s instead of raising a missing template error" do

@@ -29,7 +29,8 @@ class OrgSettingsTest < ActionDispatch::IntegrationTest
     assert_match(/organization\[kiosk_collect_dob\]/, response.body)
     assert_match "Collect date of birth on kiosk and walk-in forms", response.body
     assert_match "Organization logo", response.body
-    assert_match "/#{@organization.slug}", response.body
+    # The primary organization's portal lives at the site root, not under its slug.
+    assert @organization.primary?
     assert_match "Leave organization", response.body
   end
 

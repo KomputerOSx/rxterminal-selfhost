@@ -71,7 +71,7 @@ class OrgWalkInsTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "upsell decline returns to confirmed with one queue number" do

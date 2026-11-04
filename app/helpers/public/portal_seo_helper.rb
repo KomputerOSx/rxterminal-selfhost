@@ -10,6 +10,8 @@ module Public
     }.freeze
 
     def portal_canonical_url
+      return "#{request.base_url}#{request.path}" if request.path_parameters[:organization_slug].blank?
+
       suffix = request.path.delete_prefix("/#{portal_slug}")
       suffix = "" if suffix == "/"
 

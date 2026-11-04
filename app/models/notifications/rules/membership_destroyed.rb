@@ -14,7 +14,7 @@ module Notifications
 
       def title = "You've been removed from #{organization.name}"
       def body  = "#{actor_name} removed you from #{organization.name}."
-      def url   = root_path
+      def url   = dashboard_path
     end
   end
 end

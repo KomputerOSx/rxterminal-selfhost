@@ -289,7 +289,7 @@ class OrgAppointmentsTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     get org_appointments_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "week view shows appointments across the week and excludes other weeks" do

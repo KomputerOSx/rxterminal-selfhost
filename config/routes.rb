@@ -34,7 +34,7 @@ Rails.application.routes.draw do
   post "profile/email_change/confirm_old", to: "email_changes#confirm_old", as: :confirm_old_profile_email_change
   post "profile/email_change/confirm_new", to: "email_changes#confirm_new", as: :confirm_new_profile_email_change
 
-  root "home#index"
+  root "public/home#index"
   get "robots.txt",  to: "robots#show"
   # `.xml` is a literal here, not a captured format, but Rails still parses a
   # trailing recognized extension (e.g. the `.gz` some crawlers probe for) as
@@ -251,7 +251,10 @@ Rails.application.routes.draw do
     end
   end
 
-  # Public booking portal — slug routes must be last so existing namespaces take precedence.
+  # The primary organization's portal at the site root (/privacy, /walk-in, /appointments, ...).
+  draw :public_portal_root
+
+  # Branch portals — slug routes must be last so existing namespaces take precedence.
   # Reserved words come from ReservedSlug::WORDS - the single source of truth shared
   # with Organization#slug's own validation - rather than a second hardcoded list here.
   scope "/:organization_slug",

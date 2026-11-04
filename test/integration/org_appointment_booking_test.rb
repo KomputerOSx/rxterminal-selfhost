@@ -165,7 +165,7 @@ class OrgAppointmentBookingTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     get org_appointment_booking_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "an owner can require customer emails and set a custom email message" do

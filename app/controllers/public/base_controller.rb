@@ -24,9 +24,12 @@ module Public
     end
 
     def load_and_verify_organization
-      @organization = Organization.find_by(slug: params[:organization_slug])
+      @organization = params[:organization_slug] ? Organization.find_by(slug: params[:organization_slug]) : Organization.primary
 
       unless @organization&.public_portal_enabled?
+        # At the site root there is nothing to show for visitors until the portal is switched on.
+        return redirect_to(login_path) unless params[:organization_slug]
+
         render "public/errors/not_found", status: :not_found, layout: false
       end
     end

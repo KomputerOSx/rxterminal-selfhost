@@ -32,7 +32,7 @@ class SitemapsController < ApplicationController
     ]
 
     portal_urls = Organization.find_each.select(&:public_portal_enabled?).flat_map do |organization|
-      root = portal_root_url(organization_slug: organization.slug)
+      root = organization.primary? ? root_url : portal_root_url(organization_slug: organization.slug)
       [ { loc: root, changefreq: "weekly" }, *info_page_urls(organization, root) ]
     end
 

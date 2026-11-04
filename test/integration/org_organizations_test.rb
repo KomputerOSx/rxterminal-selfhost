@@ -113,7 +113,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_equal "team-pharmacy", @organization.reload.slug
 
     patch org_organization_path, params: { organization: { name: "Hijacked Name" } }
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert_not_equal "Hijacked Name", @organization.reload.name
   end
 
@@ -134,7 +134,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
 
     patch org_organization_path, params: { organization: { name: "Hijacked Name" } }
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert_not_equal "Hijacked Name", @organization.reload.name
   end
 
@@ -318,7 +318,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: member.email, password: "password123" }
 
     get new_org_organization_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
 
     assert_no_difference "Organization.count" do
       post org_organization_path, params: { organization: { name: "Sneaky Branch", slug: "sneaky-branch" } }

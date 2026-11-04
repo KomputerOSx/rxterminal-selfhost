@@ -34,7 +34,7 @@ class OrgFeaturesTest < ActionDispatch::IntegrationTest
 
     patch org_features_path, params: { features: { "online_appointment_booking" => { enabled: "1" } } }
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "toggling a key outside the catalog is silently ignored" do

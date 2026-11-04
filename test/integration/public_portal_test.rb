@@ -20,6 +20,47 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     accept_portal_privacy!
   end
 
+  test "the primary organization's portal is served at the site root without a slug" do
+    get "/"
+
+    assert_response :success
+    assert_match @service.display_name, response.body
+    assert_match '<link rel="canonical" href="http://www.example.com/">', response.body
+    assert_match 'href="/appointments', response.body
+    assert_no_match %(href="/#{@organization.slug}/), response.body
+  end
+
+  test "root-mounted portal pages work and the slugged portal still works for the primary organization" do
+    get "/appointments/new"
+    assert_response :success
+
+    get portal_root_path(organization_slug: @organization.slug)
+    assert_response :success
+    assert_match %(href="/#{@organization.slug}/appointments), response.body
+  end
+
+  test "a branch keeps its slugged portal while the root belongs to the primary organization" do
+    branch = Organization.create_for!(@owner, name: "Second Branch", slug_base: "second-branch")
+    enable_public_portal!(branch, :online_appointment_booking)
+    assert_not branch.primary?
+
+    get portal_root_path(organization_slug: branch.slug)
+    assert_response :success
+    assert_match "Second Branch", response.body
+
+    get "/"
+    assert_match @organization.name, response.body
+    assert_no_match "Second Branch", response.body
+  end
+
+  test "the root redirects to login when there is no primary organization" do
+    Organization.stub :primary, nil do
+      get "/"
+    end
+
+    assert_redirected_to login_path
+  end
+
   test "portal home lists bookable services" do
     get portal_root_path(organization_slug: @organization.slug)
 

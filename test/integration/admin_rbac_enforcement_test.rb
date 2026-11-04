@@ -25,7 +25,7 @@ class AdminRbacEnforcementTest < ActionDispatch::IntegrationTest
     @system_user_role.permissions.delete(@manage_users_permission)
 
     get admin_users_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
 
     get admin_root_path
     assert_response :success
@@ -40,15 +40,15 @@ class AdminRbacEnforcementTest < ActionDispatch::IntegrationTest
     @system_user_role.permissions.delete(@manage_roles_permission)
 
     get admin_roles_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     get admin_permissions_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "a user with no system-scoped role at all cannot reach the admin namespace" do
     @user.revoke_role!(@system_user_role)
 
     get admin_root_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 end

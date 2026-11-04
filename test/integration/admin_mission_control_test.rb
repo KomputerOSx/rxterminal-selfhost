@@ -35,7 +35,7 @@ class AdminMissionControlTest < ActionDispatch::IntegrationTest
 
     get "/admin/jobs"
 
-    assert_redirected_to root_path
+    assert_redirected_to "/dashboard"
   end
 
   test "failed jobs page is reachable for system admins" do

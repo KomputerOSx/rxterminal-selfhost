@@ -20,7 +20,8 @@ module OrgSettingsHelper
     host = AppHost.primary_host
     protocol = Rails.env.production? ? "https" : "http"
     port_suffix = (Rails.env.development? && host == "localhost") ? ":#{request.port}" : ""
-    "#{protocol}://#{host}#{port_suffix}/#{organization.slug}"
+    base = "#{protocol}://#{host}#{port_suffix}"
+    organization.primary? ? base : "#{base}/#{organization.slug}"
   end
 
   def organization_public_portal_url(organization)

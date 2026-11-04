@@ -55,11 +55,11 @@ class Rack::Attack
   end
 
   throttle("portal/appointments/post/ip", limit: 3, period: 10.minutes) do |req|
-    req.ip if req.path.match?(%r{\A/[a-z0-9][a-z0-9\-]*/appointments\z}) && req.post?
+    req.ip if req.path.match?(%r{\A(?:/[a-z0-9][a-z0-9\-]*)?/appointments\z}) && req.post? && !req.path.start_with?("/org/")
   end
 
   throttle("portal/calendar/ip", limit: 60, period: 1.minute) do |req|
-    req.ip if req.path.match?(%r{\A/[a-z0-9][a-z0-9\-]*/appointments/(calendar|slots|\d+/calendar\.ics)}) && req.get?
+    req.ip if req.path.match?(%r{\A(?:/[a-z0-9][a-z0-9\-]*)?/appointments/(calendar|slots|\d+/calendar\.ics)}) && req.get?
   end
 
   # Public walk-in queue joins.

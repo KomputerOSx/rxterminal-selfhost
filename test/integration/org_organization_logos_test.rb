@@ -62,7 +62,7 @@ class OrgOrganizationLogosTest < ActionDispatch::IntegrationTest
 
     post org_organization_logo_path, params: { organization_logo: { image: uploaded_image } }
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert_not @organization.reload.kiosk_logo.attached?
   end
 
@@ -84,7 +84,7 @@ class OrgOrganizationLogosTest < ActionDispatch::IntegrationTest
 
     delete org_organization_logo_path
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert @organization.reload.kiosk_logo.attached?
   end
 end

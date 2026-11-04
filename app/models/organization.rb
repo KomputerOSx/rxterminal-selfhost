@@ -192,6 +192,15 @@ class Organization < ApplicationRecord
     SERVICE_CURRENCY_SYMBOLS.fetch(service_currency, SERVICE_CURRENCY_SYMBOLS.fetch(DEFAULT_SERVICE_CURRENCY))
   end
 
+  # The install's main business: its portal is served at the site root.
+  def self.primary
+    order(:id).first
+  end
+
+  def primary?
+    id.present? && id == self.class.primary&.id
+  end
+
   def self.weekday_key(date)
     WEEKDAYS[date.cwday - 1]
   end

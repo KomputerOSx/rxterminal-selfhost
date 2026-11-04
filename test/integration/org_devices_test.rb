@@ -69,6 +69,6 @@ class OrgDevicesTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     get org_devices_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 end

@@ -65,7 +65,7 @@ class AdminCustomerErasureTest < ActionDispatch::IntegrationTest
     sign_in_as_system_user(users(:two))
 
     get new_admin_customer_erasure_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   private

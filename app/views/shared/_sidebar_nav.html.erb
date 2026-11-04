@@ -6,7 +6,7 @@
 
   if Current.organization && current_membership&.roles&.any?
     product_items = []
-    product_items << { icon: "space_dashboard", label: "Dashboard", path: root_path }
+    product_items << { icon: "space_dashboard", label: "Dashboard", path: dashboard_path }
     product_items << { icon: "groups", label: "Queue", path: org_queue_path, permission: "app.queue.view" }
     product_items << { icon: "person_add", label: "Walk-in", path: org_new_walk_in_path, permission: "app.queue.manage" }
     product_items << { icon: "event", label: "Appointments", path: org_appointments_path, permission: "app.appointments.view", plan_feature: :appointments }
@@ -47,7 +47,7 @@
     }
   else
     sections << {
-      items: [{ icon: "space_dashboard", label: "Dashboard", path: root_path }]
+      items: [{ icon: "space_dashboard", label: "Dashboard", path: dashboard_path }]
     }
   end
 
@@ -63,7 +63,7 @@
     admin_items << { icon: "download",      label: "SAR export", path: new_admin_subject_access_request_path } if current_user.has_permission?("system.subject_access.manage")
     admin_items << { icon: "engineering",   label: "Maintenance", path: edit_admin_maintenance_mode_path }
 
-    sections << { title: "Admin", items: admin_items }
+    sections << { title: "Instance settings", items: admin_items }
   end
 
   row_classes = "flex h-10 items-center gap-3 rounded-lg px-2"

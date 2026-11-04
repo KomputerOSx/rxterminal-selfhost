@@ -9,7 +9,7 @@ class AdminAuthorizationTest < ActionDispatch::IntegrationTest
       get admin_root_path
     end
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "system_admin can access the admin namespace" do

@@ -7,7 +7,7 @@ class NotificationRecipientsController < ApplicationController
 
   def open
     @notification_recipient.mark_read!
-    redirect_to @notification_recipient.notification.url || root_path
+    redirect_to @notification_recipient.notification.url || dashboard_path
   end
 
   def mark_read
@@ -21,7 +21,7 @@ class NotificationRecipientsController < ApplicationController
                                 locals: { unread_count: current_user.unread_notification_count })
         ]
       end
-      format.html { redirect_back fallback_location: root_path }
+      format.html { redirect_back fallback_location: dashboard_path }
     end
   end
 
@@ -29,7 +29,7 @@ class NotificationRecipientsController < ApplicationController
     current_user.notification_recipients.inbox.unread.update_all(read_at: Time.current)
     respond_to do |format|
       format.turbo_stream { render turbo_stream: inbox_replace_stream }
-      format.html { redirect_back fallback_location: root_path }
+      format.html { redirect_back fallback_location: dashboard_path }
     end
   end
 
@@ -37,7 +37,7 @@ class NotificationRecipientsController < ApplicationController
     @notification_recipient.dismiss!
     respond_to do |format|
       format.turbo_stream { render turbo_stream: inbox_replace_stream }
-      format.html { redirect_back fallback_location: root_path }
+      format.html { redirect_back fallback_location: dashboard_path }
     end
   end
 
