@@ -52,12 +52,3 @@
   animation: onboarding-confetti-burst 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-/* Public marketing pages */
-.landing-page h1,
-.landing-page h2,
-.landing-page h3,
-.landing-page .landing-display {
-  font-family: var(--font-mogilte);
-  font-weight: normal;
-  letter-spacing: 0.01em;
-}

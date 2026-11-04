@@ -1,7 +1,8 @@
+<% content_for :title, "#{LegalDocument.title("privacy_policy")} - #{@organization.name}" %>
 <div class="card border border-base-300">
   <div class="card-body gap-6">
     <div class="flex flex-wrap items-start justify-between gap-4">
-      <h1 class="text-2xl font-semibold">Privacy Policy</h1>
+      <h1 class="text-2xl font-semibold"><%= LegalDocument.title("privacy_policy") %></h1>
       <%= link_to "Back", portal_back_path, class: "btn btn-outline btn-sm" %>
     </div>
     <div class="legal-content text-sm text-base-content/80">

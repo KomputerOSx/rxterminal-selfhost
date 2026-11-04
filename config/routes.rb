@@ -42,10 +42,10 @@ Rails.application.routes.draw do
   # hitting the controller with a format we have no template for.
   get "sitemap.xml", to: "sitemaps#show", as: :sitemap, constraints: { format: "xml" }
 
-  get "privacy-policy", to: "legal#privacy_policy", as: :legal_privacy_policy
-  get "gdpr",           to: "legal#gdpr",           as: :legal_gdpr
-  get "terms",          to: "legal#terms",          as: :legal_terms
-  get "cookies",        to: "legal#cookies_policy", as: :legal_cookies
+  get "privacy-policy", to: "public/legal#privacy_policy", as: :legal_privacy_policy
+  get "gdpr",           to: "public/legal#gdpr",           as: :legal_gdpr
+  get "terms",          to: "public/legal#terms",          as: :legal_terms
+  get "cookies",        to: "public/legal#cookies_policy", as: :legal_cookies
 
   get "dashboard" => "dashboard#index"
 

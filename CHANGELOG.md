@@ -7,6 +7,10 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ### Added
 - Optional image for each service, shown to customers on the booking portal and the kiosk.
+- A list / two-column switch beside the service search on the booking portal.
+
+### Changed
+- The legal pages open inside the public portal (same header, footer and styling) instead of a separate page.
 
 ## [1.0.0] - 2026-11-04
 
