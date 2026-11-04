@@ -23,21 +23,13 @@ module OrgSettingsHelper
     "#{protocol}://#{host}#{port_suffix}/#{organization.slug}"
   end
 
-  # The URL customers should actually be sent to: the organization's custom
-  # domain when one is attached, falling back to the rxterminal-hosted portal.
   def organization_public_portal_url(organization)
-    organization_custom_domain_url(organization) || organization_portal_url(organization)
+    organization_portal_url(organization)
   end
 
   def portal_arrive_url(organization, token: nil)
     url = "#{organization_public_portal_url(organization)}/arrive"
     token.present? ? "#{url}?token=#{CGI.escape(token)}" : url
-  end
-
-  def organization_custom_domain_url(organization)
-    return if organization.custom_domain.blank?
-
-    "https://#{organization.custom_domain}"
   end
 
   def settings_opening_hours_summary(organization)

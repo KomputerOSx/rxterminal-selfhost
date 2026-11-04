@@ -4,8 +4,6 @@ class Organization < ApplicationRecord
   include PortalTheming
 
   SLUG_FORMAT = /\A[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\z/
-  CUSTOM_DOMAIN_FORMAT = /\A(?:[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\.)+[a-z]{2,}\z/
-  DOMAIN_ORG_CACHE_PREFIX = "domain_org_id:"
   WEEKDAYS = %w[monday tuesday wednesday thursday friday saturday sunday].freeze
   APPOINTMENT_BOOKING_MODES = %w[rolling openings].freeze
   SLUG_CHANGE_INTERVAL = 30.days
@@ -67,12 +65,10 @@ class Organization < ApplicationRecord
   has_many :upsell_rules, dependent: :destroy
   has_many :devices, dependent: :destroy
 
-  before_validation :normalize_custom_domain
   attr_accessor :enforce_slug_change_limit
 
   before_validation :normalize_slug, if: -> { slug.present? && will_save_change_to_slug? }
   before_save :stamp_slug_change, if: :limited_slug_change?
-  after_save :clear_custom_domain_cache, if: :saved_change_to_custom_domain?
 
   validates :name, presence: true, profanity: true
   validates :slug, presence: true, uniqueness: true,
@@ -80,9 +76,6 @@ class Organization < ApplicationRecord
     length: { maximum: 63 },
     exclusion: { in: ReservedSlug::WORDS },
     profanity: true
-  validates :custom_domain, uniqueness: { allow_nil: true },
-    format: { with: CUSTOM_DOMAIN_FORMAT, allow_nil: true },
-    length: { maximum: 253, allow_nil: true }
   validates :postcode_region, inclusion: { in: POSTCODE_REGIONS }
   validates :service_currency, inclusion: { in: SERVICE_CURRENCIES }
   validates :business_type, inclusion: { in: ->(_) { Onboarding::BusinessPresets.all.map(&:key) } }, allow_nil: true
@@ -204,25 +197,6 @@ class Organization < ApplicationRecord
     SERVICE_CURRENCY_SYMBOLS.fetch(service_currency, SERVICE_CURRENCY_SYMBOLS.fetch(DEFAULT_SERVICE_CURRENCY))
   end
 
-  def custom_domain_allowed?
-    true
-  end
-
-  def clear_custom_domain_if_disallowed!
-    return if custom_domain.blank? || custom_domain_allowed?
-
-    update!(custom_domain: nil)
-  end
-
-  def self.find_id_by_custom_domain(host)
-    domain = host.to_s.downcase.strip.sub(/\Awww\./, "")
-    return nil if domain.blank?
-
-    Rails.cache.fetch("#{DOMAIN_ORG_CACHE_PREFIX}#{domain}", expires_in: 10.minutes) do
-      find_by(custom_domain: domain)&.id
-    end
-  end
-
   def slug_changeable_at
     slug_changed_at && slug_changed_at + SLUG_CHANGE_INTERVAL
   end
@@ -314,11 +288,6 @@ class Organization < ApplicationRecord
     end
   end
 
-  def normalize_custom_domain
-    domain = custom_domain.to_s.downcase.strip.sub(/\Awww\./, "")
-    self.custom_domain = domain.presence
-  end
-
   def normalize_slug
     self.slug = slug.to_s.downcase.strip
   end
@@ -385,10 +354,4 @@ class Organization < ApplicationRecord
   end
 
   TIME_FORMAT = /\A([01]\d|2[0-3]):[0-5]\d\z/
-
-  def clear_custom_domain_cache
-    previous, current = saved_change_to_custom_domain
-    Rails.cache.delete("#{DOMAIN_ORG_CACHE_PREFIX}#{previous}") if previous.present?
-    Rails.cache.delete("#{DOMAIN_ORG_CACHE_PREFIX}#{current}") if current.present?
-  end
 end

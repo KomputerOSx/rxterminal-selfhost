@@ -24,11 +24,7 @@ module Public
     end
 
     def load_and_verify_organization
-      @organization = if custom_domain_portal_request?
-        Organization.find_by(id: request.env[CustomDomainResolver::ENV_KEY])
-      else
-        Organization.find_by(slug: params[:organization_slug])
-      end
+      @organization = Organization.find_by(slug: params[:organization_slug])
 
       unless @organization&.public_portal_enabled?
         render "public/errors/not_found", status: :not_found, layout: false

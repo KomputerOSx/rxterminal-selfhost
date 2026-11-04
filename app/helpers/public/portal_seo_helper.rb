@@ -10,14 +10,10 @@ module Public
     }.freeze
 
     def portal_canonical_url
-      suffix = custom_domain_portal_request? ? request.path : request.path.delete_prefix("/#{portal_slug}")
+      suffix = request.path.delete_prefix("/#{portal_slug}")
       suffix = "" if suffix == "/"
 
-      if @organization.custom_domain.present?
-        "#{request.scheme}://#{@organization.custom_domain}#{suffix.presence || "/"}"
-      else
-        "#{request.base_url}/#{portal_slug}#{suffix}"
-      end
+      "#{request.base_url}/#{portal_slug}#{suffix}"
     end
 
     def portal_meta_description

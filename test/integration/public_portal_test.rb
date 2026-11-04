@@ -54,17 +54,6 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     assert_match "<title>#{@organization.name}</title>", response.body
   end
 
-  test "portal title tag omits the RxTerminal suffix when served on a custom domain" do
-    @organization.update!(custom_domain: "shop.acme.test")
-
-    host! "shop.acme.test"
-    get "/"
-
-    assert_response :success
-    assert_match "<title>#{@organization.name}</title>", response.body
-    assert_match '<link rel="canonical" href="http://shop.acme.test/">', response.body
-  end
-
   test "portal home is reachable without accepting privacy" do
     reset!
 
@@ -161,19 +150,6 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "No contact details yet.", response.body
-  end
-
-  test "info pages work on a custom domain" do
-    enable_public_portal!(@organization, :portal_opening_times, :portal_contact_page)
-    @organization.update!(custom_domain: "shop.acme.test")
-    host! "shop.acme.test"
-
-    get "/opening-times"
-    assert_response :success
-    assert_match 'href="/contact"', response.body
-
-    get "/contact"
-    assert_response :success
   end
 
   test "flow pages are never indexable" do

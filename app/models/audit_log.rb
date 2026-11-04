@@ -64,8 +64,6 @@ class AuditLog < ApplicationRecord
     permission_updated: "permission_updated",
     permission_deleted: "permission_deleted",
     organization_feature_settings_updated: "organization_feature_settings_updated",
-    custom_domain_updated: "custom_domain_updated",
-    custom_domain_removed: "custom_domain_removed",
     service_created: "service_created",
     service_updated: "service_updated",
     service_deleted: "service_deleted",

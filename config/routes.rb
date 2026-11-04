@@ -1,18 +1,5 @@
 Rails.application.routes.draw do
-  # Health + internal endpoints must be outside the custom-domain catch-all.
-  # kamal-proxy probes /up with a non-APP_HOST Host header; if the catch-all
-  # wins first, SitesController returns 404 and the deploy never goes healthy.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Caddy on-demand TLS ask endpoint (internal Docker / localhost only).
-  namespace :internal do
-    get "domain_validations", to: "domain_validations#show"
-  end
-
-  # Custom domains serve the public portal for the mapped organization.
-  constraints CustomDomainConstraint do
-    draw :public_portal_custom_domain
-  end
 
   # --- Authentication ---
   resource :session, only: [ :new, :create, :destroy ], controller: "sessions"
@@ -145,9 +132,6 @@ Rails.application.routes.draw do
       collection do
         patch :deactivate
       end
-    end
-    resource :custom_domain, only: [ :show, :create, :destroy ], controller: "custom_domains" do
-      get :status
     end
     get "settings", to: "settings#index", as: :settings
     resource :opening_hours, only: [ :show, :update ], controller: "opening_hours"
