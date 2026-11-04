@@ -9,34 +9,11 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
   end
 
-  test "user can sign up, confirm, and sign in" do
-    perform_enqueued_jobs do
-      post registration_path, params: {
-        user: {
-          email: "new@example.com",
-          password: "Tr8kMvln52",
-          password_confirmation: "Tr8kMvln52"
-        }
-      }
-    end
+  test "open sign-up is closed" do
+    get new_registration_path
 
-    assert_redirected_to new_confirmation_path
-
-    user = User.find_by(email: "new@example.com")
-    assert_nil user
-
-    code = ActionMailer::Base.deliveries.last.text_part.decoded[/(\d{6})/, 1]
-    post confirmations_path, params: { code: code.chars }
-
-    assert_redirected_to dashboard_path
-    user = User.find_by(email: "new@example.com")
-    assert user.present?
-    assert user.confirmed?
-
-    # A brand-new user hasn't completed onboarding yet, so dashboard_path itself
-    # redirects to the onboarding flow.
-    follow_redirect!
-    assert_redirected_to onboarding_path
+    assert_redirected_to login_path
+    assert_select "a[href=?]", new_registration_path, count: 0
   end
 
   test "user can sign in and sign out" do

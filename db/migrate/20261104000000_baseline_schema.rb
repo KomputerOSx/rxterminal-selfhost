@@ -158,17 +158,6 @@ class BaselineSchema < ActiveRecord::Migration[8.1]
     t.index [ "status" ], name: "index_devices_on_status"
   end
 
-  create_table "identities", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "email"
-    t.string "provider", null: false
-    t.string "uid", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index [ "provider", "uid" ], name: "index_identities_on_provider_and_uid", unique: true
-    t.index [ "user_id" ], name: "index_identities_on_user_id"
-  end
-
   create_table "membership_roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "granted_by_id"
@@ -558,7 +547,6 @@ class BaselineSchema < ActiveRecord::Migration[8.1]
   add_foreign_key "audit_logs", "users"
   add_foreign_key "calendars", "organizations"
   add_foreign_key "devices", "organizations"
-  add_foreign_key "identities", "users"
   add_foreign_key "membership_roles", "memberships"
   add_foreign_key "membership_roles", "roles"
   add_foreign_key "membership_roles", "users", column: "granted_by_id"

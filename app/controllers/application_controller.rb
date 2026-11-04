@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include SetupGate
   include Authentication
   include MaintenanceGate
   include CurrentOrganization

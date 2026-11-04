@@ -1,0 +1,70 @@
+<% content_for :title, "Set up your server" %>
+<section class="mx-auto w-full max-w-md">
+  <div class="card bg-base-200 shadow-sm">
+    <div class="card-body">
+      <h1 class="card-title text-2xl font-bold">Set up your server</h1>
+      <p class="text-sm text-base-content/70">Create the owner account and name your organization. Whoever completes this first becomes the owner and system administrator.</p>
+
+      <%= form_with model: @user,
+                    url: instance_setup_path,
+                    html: {
+                      class: "mt-4 space-y-4",
+                      data: {
+                        controller: "password-requirements",
+                        password_requirements_min_length_value: User::MIN_PASSWORD_LENGTH
+                      }
+                    } do |f| %>
+        <% if @user.errors[:base].any? %>
+          <p class="text-sm text-error"><%= @user.errors[:base].to_sentence %></p>
+        <% end %>
+
+        <div class="form-control">
+          <label class="label" for="organization_name"><span class="label-text">Organization name</span></label>
+          <%= text_field_tag :organization_name, @organization_name, autofocus: true, class: "input-field w-full", placeholder: "e.g. High Street Pharmacy" %>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :email, class: "label" do %>
+            <span class="label-text">Email</span>
+          <% end %>
+          <%= f.email_field :email, autocomplete: "email", class: error_class_for(@user, :email, "input-field w-full") %>
+          <%= field_errors(@user, :email) %>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :password, class: "label" do %>
+            <span class="label-text">Password</span>
+          <% end %>
+          <%= f.password_field :password,
+                               autocomplete: "new-password",
+                               class: error_class_for(@user, :password, "input-field w-full"),
+                               data: {
+                                 password_requirements_target: "password",
+                                 action: "input->password-requirements#check"
+                               } %>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :password_confirmation, class: "label" do %>
+            <span class="label-text">Confirm Password</span>
+          <% end %>
+          <%= f.password_field :password_confirmation,
+                               autocomplete: "new-password",
+                               class: error_class_for(@user, :password_confirmation, "input-field w-full"),
+                               data: {
+                                 password_requirements_target: "confirmation",
+                                 action: "input->password-requirements#check"
+                               } %>
+          <%= render "registrations/password_requirements" %>
+          <%= field_errors(@user, :password) %>
+          <%= field_errors(@user, :password_confirmation) %>
+        </div>
+
+        <div class="form-control mt-2">
+          <%= f.submit "Create account", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</section>

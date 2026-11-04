@@ -31,8 +31,7 @@ class OnboardingController < ApplicationController
     end
 
     if Onboarding.last_step?(@step.key)
-      # update_columns (not update!) - avoids re-running full User validations, which would
-      # fail for OAuth-created users whose password_digest is blank.
+      # update_columns (not update!) - avoids re-running full User validations.
       current_user.update_columns(onboarding_completed_at: Time.current, onboarding_step: @step.key)
       redirect_to dashboard_path, notice: "Welcome aboard!"
     else

@@ -312,6 +312,19 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_not @organization.reload.kiosk_logo.attached?
   end
 
+  test "only owners and system admins can create another organization (branch)" do
+    member = users(:two)
+    @organization.memberships.create!(user: member)
+    post login_path, params: { email: member.email, password: "password123" }
+
+    get new_org_organization_path
+    assert_redirected_to root_path
+
+    assert_no_difference "Organization.count" do
+      post org_organization_path, params: { organization: { name: "Sneaky Branch", slug: "sneaky-branch" } }
+    end
+  end
+
   test "org switcher shows create link and other organizations" do
     second = Organization.create_for!(@owner, name: "Second Branch")
     post login_path, params: { email: @owner.email, password: "password123" }

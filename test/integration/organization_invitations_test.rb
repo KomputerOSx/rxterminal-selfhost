@@ -46,7 +46,7 @@ class OrganizationInvitationsTest < ActionDispatch::IntegrationTest
     assert invitee.memberships.exists?(organization: @organization)
   end
 
-  test "a brand-new signup joins both their own personal organization and the invited one" do
+  test "a brand-new invitee signs up and joins only the invited organization" do
     email = "brand-new-invitee@example.com"
     invitation, raw_token = invite_user(email)
 
@@ -64,8 +64,7 @@ class OrganizationInvitationsTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
 
     user = User.find_by!(email: email)
-    assert_equal 2, user.organizations.count
-    assert user.memberships.exists?(organization: @organization)
+    assert_equal [ @organization ], user.organizations.to_a
     assert invitation.reload.accepted_at.present?
   end
 

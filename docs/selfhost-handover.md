@@ -35,18 +35,18 @@ watch out for. The plan text itself is the source of truth for scope.
   not usable in the session). Run `gitleaks detect` or enable GitHub secret scanning before
   making the repo public.
 - **Still on you:** rotate every secret that was in the old production credentials (Stripe,
-  SMTP, OAuth apps, AWS, Sentry, Kamal registry).
+  SMTP, OAuth apps, AWS, Sentry, Kamal registry); the Google/GitHub OAuth apps are no longer used, so delete them.
 
 ### Phase 1: database and configuration
 - `config/database.yml`: production primary is `storage/production.sqlite3`, or `DATABASE_URL`
   if set. Cache, queue and cable stay SQLite. The `pg` gem is kept.
 - All settings now come from environment variables (see `.env.example`): `APP_HOST`,
   `APP_PROTOCOL`, `SMTP_*`, `MAIL_FROM`, `JWT_SECRET_KEY`, `ACTIVE_RECORD_ENCRYPTION_*`,
-  `GOOGLE_*`, `GITHUB_*`, `SENTRY_DSN`, `STRIPE_*` (not used until Phase 6).
+  `SENTRY_DSN`, `STRIPE_*` (not used until Phase 6).
 - `bin/docker-entrypoint` generates missing secrets into `storage/secrets.env` (mode 600) on first
   boot; env vars win over the file. `bin/rails selfhost:show_secrets` prints them. Dev and test
   fall back to fixed non-secret keys (in the encryption initializer and `JwtService`).
-- Optional services switch off cleanly: no OAuth keys hides the buttons, no `SENTRY_DSN` skips
+- Optional services switch off cleanly: no `SENTRY_DSN` skips
   Sentry, no `SMTP_ADDRESS` logs mail and shows a banner in the admin area.
 - Verified: a production boot with only `APP_HOST` set generates secrets, builds the SQLite
   databases, and serves `/login` and `/up`.
@@ -68,6 +68,20 @@ watch out for. The plan text itself is the source of truth for scope.
 - Kept on purpose: `SoleOwnerGuard` (blocks the last owner leaving or deleting their account)
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
+
+### Phase 3a: closed sign-up, /setup, no OAuth (branch `phase-3-single-business`, WIP)
+- `/setup` (first run, first come first served, deliberately no token): creates the owner, the
+  organization and the system admin role in one transaction; every page redirects to it until a
+  user exists (`SetupGate`, `Setup.required?`). Race guard: re-check inside the transaction
+  (SQLite serialises writes; Postgres takes an advisory lock).
+- Open sign-up is closed. `RegistrationsController` and `ConfirmationsController` only work for
+  someone holding a valid organization invitation (email forced to the invitation's); invited users
+  get no personal organization and skip onboarding. "Sign up" links removed.
+- **OAuth removed entirely** (omniauth gems, callbacks controller, helper, initializer, buttons,
+  `Identity` model/table, `GOOGLE_*`/`GITHUB_*` env vars). Email + password (plus optional TOTP
+  two-factor) is the only sign-in method.
+- Creating another organization (branch) requires the system admin role or an owner role.
+- Still to do in Phase 3: root-URL portal, `/admin` renamed "Instance settings".
 
 ### Phase 2f: schema squash (branch `phase-2f-schema-squash`, on top of the simplify branch)
 - The 98 migrations are replaced by `db/migrate/20261104000000_baseline_schema.rb`, built from the

@@ -12,14 +12,12 @@ Rails.application.routes.draw do
   post "login/two_factor/resend",         to: "sessions#resend_two_factor",         as: :resend_two_factor_login
   post "login/two_factor/email_fallback", to: "sessions#email_two_factor_fallback", as: :email_two_factor_fallback_login
 
-  # --- OmniAuth (Google / GitHub) ---
-  # The request phase (/auth/:provider) is handled directly by the OmniAuth::Builder
-  # middleware (config/initializers/omniauth.rb) - only the callback needs a route.
-  get "auth/:provider/callback", to: "omniauth_callbacks#create"
 
   resource :password, only: [ :edit, :update ], controller: "passwords"
   resources :password_resets, only: [ :new, :create, :edit, :update ], param: :token
 
+  get  "setup", to: "setup#new", as: :instance_setup
+  post "setup", to: "setup#create"
   get  "signup", to: "registrations#new",    as: :new_registration
   post "signup", to: "registrations#create", as: :registration
   get  "confirmations/new", to: "confirmations#new",    as: :new_confirmation

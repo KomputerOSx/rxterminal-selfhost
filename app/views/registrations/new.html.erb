@@ -56,12 +56,6 @@
         </div>
       <% end %>
 
-      <% if any_oauth_provider_enabled? %>
-        <div class="divider">or</div>
-
-        <%= render "sessions/omniauth_buttons" %>
-      <% end %>
-
       <div class="mt-4 text-sm text-center">
         <%= link_to "Login", login_path, class: "link link-primary" %>
       </div>
