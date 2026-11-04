@@ -108,7 +108,7 @@ module KioskAuthentication
       expires: JwtService::TOKEN_EXPIRATION.seconds.from_now,
       httponly: true,
       same_site: :strict,
-      secure: Rails.env.production?
+      secure: AppHost.secure_cookies?
     }
   end
 

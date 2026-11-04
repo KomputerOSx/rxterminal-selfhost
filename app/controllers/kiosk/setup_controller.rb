@@ -34,7 +34,7 @@ module Kiosk
         expires: 1.year.from_now,
         httponly: true,
         same_site: :strict,
-        secure: Rails.env.production?
+        secure: AppHost.secure_cookies?
       }
 
       cookies.encrypted[:kiosk_device_id] = { value: device_id, **cookie_options }
@@ -120,7 +120,7 @@ module Kiosk
         expires: JwtService::TOKEN_EXPIRATION.seconds.from_now,
         httponly: true,
         same_site: :strict,
-        secure: Rails.env.production?
+        secure: AppHost.secure_cookies?
       }
     end
 

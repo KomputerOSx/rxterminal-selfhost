@@ -93,7 +93,7 @@ module Org
         expires: DISPLAY_TOKEN_DURATION.from_now,
         httponly: true,
         same_site: :strict,
-        secure: Rails.env.production?
+        secure: AppHost.secure_cookies?
       }
     end
 

@@ -9,6 +9,16 @@ module AppHost
     host.to_s.downcase.split(":", 2).first.to_s.sub(/\Awww\./, "")
   end
 
+  # Whether the site is served over HTTPS (APP_PROTOCOL, default https). Cookies are only marked
+  # Secure then - a Secure cookie is dropped by browsers on plain http, which breaks login and CSRF.
+  def https?
+    ENV.fetch("APP_PROTOCOL", "https") == "https"
+  end
+
+  def secure_cookies?
+    defined?(Rails) && Rails.env.production? && https?
+  end
+
   def primary_hosts
     hosts = [ primary_host, "localhost", "127.0.0.1" ].compact
     # Rails integration tests default to www.example.com / example.com.
