@@ -107,7 +107,6 @@ permissions:
   system.users.manage: "Manage user accounts"
   system.roles.manage: "View/manage roles and permissions"
   system.audit_logs.view: "View audit logs"
-  system.billing.manage: "Manage platform-wide billing (price migrations, grandfathering)"
   system.customer_erasure.manage: "GDPR customer erasure tool"
   system.subject_access.manage: "GDPR subject access request export"
   app.members.invite: "Invite people to the organization"
@@ -116,7 +115,6 @@ permissions:
   app.members.promote_owner: "Promote a member to co-owner of the organization"
   app.members.demote_owner: "Demote an owner to admin"
   app.organization.manage: "Manage organization settings"
-  app.billing.manage: "Manage billing and subscription"
   app.queue.view: "View live queue and waiting display"
   app.queue.manage: "Call, complete, cancel, revert queue entries"
   app.appointments.view: "View appointment list and detail"
@@ -142,7 +140,6 @@ Permission keys must match `\A[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+\z` (dot-separa
 | `app.members.promote_owner` | ✓ | | |
 | `app.members.demote_owner` | ✓ | | |
 | `app.organization.manage` | ✓ | | |
-| `app.billing.manage` | ✓ | | |
 | `app.queue.view` | ✓ | ✓ | ✓ |
 | `app.queue.manage` | ✓ | ✓ | ✓ |
 | `app.appointments.view` | ✓ | ✓ | ✓ |
@@ -306,7 +303,6 @@ authorize :system, :manage?, policy_class: SystemPolicy
 | `manage_users?` | `system.users.manage` |
 | `manage_roles?` | `system.roles.manage` |
 | `view_audit_logs?` | `system.audit_logs.view` |
-| `manage_billing?` | `system.billing.manage` |
 | `manage_customer_erasure?` | `system.customer_erasure.manage` |
 | `manage_subject_access?` | `system.subject_access.manage` |
 
@@ -354,10 +350,6 @@ end
 For `create?`, the record is the `Organization` (invitation doesn't exist yet). For
 `destroy?`, the record is the `OrganizationInvitation`.
 
-### BillingPolicy
-
-Both `show?` and `manage?` require `app.billing.manage` on the organization.
-
 ### Product policies (Phase 1 stubs)
 
 Policies exist for product resources introduced in later phases. Controllers wire them up as
@@ -377,7 +369,7 @@ features land:
 
 ### verify_authorized
 
-`Org::BaseController`, `Admin::BaseController`, and `BillingController` run
+`Org::BaseController` and `Admin::BaseController` run
 `after_action :verify_authorized`. Every action must call `authorize` or explicitly
 `skip_authorization`.
 
@@ -400,7 +392,6 @@ features land:
 | `Org::MembersController#promote_to_owner` | `MembershipPolicy#promote_to_owner?` | `app.members.promote_owner` | Add a co-owner; requires typed-email + emailed-code confirmation (code sent to the acting owner) |
 | `Org::MembersController#demote_owner` | `MembershipPolicy#demote_owner?` | `app.members.demote_owner` | Demote an owner to admin, self or peer-initiated; requires typed-email + emailed-code confirmation (code always sent to the owner being demoted) |
 | `Org::MembersController#leave` | - | - | `skip_authorization`; self-removal always allowed unless the member is an owner (must `#demote_owner` first) |
-| `BillingController` + nested | `BillingPolicy` | `app.billing.manage` | Show + all mutations |
 
 ### Admin controllers
 
@@ -412,8 +403,6 @@ features land:
 | `Admin::RolesController` | `manage_roles?` |
 | `Admin::PermissionsController` | `manage_roles?` |
 | `Admin::AuditLogsController` | `view_audit_logs?` |
-| `Admin::PriceMigrationsController` | `manage_billing?` |
-| `Admin::OrganizationGrandfathersController` | `manage_billing?` |
 
 ---
 
@@ -441,7 +430,6 @@ Reference: `app/views/org/settings/_name_editor.html.erb`.
   the selected org). Links: Members (`/org/members`), Features, Settings.
 - **Product section** - placeholder links (no routes yet) gated by product permissions
   (Queue, Appointments, Services, Upsells, Kiosk, Analytics).
-- **Account section** - Billing link gated by `app.billing.manage`.
 - **Admin items** - each link gated individually:
   ```erb
   <% if current_user.has_permission?("system.users.manage") %>
@@ -486,8 +474,6 @@ You can also call Pundit from views (`policy(Current.organization)`), but the di
 | Org settings overview | any org member (read-only details for users without manage permissions) |
 | Pending invitations (table + form) | `app.members.invite` |
 | Member remove / role edit | `app.members.remove` / `app.members.promote` |
-| Billing page controls | `app.billing.manage` |
-| Sidebar Billing link | `app.billing.manage` |
 | Product nav placeholders | respective `app.*` permission per item |
 | Org calendars page | `app.calendars.manage` |
 | Org opening hours page | `app.portal.configure` |
@@ -511,8 +497,6 @@ Flow:
 
 The invite form always assigns the `user` role. Promotion to `admin` is a separate action
 (`Org::MembersController#promote`) requiring `app.members.promote`.
-
-Member limit is enforced at invite creation and again at acceptance (see `docs/BILLING.md` §7).
 
 ---
 
@@ -648,8 +632,8 @@ Once a role exists, boot sync never modifies its permission set. This means:
   UI or a one-off task.
 - Admin edits to role permissions survive every deploy.
 
-This runs on every boot (not just `db:seed`), so Kamal deploys to existing databases still
-pick up new permission keys.
+This runs on every boot (not just `db:seed`), so upgrading an existing install still
+picks up new permission keys.
 
 ---
 
@@ -672,7 +656,6 @@ Integration tests document expected RBAC behavior:
 | `test/integration/org_members_test.rb` | Plain user can view settings but not remove; admin can invite/remove but not promote |
 | `test/integration/org_organizations_test.rb` | Plain user cannot rename org |
 | `test/integration/admin_rbac_enforcement_test.rb` | System permission granularity; namespace vs action gating |
-| `test/integration/billing_*_test.rb` | Non-owner blocked from billing mutations |
 
 Pattern for testing authorization:
 
