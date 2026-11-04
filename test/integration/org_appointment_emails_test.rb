@@ -32,21 +32,19 @@ class OrgAppointmentEmailsTest < ActionDispatch::IntegrationTest
   test "creating an appointment enqueues confirmation email" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_enqueued_emails 1 do
-        post org_appointments_path, params: {
-          appointment: {
-            service_id: @service.id,
-            first_name: "alex",
-            last_name: "smith",
-            dob: "20-05-1985",
-            postcode: "SW1A 2AA",
-            email: "alex@example.com",
-            appointment_date: (Date.current + 3.days).strftime("%d-%m-%Y"),
-            appointment_time: "12:00"
-          }
+    assert_enqueued_emails 1 do
+      post org_appointments_path, params: {
+        appointment: {
+          service_id: @service.id,
+          first_name: "alex",
+          last_name: "smith",
+          dob: "20-05-1985",
+          postcode: "SW1A 2AA",
+          email: "alex@example.com",
+          appointment_date: (Date.current + 3.days).strftime("%d-%m-%Y"),
+          appointment_time: "12:00"
         }
-      end
+      }
     end
   end
 

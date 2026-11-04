@@ -28,8 +28,8 @@ module Org
       )
       session[:current_organization_id] = organization.id
 
-      redirect_to billing_path,
-        notice: "#{organization.name} created. Choose a plan to start using it."
+      redirect_to dashboard_path,
+        notice: "#{organization.name} created."
     rescue ActiveRecord::RecordInvalid => e
       @organization = e.record
       @organization.assign_attributes(organization_params)
@@ -56,13 +56,6 @@ module Org
 
       organization = Current.organization
 
-      # Warm the Pay::Customer association before a possible validation failure below - the
-      # settings view checks plan/billing state (e.g. custom_domain_allowed?) on re-render, and
-      # Pay's lazy payment_processor auto-vivification uses with_lock, which raises if called
-      # on a record with unsaved changes (the invalid attributes we're about to assign).
-      organization.payment_processor
-      organization.enforce_slug_change_limit = true
-
       if organization.update(permitted)
         log_audit(:organization_updated, resource: organization, metadata: {
           changed_fields: organization.saved_changes.except("updated_at").keys
@@ -75,7 +68,6 @@ module Org
               turbo_stream.update(dom_id(Current.organization, :dialog), partial: "org/settings/name_dialog_content"),
               turbo_stream.replace(dom_id(Current.organization, :nav_label), partial: "shared/org_nav_label", locals: { organization: Current.organization }),
               turbo_stream.replace(dom_id(Current.organization, :nav_item_label), partial: "shared/org_nav_item_label", locals: { organization: Current.organization }),
-              turbo_stream.replace(dom_id(Current.organization, :logo_gallery), partial: "org/settings/logo_gallery", locals: { organization: Current.organization }),
               turbo_stream.update("flash_messages", partial: "shared/flash")
             ]
           end
@@ -92,8 +84,7 @@ module Org
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.update(dom_id(Current.organization, :dialog), partial: "org/settings/name_dialog_content"),
-            turbo_stream.replace(dom_id(Current.organization, :logo_gallery), partial: "org/settings/logo_gallery", locals: { organization: Current.organization })
+            turbo_stream.update(dom_id(Current.organization, :dialog), partial: "org/settings/name_dialog_content")
           ], status: :unprocessable_entity
         end
         format.html do

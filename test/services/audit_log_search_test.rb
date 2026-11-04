@@ -5,7 +5,7 @@ require "test_helper"
 class AuditLogSearchTest < ActiveSupport::TestCase
   setup do
     @admin = users(:one)
-    @organization = create_personal_without_trial!(@admin)
+    @organization = Organization.create_personal_for!(@admin)
   end
 
   test "filters by event type and organization" do
@@ -95,51 +95,5 @@ class AuditLogSearchTest < ActiveSupport::TestCase
     )
 
     assert_equal [ matching.id ], result.audit_logs.map(&:id)
-  end
-
-  test "organization scope applies starter audit log retention" do
-    recent = AuditLog.create!(
-      event_type: :organization_updated,
-      resource_type: "Organization",
-      resource_id: @organization.id,
-      created_at: 1.day.ago
-    )
-    old = AuditLog.create!(
-      event_type: :organization_updated,
-      resource_type: "Organization",
-      resource_id: @organization.id,
-      created_at: 10.days.ago
-    )
-
-    scope = AuditLogSearch.organization_scope(@organization.id)
-
-    assert_includes scope, recent
-    assert_not_includes scope, old
-  end
-
-  test "clamps date_from to starter retention when searching org audit logs" do
-    recent = AuditLog.create!(
-      event_type: :organization_updated,
-      resource_type: "Organization",
-      resource_id: @organization.id,
-      created_at: 1.day.ago
-    )
-    old = AuditLog.create!(
-      event_type: :organization_updated,
-      resource_type: "Organization",
-      resource_id: @organization.id,
-      created_at: 10.days.ago
-    )
-
-    result = AuditLogSearch.call(
-      ActionController::Parameters.new(
-        date_from: 30.days.ago.strftime("%Y-%m-%dT%H:%M"),
-        date_to: 1.hour.from_now.strftime("%Y-%m-%dT%H:%M")
-      ),
-      organization_id: @organization.id
-    )
-
-    assert_includes result.audit_logs.map(&:id), recent.id
-    assert_not_includes result.audit_logs.map(&:id), old.id
   end
 end

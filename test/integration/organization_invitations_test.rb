@@ -17,9 +17,7 @@ class OrganizationInvitationsTest < ActionDispatch::IntegrationTest
     assert_redirected_to login_path
     assert_equal raw_token, session[:pending_invitation_token]
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post login_path, params: { email: invitee.email, password: "password123" }
-    end
+    post login_path, params: { email: invitee.email, password: "password123" }
     assert_redirected_to dashboard_path
 
     invitation.reload
@@ -41,37 +39,32 @@ class OrganizationInvitationsTest < ActionDispatch::IntegrationTest
     assert_redirected_to two_factor_login_path
 
     code = ROTP::TOTP.new(invitee.totp_secret).now
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post verify_two_factor_login_path, params: { code: code.chars }
-    end
+    post verify_two_factor_login_path, params: { code: code.chars }
     assert_redirected_to dashboard_path
 
     assert invitation.reload.accepted_at.present?
     assert invitee.memberships.exists?(organization: @organization)
   end
 
-  test "a brand-new signup joins both their own personal organization and the invited one" do
+  test "a brand-new invitee signs up and joins only the invited organization" do
     email = "brand-new-invitee@example.com"
     invitation, raw_token = invite_user(email)
 
     get invitation_path(raw_token)
     assert_redirected_to new_registration_path(email: email)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      perform_enqueued_jobs do
-        post registration_path, params: {
-          user: { email: email, password: "Tr8kMvln52", password_confirmation: "Tr8kMvln52" }
-        }
-      end
-
-      code = ActionMailer::Base.deliveries.last.text_part.decoded[/(\d{6})/, 1]
-      post confirmations_path, params: { code: code.chars }
+    perform_enqueued_jobs do
+      post registration_path, params: {
+        user: { email: email, password: "Tr8kMvln52", password_confirmation: "Tr8kMvln52" }
+      }
     end
+
+    code = ActionMailer::Base.deliveries.last.text_part.decoded[/(\d{6})/, 1]
+    post confirmations_path, params: { code: code.chars }
     assert_redirected_to dashboard_path
 
     user = User.find_by!(email: email)
-    assert_equal 2, user.organizations.count
-    assert user.memberships.exists?(organization: @organization)
+    assert_equal [ @organization ], user.organizations.to_a
     assert invitation.reload.accepted_at.present?
   end
 

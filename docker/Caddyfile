@@ -1,0 +1,7 @@
+# Used by the "https" profile. Caddy obtains and renews a Let's Encrypt certificate for
+# APP_HOST automatically. Ports 80 and 443 must be reachable from the internet and the DNS
+# record for APP_HOST must point at this server.
+{$APP_HOST} {
+	encode zstd gzip
+	reverse_proxy app:80
+}

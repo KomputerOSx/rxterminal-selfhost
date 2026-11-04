@@ -8,34 +8,24 @@ module Org
       portal_contact_page
     ].freeze
 
-    # These features are meaningless without appointments, which is itself a Business-only
-    # plan capability (Organization#appointments_enabled?) - block toggling them on for orgs
-    # whose plan doesn't include appointments, matching the enforcement in the public booking
-    # and check-in controllers.
-    APPOINTMENT_DEPENDENT_FEATURES = %w[
-      online_appointment_booking
-      online_appointment_check
-    ].freeze
-
     def index
       authorize Current.organization, :update?, policy_class: OrganizationPolicy
 
-      @features = Feature.available_to_organization(Current.organization)
+      @features = OrgFeature.all
     end
 
     def update
       authorize Current.organization, :update?, policy_class: OrganizationPolicy
 
-      # Only ever writes keys this org is actually granted (tiers 1+2) - a member can't
-      # use a crafted request to write arbitrary keys into the features JSON column.
-      available_keys = Feature.available_to_organization(Current.organization).pluck(:key)
+      # Only writes keys from the catalog - a crafted request can't write arbitrary keys
+      # into the features JSON column.
+      available_keys = OrgFeature.keys
       submitted = params.fetch(:features, {}).to_unsafe_h
 
       submitted.each do |key, attrs|
         next unless available_keys.include?(key)
 
         enabled = ActiveModel::Type::Boolean.new.cast(attrs["enabled"])
-        next if enabled && APPOINTMENT_DEPENDENT_FEATURES.include?(key) && !Current.organization.appointments_enabled?
 
         Current.organization.update_feature!(key, enabled: enabled)
       end

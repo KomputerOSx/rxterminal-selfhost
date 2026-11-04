@@ -18,26 +18,19 @@ module OrgSettingsHelper
 
   def organization_portal_url(organization)
     host = AppHost.primary_host
-    protocol = Rails.env.production? ? "https" : "http"
+    protocol = Rails.env.production? ? (AppHost.https? ? "https" : "http") : "http"
     port_suffix = (Rails.env.development? && host == "localhost") ? ":#{request.port}" : ""
-    "#{protocol}://#{host}#{port_suffix}/#{organization.slug}"
+    base = "#{protocol}://#{host}#{port_suffix}"
+    organization.primary? ? base : "#{base}/#{organization.slug}"
   end
 
-  # The URL customers should actually be sent to: the organization's custom
-  # domain when one is attached, falling back to the rxterminal-hosted portal.
   def organization_public_portal_url(organization)
-    organization_custom_domain_url(organization) || organization_portal_url(organization)
+    organization_portal_url(organization)
   end
 
   def portal_arrive_url(organization, token: nil)
     url = "#{organization_public_portal_url(organization)}/arrive"
     token.present? ? "#{url}?token=#{CGI.escape(token)}" : url
-  end
-
-  def organization_custom_domain_url(organization)
-    return if organization.custom_domain.blank?
-
-    "https://#{organization.custom_domain}"
   end
 
   def settings_opening_hours_summary(organization)

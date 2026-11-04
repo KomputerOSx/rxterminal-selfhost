@@ -7,6 +7,7 @@ class DataRetentionJob < ApplicationJob
 
   def perform
     cutoff = RETENTION_PERIOD.ago
+    purge_old_audit_logs
 
     service_requests_redacted = redact_service_requests(cutoff)
     appointments_redacted = redact_appointments(cutoff)
@@ -18,6 +19,14 @@ class DataRetentionJob < ApplicationJob
   end
 
   private
+
+  # AUDIT_LOG_RETENTION_DAYS unset (the default) keeps audit logs forever.
+  def purge_old_audit_logs
+    days = ENV["AUDIT_LOG_RETENTION_DAYS"].to_i
+    return unless days.positive?
+
+    AuditLog.where("created_at < ?", days.days.ago).delete_all
+  end
 
   def redact_service_requests(cutoff)
     count = 0

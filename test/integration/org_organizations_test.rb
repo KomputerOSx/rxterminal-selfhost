@@ -31,53 +31,24 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_not @organization.kiosk_collect_dob?
   end
 
-  test "the slug can only be changed once every 30 days" do
+  test "the slug can be changed repeatedly without a waiting period" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
     patch org_organization_path, params: { organization: { slug: "acme-pharmacy" } }
     assert_redirected_to org_settings_path
-    assert @organization.reload.slug_changed_at.present?
 
     patch org_organization_path, params: { organization: { slug: "acme-chemist" } }
-    assert_response :unprocessable_entity
-    assert_match "Can only be changed once every 30 days, next change allowed from #{(Date.current + 30.days).strftime('%d/%m/%Y')}", response.body
-    assert_equal "acme-pharmacy", @organization.reload.slug
-
-    travel 30.days + 1.minute do
-      post login_path, params: { email: @owner.email, password: "password123" }
-      patch org_organization_path, params: { organization: { slug: "acme-chemist" } }
-      assert_redirected_to org_settings_path
-      assert_equal "acme-chemist", @organization.reload.slug
-    end
-  end
-
-  test "saving other settings with the same slug is allowed while the slug is locked" do
-    @organization.update!(slug: "acme-pharmacy", slug_changed_at: 1.day.ago)
-    post login_path, params: { email: @owner.email, password: "password123" }
-
-    patch org_organization_path, params: { organization: { slug: "ACME-Pharmacy", postcode_region: "us" } }
-
     assert_redirected_to org_settings_path
-    assert_equal "us", @organization.reload.postcode_region
-    assert_equal "acme-pharmacy", @organization.slug
+    assert_equal "acme-chemist", @organization.reload.slug
   end
 
-  test "the slug field is disabled while the slug is locked" do
-    @organization.update!(slug_changed_at: 1.day.ago)
+  test "the slug field is always editable" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
     get org_settings_path
 
     assert_response :success
-    assert_match(/<input[^>]*disabled="disabled"[^>]*name="organization\[slug\]"|<input[^>]*name="organization\[slug\]"[^>]*disabled="disabled"/, response.body)
-    assert_match "You can change your slug again on", response.body
-  end
-
-  test "setting the slug outside settings does not start the 30 day limit" do
-    @organization.update!(slug: "onboarded-slug")
-
-    assert_nil @organization.reload.slug_changed_at
-    assert_not @organization.slug_change_locked?
+    assert_no_match(/<input[^>]*name="organization\[slug\]"[^>]*disabled/, response.body)
   end
 
   test "an owner can update the service price currency" do
@@ -142,7 +113,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_equal "team-pharmacy", @organization.reload.slug
 
     patch org_organization_path, params: { organization: { name: "Hijacked Name" } }
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert_not_equal "Hijacked Name", @organization.reload.name
   end
 
@@ -163,7 +134,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
 
     patch org_organization_path, params: { organization: { name: "Hijacked Name" } }
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
     assert_not_equal "Hijacked Name", @organization.reload.name
   end
 
@@ -192,9 +163,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_equal "branch@example.com", second.contact_email
     assert_equal "020 1234 5678", second.contact_phone
     assert second.memberships.exists?(user: @owner)
-    assert second.locked?
-    assert_not second.on_trial?
-    assert_redirected_to billing_path
+    assert_redirected_to dashboard_path
     assert_equal second.id, session[:current_organization_id]
   end
 
@@ -228,7 +197,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
 
     second = Organization.order(:id).last
     assert_equal "branch-pharmacy", second.slug
-    assert_redirected_to billing_path
+    assert_redirected_to dashboard_path
   end
 
   test "create organization rejects a taken slug" do
@@ -333,7 +302,7 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_equal "favorite", @organization.reload.kiosk_fallback_icon
   end
 
-  test "kiosk_logo is no longer a directly-writable param (goes through the approval flow instead)" do
+  test "kiosk_logo is not a writable param of the organization update (uploads go through organization_logo)" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
     logo = Rack::Test::UploadedFile.new(StringIO.new("fake-logo-bytes"), "image/png", original_filename: "logo.png")
@@ -343,16 +312,27 @@ class OrgOrganizationsTest < ActionDispatch::IntegrationTest
     assert_not @organization.reload.kiosk_logo.attached?
   end
 
-  test "org switcher shows create link and status badges" do
-    second = Organization.create_for!(@owner, name: "Locked Branch")
+  test "only owners and system admins can create another organization (branch)" do
+    member = users(:two)
+    @organization.memberships.create!(user: member)
+    post login_path, params: { email: member.email, password: "password123" }
+
+    get new_org_organization_path
+    assert_redirected_to dashboard_path
+
+    assert_no_difference "Organization.count" do
+      post org_organization_path, params: { organization: { name: "Sneaky Branch", slug: "sneaky-branch" } }
+    end
+  end
+
+  test "org switcher shows create link and other organizations" do
+    second = Organization.create_for!(@owner, name: "Second Branch")
     post login_path, params: { email: @owner.email, password: "password123" }
 
     get dashboard_path
 
     assert_response :success
     assert_match "Create organization", response.body
-    assert_match "days left", response.body
-    assert_match "Locked", response.body
     assert_match second.name, response.body
   end
 end

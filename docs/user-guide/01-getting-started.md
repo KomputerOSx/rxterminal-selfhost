@@ -7,25 +7,30 @@ RxTerminal manages walk-in queues and appointments for service businesses. Staff
 ## Equipment you'll need
 
 - **Staff**: any computer, tablet, or phone with a modern web browser and an internet connection.
-- **Kiosk**: a tablet or touchscreen device with a browser, registered as a device. Requires the Business plan. See Kiosk.
+- **Kiosk**: a tablet or touchscreen device with a browser, registered as a device. See Kiosk.
 - **Waiting display**: a TV or tablet with a browser, showing the live queue. See Public Booking Portal.
 - **Customers**: their own phone, for QR check-in, appointment booking, and notifications.
 
 No printer, scanner, or other special hardware is required.
 
-## Creating your account
+## Your account
 
-1. Go to the sign-up page and enter your email and password, or continue with Google or GitHub.
-2. If you signed up with email, check your inbox for a 6-digit code and enter it on the confirmation page.
+There is no public sign-up. The first person to open a new server sets it up:
 
-RxTerminal creates your organization and logs you in automatically. Your first organization gets a 30-day free trial on the Business plan. No card required.
+1. Open your server's address. You land on the setup page.
+2. Enter your organization's name, your email, and a password.
+3. Click Create account.
+
+You become the owner and the system administrator, and RxTerminal logs you in. After that, the setup page closes.
+
+Everyone else joins by invitation. See Staff and Permissions.
 
 ## Onboarding
 
 RxTerminal walks you through setup step by step:
 
 1. Your name.
-2. Your organization's name, slug, address, and contact details. The slug becomes part of your public booking URL and can be changed later in Settings, once every 30 days.
+2. Your organization's name, slug, address, and contact details. The slug becomes part of your public booking URL and can be changed later in Settings.
 3. Your business type. RxTerminal suggests starter services based on your answer.
 4. What to collect from customers at check-in.
 5. Your time zone.
@@ -34,7 +39,7 @@ Click "Skip for now" at any point to finish later from Settings. See Organizatio
 
 ## Adding another organization
 
-Each account can run more than one organization, for example separate locations. Only your first organization gets a free trial. Additional organizations need a paid plan.
+Each account can run more than one organization, for example separate locations. Only owners can create another organization.
 
 1. Open the organization menu at the top of the page.
 2. Choose "Create organization."

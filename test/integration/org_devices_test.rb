@@ -26,16 +26,14 @@ class OrgDevicesTest < ActionDispatch::IntegrationTest
   test "a member with app.devices.manage can create a device and see api key once" do
     post login_path, params: { email: @owner.email, password: "password123" }
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference -> { @organization.devices.count }, 1 do
-        post org_devices_path, params: {
-          device: {
-            device_id: "lobby_kiosk",
-            name: "Lobby",
-            status: "active"
-          }
+    assert_difference -> { @organization.devices.count }, 1 do
+      post org_devices_path, params: {
+        device: {
+          device_id: "lobby_kiosk",
+          name: "Lobby",
+          status: "active"
         }
-      end
+      }
     end
 
     created = @organization.devices.find_by!(device_id: "lobby_kiosk")
@@ -71,6 +69,6 @@ class OrgDevicesTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     get org_devices_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 end

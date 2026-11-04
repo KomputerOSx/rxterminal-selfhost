@@ -12,9 +12,7 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
   end
 
   test "the new opening page shows the weekly bookable windows" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get new_org_appointment_booking_opening_path
-    end
+    get new_org_appointment_booking_opening_path
 
     assert_response :success
     assert_match "New opening", response.body
@@ -23,20 +21,18 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
   end
 
   test "an owner can add an opening with its own weekly windows" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference -> { @organization.appointment_openings.count }, 1 do
-        post org_appointment_booking_openings_path, params: {
-          appointment_opening: {
-            name: "Flu season",
-            start_date: @start_date.iso8601,
-            end_date: @end_date.iso8601,
-            bookable_times: {
-              "saturday" => { bookable_day: "1", "0" => { start: "09:00", end: "12:00" } },
-              "monday" => { bookable_day: "0" }
-            }
+    assert_difference -> { @organization.appointment_openings.count }, 1 do
+      post org_appointment_booking_openings_path, params: {
+        appointment_opening: {
+          name: "Flu season",
+          start_date: @start_date.iso8601,
+          end_date: @end_date.iso8601,
+          bookable_times: {
+            "saturday" => { bookable_day: "1", "0" => { start: "09:00", end: "12:00" } },
+            "monday" => { bookable_day: "0" }
           }
         }
-      end
+      }
     end
 
     assert_redirected_to org_appointment_booking_path
@@ -51,19 +47,17 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
     clinic_a = @organization.calendars.create!(name: "Clinic A")
     clinic_b = @organization.calendars.create!(name: "Clinic B")
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get new_org_appointment_booking_opening_path
-      assert_match "Selected calendars", response.body
+    get new_org_appointment_booking_opening_path
+    assert_match "Selected calendars", response.body
 
-      post org_appointment_booking_openings_path, params: {
-        appointment_opening: {
-          start_date: @start_date.iso8601,
-          end_date: @end_date.iso8601,
-          calendar_scope: "selected",
-          calendar_ids: [ "", clinic_a.id, clinic_b.id ]
-        }
+    post org_appointment_booking_openings_path, params: {
+      appointment_opening: {
+        start_date: @start_date.iso8601,
+        end_date: @end_date.iso8601,
+        calendar_scope: "selected",
+        calendar_ids: [ "", clinic_a.id, clinic_b.id ]
       }
-    end
+    }
 
     assert_redirected_to org_appointment_booking_path
     opening = @organization.appointment_openings.last
@@ -75,17 +69,15 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
     opening = @organization.appointment_openings.create!(start_date: @start_date, end_date: @end_date, calendar_ids: [ clinic.id ])
     clinic.update!(archived: true)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get edit_org_appointment_booking_opening_path(opening)
-      assert_match "Clinic (archived)", response.body
+    get edit_org_appointment_booking_opening_path(opening)
+    assert_match "Clinic (archived)", response.body
 
-      patch org_appointment_booking_opening_path(opening), params: {
-        appointment_opening: {
-          name: "Renamed", start_date: @start_date.iso8601, end_date: @end_date.iso8601,
-          calendar_scope: "selected", calendar_ids: [ "", clinic.id ]
-        }
+    patch org_appointment_booking_opening_path(opening), params: {
+      appointment_opening: {
+        name: "Renamed", start_date: @start_date.iso8601, end_date: @end_date.iso8601,
+        calendar_scope: "selected", calendar_ids: [ "", clinic.id ]
       }
-    end
+    }
 
     assert_redirected_to org_appointment_booking_path
     assert_equal [ clinic.id ], opening.reload.calendar_ids
@@ -95,26 +87,22 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
     clinic = @organization.calendars.create!(name: "Clinic")
     opening = @organization.appointment_openings.create!(start_date: @start_date, end_date: @end_date, calendar_ids: [ clinic.id ])
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      patch org_appointment_booking_opening_path(opening), params: {
-        appointment_opening: { start_date: @start_date.iso8601, end_date: @end_date.iso8601, calendar_scope: "all", calendar_ids: [ "", clinic.id ] }
-      }
-    end
+    patch org_appointment_booking_opening_path(opening), params: {
+      appointment_opening: { start_date: @start_date.iso8601, end_date: @end_date.iso8601, calendar_scope: "all", calendar_ids: [ "", clinic.id ] }
+    }
 
     assert opening.reload.all_calendars?
   end
 
   test "invalid openings re-render the form with errors" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_no_difference -> { AppointmentOpening.count } do
-        post org_appointment_booking_openings_path, params: {
-          appointment_opening: {
-            start_date: @end_date.iso8601,
-            end_date: @start_date.iso8601,
-            bookable_times: { "tuesday" => { bookable_day: "1", "0" => { start: "15:00", end: "14:00" } } }
-          }
+    assert_no_difference -> { AppointmentOpening.count } do
+      post org_appointment_booking_openings_path, params: {
+        appointment_opening: {
+          start_date: @end_date.iso8601,
+          end_date: @start_date.iso8601,
+          bookable_times: { "tuesday" => { bookable_day: "1", "0" => { start: "15:00", end: "14:00" } } }
         }
-      end
+      }
     end
 
     assert_response :unprocessable_entity
@@ -125,20 +113,18 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
   test "an owner can edit an opening" do
     opening = @organization.appointment_openings.create!(name: "Spring", start_date: @start_date, end_date: @end_date)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get edit_org_appointment_booking_opening_path(opening)
-      assert_response :success
-      assert_match "Spring", response.body
+    get edit_org_appointment_booking_opening_path(opening)
+    assert_response :success
+    assert_match "Spring", response.body
 
-      patch org_appointment_booking_opening_path(opening), params: {
-        appointment_opening: {
-          name: "Summer",
-          start_date: @start_date.iso8601,
-          end_date: (@end_date + 10.days).iso8601,
-          bookable_times: { "sunday" => { bookable_day: "1", "0" => { start: "10:00", end: "11:00" } } }
-        }
+    patch org_appointment_booking_opening_path(opening), params: {
+      appointment_opening: {
+        name: "Summer",
+        start_date: @start_date.iso8601,
+        end_date: (@end_date + 10.days).iso8601,
+        bookable_times: { "sunday" => { bookable_day: "1", "0" => { start: "10:00", end: "11:00" } } }
       }
-    end
+    }
 
     assert_redirected_to org_appointment_booking_path
     opening.reload
@@ -152,9 +138,7 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
   test "an owner can remove an opening" do
     opening = @organization.appointment_openings.create!(start_date: @start_date, end_date: @end_date)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      delete org_appointment_booking_opening_path(opening), as: :turbo_stream
-    end
+    delete org_appointment_booking_opening_path(opening), as: :turbo_stream
 
     assert_response :success
     assert_not AppointmentOpening.exists?(opening.id)
@@ -177,9 +161,7 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
       appointment_time: Time.zone.parse("10:00"), status: "booked"
     )
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      delete org_appointment_booking_opening_path(opening), as: :turbo_stream
-    end
+    delete org_appointment_booking_opening_path(opening), as: :turbo_stream
 
     assert_match "1 booked appointment falls outside your booking schedule", response.body
     assert_match appointment.booking_reference, response.body
@@ -190,22 +172,8 @@ class OrgAppointmentOpeningsTest < ActionDispatch::IntegrationTest
     other_org = Organization.create_personal_for!(users(:two))
     opening = other_org.appointment_openings.create!(start_date: @start_date, end_date: @end_date)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get edit_org_appointment_booking_opening_path(opening)
-    end
+    get edit_org_appointment_booking_opening_path(opening)
 
     assert_response :not_found
-  end
-
-  test "plans without appointments are blocked" do
-    @organization.switch_trial_plan!(Billing::Plans::STARTER)
-
-    assert_no_difference -> { AppointmentOpening.count } do
-      post org_appointment_booking_openings_path, params: {
-        appointment_opening: { start_date: @start_date.iso8601, end_date: @end_date.iso8601 }
-      }
-    end
-
-    assert_redirected_to billing_path
   end
 end

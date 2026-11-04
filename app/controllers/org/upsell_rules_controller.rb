@@ -31,8 +31,6 @@ module Org
     end
 
     def create
-      return if block_if_at_upsell_rule_limit!
-
       @rule = Current.organization.upsell_rules.build(rule_params)
       @rule.priority = next_priority
 

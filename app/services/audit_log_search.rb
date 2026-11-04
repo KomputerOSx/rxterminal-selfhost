@@ -73,7 +73,7 @@ class AuditLogSearch
   end
 
   def organization_scope
-    apply_plan_retention(filter_organizations(AuditLog.all))
+    filter_organizations(AuditLog.all)
   end
 
   private
@@ -134,7 +134,6 @@ class AuditLogSearch
   def filter_date_range(scope)
     if filter_params[:date_from].present?
       from = Time.zone.parse(filter_params[:date_from])
-      from = retention_cutoff if from && retention_cutoff && from < retention_cutoff
       scope = scope.where("created_at >= ?", from)
     end
 
@@ -142,7 +141,7 @@ class AuditLogSearch
       scope = scope.where("created_at <= ?", Time.zone.parse(filter_params[:date_to]))
     end
 
-    apply_plan_retention(scope)
+    scope
   end
 
   def filter_organizations(scope)
@@ -217,24 +216,5 @@ class AuditLogSearch
 
   def default_sort_direction
     "desc"
-  end
-
-  def apply_plan_retention(scope)
-    return scope unless @organization_id.present?
-
-    organization = Organization.find_by(id: @organization_id)
-    return scope unless organization
-
-    organization.audit_logs_scope(scope)
-  end
-
-  def retention_cutoff
-    return @retention_cutoff if defined?(@retention_cutoff)
-
-    @retention_cutoff = if @organization_id.present?
-      organization = Organization.find_by(id: @organization_id)
-      days = organization&.audit_log_retention_days
-      days ? days.days.ago : nil
-    end
   end
 end

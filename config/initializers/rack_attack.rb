@@ -55,24 +55,19 @@ class Rack::Attack
   end
 
   throttle("portal/appointments/post/ip", limit: 3, period: 10.minutes) do |req|
-    req.ip if req.path.match?(%r{\A/[a-z0-9][a-z0-9\-]*/appointments\z}) && req.post?
+    req.ip if req.path.match?(%r{\A(?:/[a-z0-9][a-z0-9\-]*)?/appointments\z}) && req.post? && !req.path.start_with?("/org/")
   end
 
   throttle("portal/calendar/ip", limit: 60, period: 1.minute) do |req|
-    req.ip if req.path.match?(%r{\A/[a-z0-9][a-z0-9\-]*/appointments/(calendar|slots|\d+/calendar\.ics)}) && req.get?
+    req.ip if req.path.match?(%r{\A(?:/[a-z0-9][a-z0-9\-]*)?/appointments/(calendar|slots|\d+/calendar\.ics)}) && req.get?
   end
 
-  # Public walk-in queue joins. Matched on a path *suffix* (not a `/:slug/` prefix, unlike
-  # portal/appointments/post/ip above) so this covers both the multi-tenant `/:slug/walk-in`
-  # route and the root-mounted custom-domain `/walk-in` route (config/routes/public_portal_
-  # custom_domain.rb).
+  # Public walk-in queue joins.
   throttle("portal/walk_in/post/ip", limit: 5, period: 10.minutes) do |req|
     req.ip if req.path.end_with?("/walk-in") && req.post?
   end
 
-  # Catches distributed abuse of a single organization's queue spread across many IPs. Only
-  # matches the slugged path shape - root-mounted custom-domain requests have no slug segment
-  # to key on, and still get the per-IP throttle above.
+  # Catches distributed abuse of a single organization's queue spread across many IPs.
   throttle("portal/walk_in/post/org", limit: 20, period: 10.minutes) do |req|
     if req.post? && (match = req.path.match(%r{\A/([a-z0-9][a-z0-9\-]*)/walk-in\z}))
       match[1]

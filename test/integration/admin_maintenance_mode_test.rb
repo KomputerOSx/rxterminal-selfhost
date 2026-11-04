@@ -18,7 +18,7 @@ class AdminMaintenanceModeTest < ActionDispatch::IntegrationTest
       get edit_admin_maintenance_mode_path
     end
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "system admin can enable maintenance mode with a message, audited" do

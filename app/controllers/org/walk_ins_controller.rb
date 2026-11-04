@@ -17,8 +17,6 @@ module Org
     end
 
     def create
-      return if block_if_at_monthly_request_limit!
-
       service = Current.organization.services.active.visible.find_by(id: params.dig(:service_request, :service_id))
       unless service
         redirect_to org_new_walk_in_path, alert: "Service not found." and return

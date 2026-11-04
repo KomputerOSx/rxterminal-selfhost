@@ -26,12 +26,8 @@ class SystemPolicy < ApplicationPolicy
     user&.has_permission?("system.audit_logs.view") || false
   end
 
-  def manage_billing?
-    user&.has_permission?("system.billing.manage") || false
-  end
-
-  def manage_email_campaigns?
-    user&.has_permission?("system.email_campaigns.manage") || false
+  def manage_jobs?
+    user&.has_permission?("system.jobs.manage") || false
   end
 
   def manage_customer_erasure?
@@ -40,9 +36,5 @@ class SystemPolicy < ApplicationPolicy
 
   def manage_subject_access?
     user&.has_permission?("system.subject_access.manage") || false
-  end
-
-  def manage_organization_logos?
-    user&.has_permission?("system.organization_logos.manage") || false
   end
 end

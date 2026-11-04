@@ -5,16 +5,11 @@
 
       <nav class="flex flex-1 items-center justify-center gap-6 text-sm text-base-content/80" aria-label="Primary">
         <%= link_to "Home", root_path, class: "link link-hover no-underline" %>
-        <%= link_to "Features", features_path, class: "link link-hover no-underline" %>
-        <%= link_to "Security", security_path, class: "link link-hover no-underline" %>
-        <%= link_to "Pricing", pricing_path, class: "link link-hover no-underline" %>
-        <%= link_to "Contact us", contact_path, class: "link link-hover no-underline" %>
       </nav>
 
       <div class="flex shrink-0 items-center gap-2">
         <%= render "shared/theme_toggle" %>
         <%= link_to "Log in", login_path, class: "btn btn-ghost btn-sm" %>
-        <%= link_to "Start free trial", new_registration_path, class: "btn btn-primary btn-sm" %>
       </div>
     </div>
 
@@ -45,18 +40,13 @@
           <div class="mx-auto max-w-6xl px-4 pb-5 pt-2">
             <div class="flex flex-col">
               <%= link_to "Home", root_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
-              <%= link_to "Features", features_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
-              <%= link_to "Security", security_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
-              <%= link_to "Pricing", pricing_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
-              <%= link_to "Contact us", contact_path, class: "rounded-lg px-3 py-3 text-base font-medium hover:bg-base-200" %>
             </div>
             <div class="mt-2 flex items-center justify-between border-t border-base-300 px-3 py-3">
               <span class="text-sm text-base-content/70">Theme</span>
               <%= render "shared/theme_toggle" %>
             </div>
-            <div class="mt-2 grid grid-cols-2 gap-3">
+            <div class="mt-2 grid grid-cols-1 gap-3">
               <%= link_to "Log in", login_path, class: "btn btn-ghost" %>
-              <%= link_to "Start free trial", new_registration_path, class: "btn btn-primary" %>
             </div>
           </div>
         </nav>

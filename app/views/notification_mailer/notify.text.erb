@@ -10,9 +10,9 @@ Hi <%= @user.first_name.presence || @user.email %>,
 <% end -%>
 <% end %>
 
-You can review this and manage your account by signing in to RxTerminal at <%= mailer_website_domain %>.
+You can review this and manage your account by signing in to <%= AppConfig.name %> at <%= mailer_website_domain %>.
 
-Notification settings can be modified inside the RxTerminal application.
+Notification settings can be modified inside the <%= AppConfig.name %> application.
 
 If you run into problems, contact support at <%= mailer_contact_email %>. Please do not reply directly to this email.
 

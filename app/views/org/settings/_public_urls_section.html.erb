@@ -10,22 +10,6 @@
         </div>
       </div>
 
-      <% if Current.organization.custom_domain.present? %>
-        <div>
-          <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">Custom domain</p>
-          <div class="mt-2 flex flex-wrap items-center gap-2">
-            <%= render "shared/copyable_value", value: organization_custom_domain_url(Current.organization) %>
-            <% if Current.organization.custom_domain_allowed? %>
-              <%= link_to "Manage", org_custom_domain_path, class: "btn btn-ghost btn-xs" %>
-            <% end %>
-          </div>
-        </div>
-      <% elsif Current.organization.custom_domain_allowed? %>
-        <p class="text-sm text-base-content/60">
-          No custom domain yet.
-          <%= link_to "Set one up", org_custom_domain_path, class: "link link-primary" %>
-        </p>
-      <% end %>
     </div>
   </div>
 </div>

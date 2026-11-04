@@ -2,9 +2,7 @@
 
 module Onboarding
   # Seeds starter Services and one demo UpsellRule for a chosen Onboarding::BusinessPresets
-  # preset. Caps creation at whatever plan-limit room the organization actually has (Starter's
-  # 3 services / 1 upsell rule, checked via Organization#plan_limits) rather than assuming the
-  # 3-service preset shape always fits.
+  # preset.
   class PresetApplier
     def initialize(organization)
       @organization = organization
@@ -23,14 +21,7 @@ module Onboarding
     attr_reader :organization
 
     def create_services(service_presets)
-      capped = service_presets
-      limit = organization.plan_limits.max_services
-      if limit
-        remaining = [ limit - organization.services.counting_toward_plan_limit.count, 0 ].max
-        capped = service_presets.first(remaining)
-      end
-
-      capped.map { |preset| create_service!(preset) }
+      service_presets.map { |preset| create_service!(preset) }
     end
 
     def create_service!(preset)
@@ -46,8 +37,6 @@ module Onboarding
     end
 
     def create_upsell_rule(rule_preset, services)
-      return if organization.at_upsell_rule_limit?
-
       trigger = services[rule_preset.trigger_index]
       suggested = services[rule_preset.suggested_index]
       return unless trigger && suggested

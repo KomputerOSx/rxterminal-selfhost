@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# This Dockerfile is designed for production, not development. Normal use is `docker compose up`
+# (see docker-compose.yml); to build and run by hand:
 # docker build -t rxterminal .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name rxterminal rxterminal
+# docker run -d -p 3000:80 -e APP_HOST=localhost -e APP_PROTOCOL=http -v rxterminal_storage:/rails/storage rxterminal
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
@@ -25,6 +26,7 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
+    SOLID_QUEUE_IN_PUMA="true" \
     LD_PRELOAD="/usr/local/lib/libjemalloc.so"
 
 # Throw-away build stage to reduce size of final image
@@ -62,7 +64,9 @@ FROM base
 
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+    mkdir -p /rails/storage /rails/log /rails/tmp && \
+    chown -R rails:rails /rails/storage /rails/log /rails/tmp
 USER 1000:1000
 
 # Copy built artifacts: gems, application
@@ -74,4 +78,11 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
+
+# Database, uploads and generated secrets live here: mount a volume.
+VOLUME /rails/storage
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -fsS http://localhost:80/up || exit 1
+
 CMD ["./bin/thrust", "./bin/rails", "server"]

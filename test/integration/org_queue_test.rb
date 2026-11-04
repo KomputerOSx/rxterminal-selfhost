@@ -51,7 +51,7 @@ class OrgQueueTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     get org_queue_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "completing a waiting entry via update_status" do

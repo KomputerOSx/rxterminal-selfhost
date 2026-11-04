@@ -30,10 +30,6 @@ gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 2.2"
 
 # OmniAuth for "Sign in with Google/GitHub"
-gem "omniauth", "~> 2.1"
-gem "omniauth-google-oauth2", "~> 1.1"
-gem "omniauth-github", "~> 2.0"
-gem "omniauth-rails_csrf_protection", "~> 2.0"
 
 # Request throttling / IP blocklisting
 gem "rack-attack"
@@ -53,10 +49,6 @@ gem "sentry-rails"
 
 # Object-oriented authorization policies
 gem "pundit", "~> 2.3"
-
-# Stripe subscription billing
-gem "pay", ">= 11.6.2"
-gem "stripe", ">= 19.3"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]

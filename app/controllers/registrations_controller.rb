@@ -3,16 +3,20 @@ class RegistrationsController < ApplicationController
 
   allow_unauthenticated_access only: [ :new, :create ]
 
+  # Accounts are created by the first-run /setup or by accepting an organization invitation
+  # (InvitationsController#show stashes the token in the session). Open sign-up is closed.
+  before_action :require_invitation, only: [ :new, :create ]
+
   def new
     redirect_to dashboard_path and return if authenticated?
 
-    @user = User.new(email: params[:email])
+    @user = User.new(email: @invitation.email)
   end
 
   def create
     redirect_to dashboard_path and return if authenticated?
 
-    @user = User.new(registration_params)
+    @user = User.new(registration_params.merge(email: @invitation.email))
 
     # Validate only - no `users` row is created until the confirmation code is entered,
     # so an abandoned signup never blocks the email from being used again.
@@ -30,6 +34,13 @@ class RegistrationsController < ApplicationController
   end
 
   private
+
+  def require_invitation
+    @invitation = OrganizationInvitation.find_usable(session[:pending_invitation_token])
+    return if @invitation
+
+    redirect_to login_path, alert: "Sign-up is by invitation only. Ask an administrator to invite you."
+  end
 
   def registration_params
     params.require(:user).permit(:email, :password, :password_confirmation)

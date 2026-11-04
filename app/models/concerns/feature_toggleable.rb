@@ -1,24 +1,13 @@
-# Mixed into the tenant model (Organization). Three independent gates must all pass for
-# a feature to be "on": Feature.enabled (global kill switch), FeatureOrganizationAccess.enabled
-# (per-org grant), and the org's own opt-in stored in the `features` JSON column (only
-# checked when the feature requires it).
+# Mixed into Organization. A feature is "on" when it is in the OrgFeature catalog and either
+# needs no opt-in or the organization has switched it on (stored in the `features` JSON column).
 module FeatureToggleable
   extend ActiveSupport::Concern
 
   def feature_enabled?(key)
-    feature = Feature.find_by(key: key.to_s)
-    return false unless feature&.available_to_organization?(self)
+    feature = OrgFeature.find(key)
+    return false unless feature
 
     !feature.org_opt_in_required? || feature_org_setting_enabled?(key)
-  end
-
-  def feature_available?(key)
-    Feature.exists?(key: key.to_s, enabled: true)
-  end
-
-  def feature_admin_enabled?(key)
-    feature = Feature.find_by(key: key.to_s)
-    feature&.available_to_organization?(self) || false
   end
 
   def feature_org_setting_enabled?(key)

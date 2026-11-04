@@ -7,7 +7,7 @@ class PasswordResetMailer < ApplicationMailer
     @request_details = request_details || {}
     @requested_at = parse_requested_at(@request_details[:requested_at])
 
-    mail(to: user.email, subject: "Reset your RxTerminal password")
+    mail(to: user.email, subject: "Reset your #{AppConfig.name} password")
   end
 
   private

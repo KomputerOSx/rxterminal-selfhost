@@ -34,7 +34,7 @@ module Org
     def redirect_to_default_range
       return if params.except(:controller, :action, :page, :sort, :direction).present?
 
-      default_days = Current.organization.audit_log_retention_days || 7
+      default_days = 7
       redirect_to org_audit_logs_path(
         date_from: helpers.audit_log_filter_datetime(default_days.days.ago),
         date_to: helpers.audit_log_filter_datetime(Time.current)

@@ -73,11 +73,8 @@ module TwoFactorAuthentication
       value: { user_id: user.id, verifier: trusted_two_factor_verifier(user), expires_at: expires_at.iso8601 }.to_json,
       expires: expires_at,
       httponly: true,
-      # :lax, not :strict - this cookie is also read from OmniauthCallbacksController#create,
-      # which runs on the cross-site-initiated redirect landing from the OAuth provider (see
-      # the same reasoning in Authentication#start_new_session_for).
       same_site: :lax,
-      secure: Rails.env.production?
+      secure: AppHost.secure_cookies?
     }
   end
 

@@ -52,7 +52,6 @@
                 <td class="text-base-content/60"><%= organization.contact_email.presence || "-" %></td>
                 <td class="text-base-content/60"><%= organization.contact_phone.presence || "-" %></td>
                 <td class="text-base-content/60"><%= customer_pii_organization_owner_emails(organization) %></td>
-                <td class="text-base-content/60"><%= organization.custom_domain.presence || "-" %></td>
                 <td><%= organization.memberships.size %></td>
                 <td class="text-base-content/60"><%= organization.created_at.to_date.to_fs(:long) %></td>
               </tr>

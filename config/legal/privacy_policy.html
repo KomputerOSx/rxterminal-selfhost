@@ -1,0 +1,76 @@
+<!--
+  TEMPLATE - not legal advice. Review and edit for your organisation and jurisdiction.
+  The defaults assume the UK GDPR. Placeholders: {{organization_name}} {{organization_address}}
+  {{contact_email}} {{contact_phone}} {{app_name}} {{site_url}} {{pii_retention_days}}
+  To customise: bin/rails selfhost:legal:export, then edit storage/legal/privacy_policy.html
+-->
+<p class="legal-subtitle">This notice explains how your personal information is collected and used when you use this portal.</p>
+
+<section>
+  <h2>1. Who Is Collecting Your Information</h2>
+  <p>This portal is operated by <strong>{{organization_name}}</strong>, who is the Data Controller for the personal information you provide. The organisation decides how and why your data is used and is responsible for keeping it safe.</p>
+  <p>Contact: {{organization_address}}<br>Email: <a href="mailto:{{contact_email}}">{{contact_email}}</a><br>Phone: {{contact_phone}}</p>
+  <p>The portal runs on {{app_name}}, open-source software that {{organization_name}} hosts itself. The software's authors do not receive or have access to your data.</p>
+</section>
+
+<section>
+  <h2>2. What Information Is Collected</h2>
+  <p>When you book an appointment or join the queue through this portal, the following may be collected:</p>
+  <ul>
+    <li>Your first and last name</li>
+    <li>Date of birth (used to identify you at the counter)</li>
+    <li>Postcode (used to confirm you are registered with this organisation)</li>
+    <li>Your email address, if you ask for a confirmation or reminder</li>
+    <li>The service you are requesting</li>
+  </ul>
+  <p>Payment card details are never stored by this portal.</p>
+</section>
+
+<section>
+  <h2>3. Why Your Information Is Collected (Lawful Basis)</h2>
+  <p>Your information is processed under UK GDPR Article 6:</p>
+  <ul>
+    <li><strong>Legitimate interests (Article 6(1)(f)):</strong> to manage appointments and the queue efficiently and give you timely service.</li>
+    <li><strong>Public task (Article 6(1)(e)):</strong> where the service is a publicly funded health service.</li>
+  </ul>
+  <p>If you provide health-related information, the organisation also processes it under <strong>Article 9(2)(h)</strong>: provision of health or social care.</p>
+</section>
+
+<section>
+  <h2>4. How Your Information Is Used</h2>
+  <ul>
+    <li>To place you in the queue or confirm your appointment</li>
+    <li>To let staff prepare for your visit before you reach the counter</li>
+    <li>To send you the confirmation or reminder you asked for</li>
+    <li>To keep the records the organisation is required to keep</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. How Long Your Information Is Kept</h2>
+  <p>Personal details such as your name, date of birth and postcode are automatically anonymised after <strong>{{pii_retention_days}} days</strong>. Anonymised records cannot be linked back to you and may be kept for statistics and regulatory purposes.</p>
+</section>
+
+<section>
+  <h2>6. Who Your Information Is Shared With</h2>
+  <p>Your information is visible to authorised staff of {{organization_name}} only. It is not sold and is not used for marketing by third parties.</p>
+  <p>{{organization_name}} may use service providers to run this system, for example hosting and email delivery. They act only on the organisation's instructions.</p>
+</section>
+
+<section>
+  <h2>7. Your Rights</h2>
+  <ul>
+    <li><strong>Access:</strong> ask for a copy of your personal data.</li>
+    <li><strong>Rectification:</strong> ask for inaccurate data to be corrected.</li>
+    <li><strong>Erasure:</strong> ask for your data to be deleted.</li>
+    <li><strong>Restriction and objection:</strong> ask the organisation to limit or stop using your data.</li>
+    <li><strong>Portability:</strong> ask for your data in a portable format.</li>
+  </ul>
+  <p>To use any of these rights, speak to a member of staff or email <a href="mailto:{{contact_email}}">{{contact_email}}</a>. The organisation will respond within one calendar month.</p>
+  <p>If you are unhappy with how your data is handled you can complain to the Information Commissioner's Office (ICO): <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>, 0303 123 1113. If you are outside the UK, contact your local data protection authority.</p>
+</section>
+
+<section>
+  <h2>8. Changes To This Notice</h2>
+  <p>This notice may be updated from time to time. The current version is always available on this page and from the organisation on request.</p>
+</section>

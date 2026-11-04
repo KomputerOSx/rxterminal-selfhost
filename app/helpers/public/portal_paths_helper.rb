@@ -2,10 +2,6 @@
 
 module Public
   module PortalPathsHelper
-    def custom_domain_portal_request?
-      request.env[CustomDomainResolver::ENV_KEY].present?
-    end
-
     def portal_slug
       @organization.slug
     end
@@ -144,7 +140,7 @@ module Public
     private
 
     def portal_path(suffix, **options)
-      base = custom_domain_portal_request? ? "" : "/#{portal_slug}"
+      base = request.path_parameters[:organization_slug].present? ? "/#{portal_slug}" : ""
       path = [ base, suffix ].reject(&:blank?).join("/")
       path = "/#{path.delete_prefix("/")}"
       query = options.except(:only_path).to_query

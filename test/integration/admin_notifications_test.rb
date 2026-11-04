@@ -16,7 +16,7 @@ class AdminNotificationsTest < ActionDispatch::IntegrationTest
       get admin_notifications_path
     end
 
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "system admin can send a notification to specific users" do

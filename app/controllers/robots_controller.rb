@@ -8,8 +8,6 @@ class RobotsController < ApplicationController
   skip_before_action :enforce_maintenance_mode!
 
   # Authenticated / internal app areas - not useful or safe to index.
-  # Irrelevant (and left out) on custom domains, since those hosts only
-  # ever serve the public organization portal.
   DISALLOWED_PATHS = %w[
     /admin/
     /api/
@@ -29,19 +27,11 @@ class RobotsController < ApplicationController
     /confirmations
     /registration
     /invitations
-    /email_preferences
-    /auth/
   ].freeze
 
   def show
-    @disallowed_paths = custom_domain_request? ? [] : DISALLOWED_PATHS
+    @disallowed_paths = DISALLOWED_PATHS
 
     render layout: false
-  end
-
-  private
-
-  def custom_domain_request?
-    request.env[CustomDomainResolver::ENV_KEY].present?
   end
 end

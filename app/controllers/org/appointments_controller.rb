@@ -34,8 +34,6 @@ module Org
     end
 
     def create
-      return if block_unless_appointments_enabled!
-
       @appointment = Current.organization.appointments.build(appointment_params)
       apply_customer_normalization(@appointment)
       @appointment.status = "booked"

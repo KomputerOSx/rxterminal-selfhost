@@ -26,7 +26,6 @@ class User < ApplicationRecord
   has_many :notifications, through: :notification_recipients
   has_many :created_notifications, class_name: "Notification", foreign_key: :created_by_id, dependent: :nullify
   has_many :sent_invitations, class_name: "OrganizationInvitation", foreign_key: :invited_by_id, dependent: :nullify
-  has_many :identities, dependent: :destroy
 
   MIN_PASSWORD_LENGTH = 8
   PASSWORD_HISTORY_LIMIT = 10
@@ -59,13 +58,8 @@ class User < ApplicationRecord
   validate :password_no_repeated_characters, if: :password_digest_changed?
   validate :password_no_keyboard_patterns, if: :password_digest_changed?
   validate :password_not_in_history, if: :password_digest_changed?
-  validate :clear_password_blank_error_for_oauth_users
 
   after_update :save_password_to_history, if: :saved_change_to_password_digest?
-
-  def trial_available?
-    trial_granted_at.nil?
-  end
 
   # --- Account lockout ---
 
@@ -135,6 +129,10 @@ class User < ApplicationRecord
     has_role?(Role::SYSTEM_ADMIN, scope: :system)
   end
 
+  def organization_owner?
+    memberships.joins(membership_roles: :role).exists?(roles: { scope: "app", name: Role::APP_OWNER })
+  end
+
   def unread_notification_count
     notification_recipients.inbox.unread.count
   end
@@ -176,27 +174,9 @@ class User < ApplicationRecord
     memberships.order(:created_at).first&.organization
   end
 
-  # --- Email notification preferences ---
-  # email_preferences is a hash keyed by EmailCampaign category string. Absent key means
-  # subscribed - a category added to EmailCampaign::OPTIONAL_CATEGORIES later needs no backfill,
-  # since everyone is implicitly subscribed to a category they've never expressed an opinion on.
-
-  def subscribed_to_email_category?(category)
-    email_preferences[category.to_s] != false
-  end
-
-  def unsubscribe_from_email_category!(category)
-    update!(email_preferences: email_preferences.merge(category.to_s => false))
-  end
-
-  def resubscribe_to_email_category!(category)
-    update!(email_preferences: email_preferences.except(category.to_s))
-  end
-
-  # --- Activity notification preferences (in-app + email, separate from email_preferences
-  # above which only governs marketing/campaign mail) ---
+  # --- Activity notification preferences (in-app + email) ---
   # notification_preferences is {category => {channel => false}}. Absent key means enabled,
-  # same "absence = opted in" convention as email_preferences. always_on categories (see
+  # same "absence = opted in" convention. always_on categories (see
   # Notifications::CATEGORIES) ignore preferences entirely and are always delivered.
 
   def notification_channel_enabled?(category, channel)
@@ -501,9 +481,5 @@ class User < ApplicationRecord
 
     old_passwords = password_histories.order(created_at: :desc).offset(PASSWORD_HISTORY_LIMIT)
     PasswordHistory.where(id: old_passwords.pluck(:id)).destroy_all
-  end
-
-  def clear_password_blank_error_for_oauth_users
-    errors.delete(:password, :blank) if persisted? && !password_digest_changed?
   end
 end

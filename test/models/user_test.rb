@@ -11,7 +11,7 @@ class UserTest < ActiveSupport::TestCase
 
     assert_not users(:one).notification_channel_enabled?("membership", "email")
     assert users(:one).notification_channel_enabled?("membership", "in_app")
-    assert users(:one).notification_channel_enabled?("billing", "email")
+    assert users(:one).notification_channel_enabled?("appointments", "email")
   end
 
   test "enable_notification_channel! clears a prior opt-out" do

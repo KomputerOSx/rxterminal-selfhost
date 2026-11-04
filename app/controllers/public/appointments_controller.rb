@@ -3,7 +3,6 @@
 module Public
   class AppointmentsController < BaseController
     before_action :require_online_appointment_booking_feature
-    before_action(only: [ :new, :calendar, :slot_options, :create ]) { block_unless_appointments_enabled!(public_facing: true) }
 
     def new
       @appointment = Appointment.new

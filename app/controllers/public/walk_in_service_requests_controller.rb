@@ -19,8 +19,6 @@ module Public
     end
 
     def create
-      return if block_if_at_monthly_request_limit!(public_facing: true)
-
       submitted = service_request_params
       @display_dob = submitted[:dob]
 

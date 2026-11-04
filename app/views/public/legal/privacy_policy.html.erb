@@ -5,7 +5,7 @@
       <%= link_to "Back", portal_back_path, class: "btn btn-outline btn-sm" %>
     </div>
     <div class="legal-content text-sm text-base-content/80">
-      <%= render "shared/legal/privacy_policy", org_name: @organization.name, hide_heading: true %>
+      <%= LegalDocument.render("privacy_policy", organization: @organization) %>
     </div>
   </div>
 </div>

@@ -3,47 +3,17 @@ require "test_helper"
 class AuthenticationTest < ActionDispatch::IntegrationTest
   include ActiveJob::TestHelper
 
-  test "home page shows authentication links" do
+  test "root redirects anonymous visitors to login" do
     get root_path
 
-    assert_response :success
-    assert_select "a", text: "Log in"
-    assert_select "a", text: "Start free trial"
-    assert_select "a", text: "Start your free trial"
-    assert_select "a.rx-terminal-brand"
-    assert_select "a.rx-terminal-brand span.rx", text: "Rx"
-    assert_match(/Self.?Service/i, response.body)
-    assert_match(/kiosk platform/i, response.body)
+    assert_redirected_to login_path
   end
 
-  test "user can sign up, confirm, and sign in" do
-    perform_enqueued_jobs do
-      post registration_path, params: {
-        user: {
-          email: "new@example.com",
-          password: "Tr8kMvln52",
-          password_confirmation: "Tr8kMvln52"
-        }
-      }
-    end
+  test "open sign-up is closed" do
+    get new_registration_path
 
-    assert_redirected_to new_confirmation_path
-
-    user = User.find_by(email: "new@example.com")
-    assert_nil user
-
-    code = ActionMailer::Base.deliveries.last.text_part.decoded[/(\d{6})/, 1]
-    post confirmations_path, params: { code: code.chars }
-
-    assert_redirected_to dashboard_path
-    user = User.find_by(email: "new@example.com")
-    assert user.present?
-    assert user.confirmed?
-
-    # A brand-new user hasn't completed onboarding yet, so dashboard_path itself
-    # redirects to the onboarding flow.
-    follow_redirect!
-    assert_redirected_to onboarding_path
+    assert_redirected_to login_path
+    assert_select "a[href=?]", new_registration_path, count: 0
   end
 
   test "user can sign in and sign out" do
@@ -57,7 +27,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to root_path
     follow_redirect!
-    assert_select "a", text: "Log in"
+    assert_redirected_to login_path
   end
 
   test "signing in from a new user agent logs a new_device_login audit event, a repeat from a known one does not, even across logout" do

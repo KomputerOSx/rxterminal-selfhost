@@ -21,7 +21,7 @@
     <div class="card-body gap-5">
       <h2 class="text-lg font-semibold">Service information</h2>
 
-      <% if calendars.any? && Current.organization.calendars_enabled? %>
+      <% if calendars.any? %>
         <div class="form-control">
           <label class="label"><span class="label-text">Calendar</span></label>
           <%= form.collection_select :calendar_id, calendars, :id, :name,
@@ -108,13 +108,11 @@
                 tip: "Customers can request this service immediately." %>
         </label>
 
-        <% appointments_enabled = Current.organization.appointments_enabled? %>
-        <label class="flex cursor-pointer items-center gap-3 <%= "opacity-60" unless appointments_enabled %>">
-          <%= form.check_box :requires_appointment, class: "checkbox-field", disabled: !appointments_enabled %>
+        <label class="flex cursor-pointer items-center gap-3">
+          <%= form.check_box :requires_appointment, class: "checkbox-field" %>
           <%= form_option_label "Allow appointments",
                 tooltips: true,
-                tip: appointments_enabled ? "Customers can book an appointment for a later date." : plan_feature_upgrade_message("appointment booking") %>
-          <%= plan_gated_nav_badge unless appointments_enabled %>
+                tip: "Customers can book an appointment for a later date." %>
         </label>
 
         <label class="flex cursor-pointer items-center gap-3">

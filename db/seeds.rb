@@ -75,14 +75,6 @@ if Rails.env.development?
 
     puts "'#{org.name}' is a solo org (#{dev_owner_email}), also granted system admin"
 
-    # Business plan via the no-card trial mechanism (not a real Stripe subscription) so this
-    # works in dev regardless of Stripe credentials being configured.
-    unless org.subscribed?
-      org.update!(trial_plan_key: Billing::Plans::BUSINESS.key, trial_ends_at: OrganizationTrial::TRIAL_DAYS.days.from_now)
-    end
-
-    puts "'#{org.name}' is on the #{org.current_plan&.name || "no"} plan"
-
     default_calendar = org.calendars.find_by(is_default: true) || org.calendars.first!
 
     seed_services = [

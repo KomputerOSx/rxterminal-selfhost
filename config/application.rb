@@ -28,11 +28,6 @@ module Rxterminal
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    # Loaded early so routes.rb / middleware boot can reference them reliably.
-    require Rails.root.join("app/constraints/custom_domain_constraint")
-    require Rails.root.join("app/middleware/custom_domain_resolver")
-    config.middleware.use CustomDomainResolver
-
     config.middleware.use Rack::Attack
 
     config.mission_control.jobs.base_controller_class = "Admin::MissionControlController"

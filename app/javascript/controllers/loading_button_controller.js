@@ -3,10 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="loading-button"
 //
 // Disables its button and swaps the label to a busy state for the duration of a form
-// submission - these billing actions (subscribe/upgrade/downgrade/cancel/remove card) hit
-// Stripe and only fully settle once a webhook lands a moment later, so without this a second
-// click before the page reloads/redirects can fire the same action twice (e.g. double-swap a
-// plan, double-cancel).
+// submission, so a second click before the page reloads/redirects can't fire the same action
+// twice (e.g. sending a notification twice).
 //
 // Attach directly to the button `button_to` renders (data: passed to button_to lands on the
 // <button>, not the <form>) - listens on the *form's* native "submit" event rather than the

@@ -16,11 +16,12 @@ class NotificationMailerTest < ActionMailer::TestCase
     assert_not_includes keyword_names, :url
   end
 
-  test "notify directs the recipient to the main website by name, not a link" do
+  test "notify directs the recipient to this install's own site by name, not a link" do
     mail = NotificationMailer.notify(user: users(:one), title: "Hello", body: "World")
 
-    assert_match "rxterminal.co.uk", mail.text_part.body.to_s
-    assert_match "rxterminal.co.uk", mail.html_part.body.to_s
+    assert_match AppConfig.site_domain, mail.text_part.body.to_s
+    assert_match AppConfig.site_domain, mail.html_part.body.to_s
+    assert_no_match(/strixon|rxterminal\.co\.uk/i, mail.html_part.body.to_s)
   end
 
   test "notify greets the recipient by email when no first name is set" do

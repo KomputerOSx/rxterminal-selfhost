@@ -22,21 +22,6 @@ default: &default
     queue: default
     schedule: every day at 9am
 
-  trial_reminder:
-    class: TrialReminderJob
-    queue: default
-    schedule: every day at 9am
-
-  organization_logo_review_reminder:
-    class: OrganizationLogoReviewReminderJob
-    queue: default
-    schedule: every day at 9am
-
-  stripe_webhook_reconciliation:
-    class: Billing::ReconcileStripeEventsJob
-    queue: default
-    schedule: every hour
-
 development:
   <<: *default
 

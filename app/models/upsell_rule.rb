@@ -16,7 +16,6 @@ class UpsellRule < ApplicationRecord
   scope :not_archived, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
   scope :plan_active, -> { where(active: true, archived_at: nil) }
-  scope :counting_toward_plan_limit, -> { plan_active }
 
   validates :name, presence: true
   validates :frequency_type, inclusion: { in: %w[every_nth_customer percentage_based] }

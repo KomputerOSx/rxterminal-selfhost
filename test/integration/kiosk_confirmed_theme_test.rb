@@ -37,42 +37,38 @@ class KioskConfirmedThemeTest < ActionDispatch::IntegrationTest
   end
 
   test "queue confirmed screen uses locked markup not theme utilities" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post kiosk_service_requests_path,
-        params: {
-          service_id: @service.id,
-          service_request: {
-            first_name: "jane",
-            last_name: "doe",
-            dob: "1985-05-20",
-            postcode: "SW1A 2AA",
-            privacy_requested: false
-          }
-        },
-        as: :json
+    post kiosk_service_requests_path,
+      params: {
+        service_id: @service.id,
+        service_request: {
+          first_name: "jane",
+          last_name: "doe",
+          dob: "1985-05-20",
+          postcode: "SW1A 2AA",
+          privacy_requested: false
+        }
+      },
+      as: :json
 
-      assert_response :success
-      body = JSON.parse(response.body)
+    assert_response :success
+    body = JSON.parse(response.body)
 
-      get body["redirect_to"]
-      assert_response :success
-      assert_match "kiosk-confirmed-page", response.body
-      assert_no_match(/\bbg-success\b/, response.body)
-    end
+    get body["redirect_to"]
+    assert_response :success
+    assert_match "kiosk-confirmed-page", response.body
+    assert_no_match(/\bbg-success\b/, response.body)
   end
 
   test "upsell confirmed screen uses locked markup not theme utilities" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      seed_upsell_rule!
-      create_walk_in_for_upsell!
+    seed_upsell_rule!
+    create_walk_in_for_upsell!
 
-      post kiosk_decline_upsell_path
-      follow_redirect!
+    post kiosk_decline_upsell_path
+    follow_redirect!
 
-      assert_response :success
-      assert_match "kiosk-confirmed-page", response.body
-      assert_no_match(/\bbg-success\b/, response.body)
-    end
+    assert_response :success
+    assert_match "kiosk-confirmed-page", response.body
+    assert_no_match(/\bbg-success\b/, response.body)
   end
 
   test "appointment confirmation screen uses locked markup not theme utilities" do
@@ -91,28 +87,26 @@ class KioskConfirmedThemeTest < ActionDispatch::IntegrationTest
       appointment_date += 1.day
     end
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post kiosk_appointments_path,
-        params: {
-          appointment: {
-            service_id: appointment_service.id,
-            first_name: "jane",
-            last_name: "doe",
-            dob: "1985-03-20",
-            postcode: "SW1A 1AA",
-            appointment_date: appointment_date.iso8601,
-            appointment_time: "10:00"
-          }
-        },
-        as: :json
+    post kiosk_appointments_path,
+      params: {
+        appointment: {
+          service_id: appointment_service.id,
+          first_name: "jane",
+          last_name: "doe",
+          dob: "1985-03-20",
+          postcode: "SW1A 1AA",
+          appointment_date: appointment_date.iso8601,
+          appointment_time: "10:00"
+        }
+      },
+      as: :json
 
-      body = JSON.parse(response.body)
-      get body["redirect_to"]
+    body = JSON.parse(response.body)
+    get body["redirect_to"]
 
-      assert_response :success
-      assert_match "kiosk-appointment-confirmed-page", response.body
-      assert_no_match(/\bbg-warning\b/, response.body)
-    end
+    assert_response :success
+    assert_match "kiosk-appointment-confirmed-page", response.body
+    assert_no_match(/\bbg-warning\b/, response.body)
   end
 
   private

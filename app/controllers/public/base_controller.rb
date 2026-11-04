@@ -3,8 +3,6 @@
 module Public
   class BaseController < ApplicationController
     include Public::PortalPathsHelper
-    include SubscriptionLockout
-    include PlanLimitEnforcement
 
     allow_unauthenticated_access
     layout "public"
@@ -17,7 +15,6 @@ module Public
 
     before_action :load_and_verify_organization
     around_action :use_organization_time_zone
-    before_action :enforce_public_subscription_lockout!
     before_action :require_privacy_accepted
 
     private
@@ -27,13 +24,12 @@ module Public
     end
 
     def load_and_verify_organization
-      @organization = if custom_domain_portal_request?
-        Organization.find_by(id: request.env[CustomDomainResolver::ENV_KEY])
-      else
-        Organization.find_by(slug: params[:organization_slug])
-      end
+      @organization = params[:organization_slug] ? Organization.find_by(slug: params[:organization_slug]) : Organization.primary
 
       unless @organization&.public_portal_enabled?
+        # At the site root there is nothing to show for visitors until the portal is switched on.
+        return redirect_to(login_path) unless params[:organization_slug]
+
         render "public/errors/not_found", status: :not_found, layout: false
       end
     end
@@ -52,10 +48,5 @@ module Public
       session[:public_privacy_return_to] = request.fullpath
       redirect_to portal_privacy_path
     end
-
-    def subscription_lockout_organization
-      @organization
-    end
-    alias_method :enforce_public_subscription_lockout!, :enforce_subscription_lockout!
   end
 end

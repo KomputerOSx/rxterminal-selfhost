@@ -6,7 +6,6 @@ module Org
 
     included do
       before_action :authorize_booking_configuration
-      before_action(unless: -> { action_name == "show" }) { block_unless_appointments_enabled! }
     end
 
     private

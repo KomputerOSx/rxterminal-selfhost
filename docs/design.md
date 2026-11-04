@@ -48,7 +48,7 @@ Each layout wraps a distinct part of the app in `app/views/layouts/`:
 | Landing | `landing.html.erb` | Public marketing/landing pages |
 | Kiosk | `kiosk.html.erb` | Customer-facing kiosk (device JWT auth, touch-optimised). |
 | Waiting display | `waiting_display.html.erb` | Full-screen queue display for waiting area TVs |
-| Public portal | `public.html.erb` | Customer-facing booking portal (`/:slug`, custom domains) |
+| Public portal | `public.html.erb` | Customer-facing booking portal (`/` for the main organization, `/:slug` for other organizations) |
 
 <!-- TODO: fill in - any layout-specific rules (max-width, when to use which layout, etc.) -->
 
@@ -145,7 +145,7 @@ Wire confirmations with the `confirm-modal` Stimulus controller on the **submit 
 
 The confirm button inside the dialog automatically picks `btn-error` when the triggering button has
 `btn-error` or `text-error`; otherwise it uses `btn-primary`. Pair with `loading-button` when the
-action is slow (billing, migrations).
+action is slow.
 
 Reference: `app/javascript/controllers/confirm_modal_controller.js`
 

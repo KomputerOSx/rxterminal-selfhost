@@ -6,6 +6,9 @@ Rails.application.configure do
   # Code is not reloaded between requests.
   config.enable_reloading = false
 
+  # Secrets come from ENV, not credentials.
+  config.require_master_key = false
+
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
 
@@ -25,13 +28,13 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
+  config.assume_ssl = ENV.fetch("APP_PROTOCOL", "https") == "https"
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  config.force_ssl = ENV.fetch("APP_PROTOCOL", "https") == "https"
 
   # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
@@ -57,29 +60,27 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Set host to be used by links generated in mailer templates. This can't call AppHost.primary_host
-  # (Zeitwerk's main autoloader isn't wired up until the Finisher stage, well after this file
-  # runs) or defer to config.after_initialize (ActionMailer::Base reads config.action_mailer via
-  # an ActiveSupport.on_load(:action_mailer) hook that fires during eager loading, which happens
-  # BEFORE after_initialize/finisher_hook - assigning it there is silently too late and never
-  # reaches ActionMailer::Base, causing "Missing host to link to!" on every mailer). So the same
-  # credentials/ENV fallback AppHost.primary_host uses is inlined here instead.
+  # Links in mailer templates. Inlined from ENV (not AppHost) because Zeitwerk isn't wired up yet.
   config.action_mailer.default_url_options = {
-    host: Rails.application.credentials.dig(:app, :host).presence || ENV["APP_HOST"].presence || "localhost",
-    protocol: "https"
+    host: ENV["APP_HOST"].presence || "localhost",
+    protocol: ENV.fetch("APP_PROTOCOL", "https")
   }
 
-  # Azure Communication Services SMTP relay - see config/credentials.example for the
-  # azure_email credentials this reads.
-  config.action_mailer.smtp_settings = {
-    address:              "smtp.azurecomm.net",
-    port:                 587,
-    domain:               "rxterminal.co.uk",
-    user_name:            Rails.application.credentials.dig(:azure_email, :smtp_username),
-    password:             Rails.application.credentials.dig(:azure_email, :smtp_password),
-    authentication:       :login,
-    enable_starttls_auto: true
-  }
+  # Email is optional. Without SMTP_ADDRESS, delivery is logged instead of sent.
+  if ENV["SMTP_ADDRESS"].present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address:              ENV["SMTP_ADDRESS"],
+      port:                 ENV.fetch("SMTP_PORT", 587).to_i,
+      domain:               ENV["APP_HOST"].presence,
+      user_name:            ENV["SMTP_USERNAME"].presence,
+      password:             ENV["SMTP_PASSWORD"].presence,
+      authentication:       ENV.fetch("SMTP_AUTHENTICATION", "login").to_sym,
+      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS", "true") == "true"
+    }
+  else
+    config.action_mailer.delivery_method = :logger
+  end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -91,9 +92,7 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Enable DNS rebinding protection while allowing Growth-plan custom domains.
+  # Enable DNS rebinding protection for the configured APP_HOST.
   config.hosts = ->(host) { AppHost.allowed_request_host?(host) }
-  config.host_authorization = { exclude: ->(request) {
-    request.path == "/up" || request.path.start_with?("/internal/")
-  } }
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

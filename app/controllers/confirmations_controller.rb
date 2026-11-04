@@ -10,7 +10,7 @@ class ConfirmationsController < ApplicationController
 
     unless @email.present? && PendingRegistration.find(@email)
       flash[:toast] = { message: "Please sign up to get a confirmation code.", type: "error" }
-      redirect_to new_registration_path
+      redirect_to login_path
     end
   end
 
@@ -19,8 +19,8 @@ class ConfirmationsController < ApplicationController
     pending = email.present? ? PendingRegistration.find(email) : nil
 
     if pending.nil?
-      flash[:toast] = { message: "Your signup session has expired. Please sign up again.", type: "error" }
-      redirect_to new_registration_path
+      flash[:toast] = { message: "Your signup session has expired. Please open your invitation link again.", type: "error" }
+      redirect_to login_path
       return
     end
 
@@ -31,15 +31,21 @@ class ConfirmationsController < ApplicationController
       return
     end
 
-    user = User.new(email: pending.email, confirmed_at: Time.current)
+    invitation = OrganizationInvitation.find_usable(session[:pending_invitation_token])
+    unless invitation && invitation.email.casecmp?(pending.email)
+      PendingRegistration.destroy(email)
+      session.delete(:pending_confirmation_email)
+      flash[:toast] = { message: "Sign-up is by invitation only. Ask an administrator to invite you.", type: "error" }
+      redirect_to login_path
+      return
+    end
+
+    # Invited staff join the organization that invited them; the owner already did onboarding.
+    user = User.new(email: pending.email, confirmed_at: Time.current, onboarding_completed_at: Time.current)
     user.password_digest = pending.password_digest
 
     begin
-      organization = nil
-      ActiveRecord::Base.transaction do
-        user.save!(validate: false)
-        organization = Organization.create_personal_for!(user)
-      end
+      user.save!(validate: false)
     rescue ActiveRecord::RecordNotUnique
       # Someone else claimed this email while this signup was pending confirmation.
       PendingRegistration.destroy(email)
@@ -56,19 +62,12 @@ class ConfirmationsController < ApplicationController
 
     log_audit(:user_registered, user: user, metadata: { email: user.email })
     log_audit(:account_confirmed, user: user, metadata: { email: user.email })
-    log_audit(:organization_created, user: user, resource: organization, metadata: { name: organization.name, slug: organization.slug })
-    log_audit(:membership_created, user: user, resource: organization)
-    log_audit(:role_granted, user: user, resource: organization, metadata: { role: Role::APP_OWNER, scope: "app", organization_id: organization.id })
 
     start_new_session_for(user)
     log_audit(:login_success, user: user, metadata: { auto_login_after_confirmation: true })
 
-    invitation = resume_pending_invitation_for(user, token: pending_invitation_token)
-    flash[:toast] ||= if invitation
-      { message: "Email confirmed! You've joined #{invitation.organization.name}.", type: "success" }
-    else
-      { message: "Email confirmed! Welcome aboard.", type: "success" }
-    end
+    resume_pending_invitation_for(user, token: pending_invitation_token)
+    flash[:toast] ||= { message: "Email confirmed! You've joined #{invitation.organization.name}.", type: "success" }
     redirect_to dashboard_path
   end
 end

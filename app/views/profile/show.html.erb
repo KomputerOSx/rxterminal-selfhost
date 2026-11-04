@@ -149,43 +149,6 @@
       </div>
     </div>
 
-    <%# ── Marketing emails ── %>
-    <div class="card border border-base-300">
-      <div class="card-body">
-        <p class="font-medium">Marketing emails</p>
-        <p class="text-sm text-base-content/60 mt-0.5">Choose which emails you'd like to receive at <%= current_user.email %>.</p>
-
-        <%= form_with url: profile_email_preferences_path, method: :patch, html: { class: "mt-4" } do %>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="text-left text-xs uppercase tracking-wide text-base-content/60">
-                  <th class="font-normal pb-2">Category</th>
-                  <th class="font-normal pb-2 text-center w-24">Email</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-base-300">
-                <% EmailCampaign::OPTIONAL_CATEGORIES.each do |category| %>
-                  <tr>
-                    <td class="py-3"><%= category.titleize %></td>
-                    <td class="py-3 text-center">
-                      <input type="checkbox" name="subscribed[<%= category %>]" value="1"
-                             class="toggle toggle-primary toggle-sm"
-                             <%= "checked" if current_user.subscribed_to_email_category?(category) %>>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="form-control mt-4">
-            <%= submit_tag "Save preferences", class: "btn btn-sm btn-primary" %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-
     <%# ── Danger Zone ── %>
     <div class="card border border-error">
       <div class="card-body p-0">

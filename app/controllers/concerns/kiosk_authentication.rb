@@ -3,16 +3,12 @@
 module KioskAuthentication
   extend ActiveSupport::Concern
   include KioskPreviewMode
-  include SubscriptionLockout
-  include PlanLimitEnforcement
 
   KIOSK_AUTH_COOKIE = :kiosk_jwt_token
 
   included do
     before_action :authenticate_kiosk_device
     before_action :set_kiosk_organization
-    before_action :enforce_kiosk_subscription_lockout!
-    before_action :enforce_kiosk_plan_access!
   end
 
   private
@@ -83,7 +79,7 @@ module KioskAuthentication
       @organization = Organization.find_by(id: session[:kiosk_preview_organization_id])
       unless @organization
         invalidate_kiosk_preview!
-        redirect_to root_path, alert: "Preview session expired. Please try again."
+        redirect_to dashboard_path, alert: "Preview session expired. Please try again."
       end
       return
     end
@@ -112,7 +108,7 @@ module KioskAuthentication
       expires: JwtService::TOKEN_EXPIRATION.seconds.from_now,
       httponly: true,
       same_site: :strict,
-      secure: Rails.env.production?
+      secure: AppHost.secure_cookies?
     }
   end
 
@@ -146,36 +142,5 @@ module KioskAuthentication
 
   def current_device
     @device
-  end
-
-  def subscription_lockout_organization
-    @organization
-  end
-
-  def enforce_kiosk_subscription_lockout!
-    enforce_subscription_lockout!
-  end
-
-  def enforce_kiosk_plan_access!
-    return unless @organization
-    return if @organization.kiosk_enabled?
-
-    message = if kiosk_preview_mode?
-      plan_feature_upgrade_message("kiosk devices", organization: @organization)
-    else
-      "This kiosk is temporarily unavailable. Please contact the pharmacy."
-    end
-
-    if kiosk_preview_mode?
-      redirect_to org_kiosk_path, alert: message
-    elsif request.format.json?
-      render json: { error: message }, status: :forbidden
-    else
-      redirect_to kiosk_setup_path, alert: message
-    end
-  end
-
-  def subscription_lockout_layout
-    false
   end
 end

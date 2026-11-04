@@ -3,7 +3,6 @@
 module Public
   class AppointmentCheckinsController < BaseController
     before_action :require_online_appointment_check_feature
-    before_action(only: [ :new, :create ]) { block_unless_appointments_enabled!(public_facing: true) }
     before_action :require_walk_in_session, only: [ :new, :create ]
     before_action :load_checkin_forms, only: [ :new, :create ]
 

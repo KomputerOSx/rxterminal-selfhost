@@ -69,7 +69,7 @@ class OrgWaitingDisplayTest < ActionDispatch::IntegrationTest
     post login_path, params: { email: users(:two).email, password: "password123" }
 
     get org_waiting_display_path
-    assert_redirected_to root_path
+    assert_redirected_to dashboard_path
   end
 
   test "waiting display shows a scan-to-join QR code when only walk-in is enabled" do
@@ -112,9 +112,6 @@ class OrgWaitingDisplayTest < ActionDispatch::IntegrationTest
   end
 
   test "waiting display omits the QR code when the public portal is enabled but no sub-feature is" do
-    FeatureRegistry.sync!
-    Feature.find_by!(key: "public_portal").update!(enabled: true, applies_to_all_organizations: true)
-
     post login_path, params: { email: @owner.email, password: "password123" }
     get org_waiting_display_path
 
@@ -144,15 +141,6 @@ class OrgWaitingDisplayTest < ActionDispatch::IntegrationTest
   private
 
   def enable_public_portal!(organization, *feature_keys)
-    FeatureRegistry.sync!
-
-    portal = Feature.find_by!(key: "public_portal")
-    portal.update!(enabled: true, applies_to_all_organizations: true)
-
-    feature_keys.each do |key|
-      feature = Feature.find_by!(key: key.to_s)
-      feature.update!(enabled: true, applies_to_all_organizations: true)
-      organization.update_feature!(key, enabled: true) if feature.org_opt_in_required?
-    end
+    feature_keys.each { |key| organization.update_feature!(key, enabled: true) }
   end
 end

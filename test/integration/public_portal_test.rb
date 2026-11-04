@@ -20,6 +20,47 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     accept_portal_privacy!
   end
 
+  test "the primary organization's portal is served at the site root without a slug" do
+    get "/"
+
+    assert_response :success
+    assert_match @service.display_name, response.body
+    assert_match '<link rel="canonical" href="http://www.example.com/">', response.body
+    assert_match 'href="/appointments', response.body
+    assert_no_match %(href="/#{@organization.slug}/), response.body
+  end
+
+  test "root-mounted portal pages work and the slugged portal still works for the primary organization" do
+    get "/appointments/new"
+    assert_response :success
+
+    get portal_root_path(organization_slug: @organization.slug)
+    assert_response :success
+    assert_match %(href="/#{@organization.slug}/appointments), response.body
+  end
+
+  test "a branch keeps its slugged portal while the root belongs to the primary organization" do
+    branch = Organization.create_for!(@owner, name: "Second Branch", slug_base: "second-branch")
+    enable_public_portal!(branch, :online_appointment_booking)
+    assert_not branch.primary?
+
+    get portal_root_path(organization_slug: branch.slug)
+    assert_response :success
+    assert_match "Second Branch", response.body
+
+    get "/"
+    assert_match @organization.name, response.body
+    assert_no_match "Second Branch", response.body
+  end
+
+  test "the root redirects to login when there is no primary organization" do
+    Organization.stub :primary, nil do
+      get "/"
+    end
+
+    assert_redirected_to login_path
+  end
+
   test "portal home lists bookable services" do
     get portal_root_path(organization_slug: @organization.slug)
 
@@ -52,19 +93,6 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "<title>#{@organization.name}</title>", response.body
-  end
-
-  test "portal title tag omits the RxTerminal suffix when served on a custom domain" do
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      @organization.update!(custom_domain: "shop.acme.test")
-    end
-
-    host! "shop.acme.test"
-    get "/"
-
-    assert_response :success
-    assert_match "<title>#{@organization.name}</title>", response.body
-    assert_match '<link rel="canonical" href="http://shop.acme.test/">', response.body
   end
 
   test "portal home is reachable without accepting privacy" do
@@ -165,21 +193,6 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     assert_match "No contact details yet.", response.body
   end
 
-  test "info pages work on a custom domain" do
-    enable_public_portal!(@organization, :portal_opening_times, :portal_contact_page)
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      @organization.update!(custom_domain: "shop.acme.test")
-    end
-    host! "shop.acme.test"
-
-    get "/opening-times"
-    assert_response :success
-    assert_match 'href="/contact"', response.body
-
-    get "/contact"
-    assert_response :success
-  end
-
   test "flow pages are never indexable" do
     get new_portal_appointment_path(organization_slug: @organization.slug)
 
@@ -213,24 +226,13 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     assert_match '<link rel="apple-touch-icon" href="/icon.png">', response.body
   end
 
-  test "portal returns 404 when public portal feature is disabled" do
-    Feature.find_by!(key: "public_portal").update!(enabled: false)
-
-    get portal_root_path(organization_slug: @organization.slug)
-
-    assert_response :not_found
-    assert_match "Page not found", response.body
-  end
-
   test "customer can book an appointment through the public portal" do
     appointment_date = next_weekday(Date.current + 1.day)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_difference -> { Appointment.count }, 1 do
-        post portal_appointments_path(organization_slug: @organization.slug), params: {
-          appointment: appointment_payload(appointment_date: appointment_date)
-        }
-      end
+    assert_difference -> { Appointment.count }, 1 do
+      post portal_appointments_path(organization_slug: @organization.slug), params: {
+        appointment: appointment_payload(appointment_date: appointment_date)
+      }
     end
 
     assert_redirected_to portal_appointment_confirmed_path(organization_slug: @organization.slug)
@@ -249,15 +251,13 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
   test "appointment booking shows inline errors and preserves entered values on validation failure" do
     appointment_date = next_weekday(Date.current + 1.day)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post portal_appointments_path(organization_slug: @organization.slug), params: {
-        appointment: appointment_payload(appointment_date: appointment_date).merge(
-          last_name: "",
-          dob: "31-13-1990",
-          notes: "Prefer morning"
-        )
-      }
-    end
+    post portal_appointments_path(organization_slug: @organization.slug), params: {
+      appointment: appointment_payload(appointment_date: appointment_date).merge(
+        last_name: "",
+        dob: "31-13-1990",
+        notes: "Prefer morning"
+      )
+    }
 
     assert_response :unprocessable_entity
     assert_match "JANE", response.body
@@ -272,20 +272,18 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     @organization.update!(require_appointment_email: true)
     appointment_date = next_weekday(Date.current + 1.day)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_no_difference -> { Appointment.count } do
-        post portal_appointments_path(organization_slug: @organization.slug), params: {
-          appointment: appointment_payload(appointment_date: appointment_date)
-        }
-      end
-      assert_response :unprocessable_entity
-      assert_match "be blank", response.body.downcase
+    assert_no_difference -> { Appointment.count } do
+      post portal_appointments_path(organization_slug: @organization.slug), params: {
+        appointment: appointment_payload(appointment_date: appointment_date)
+      }
+    end
+    assert_response :unprocessable_entity
+    assert_match "be blank", response.body.downcase
 
-      assert_difference -> { Appointment.count }, 1 do
-        post portal_appointments_path(organization_slug: @organization.slug), params: {
-          appointment: appointment_payload(appointment_date: appointment_date).merge(email: "jane@example.com")
-        }
-      end
+    assert_difference -> { Appointment.count }, 1 do
+      post portal_appointments_path(organization_slug: @organization.slug), params: {
+        appointment: appointment_payload(appointment_date: appointment_date).merge(email: "jane@example.com")
+      }
     end
   end
 
@@ -305,21 +303,19 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
       status: "booked"
     )
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
-        last_name: "Doe",
-        dob: "01-01-1990"
-      }
-      assert_redirected_to portal_appointment_checkin_select_path(organization_slug: @organization.slug)
+    post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
+      last_name: "Doe",
+      dob: "01-01-1990"
+    }
+    assert_redirected_to portal_appointment_checkin_select_path(organization_slug: @organization.slug)
 
-      follow_redirect!
-      assert_response :success
-      assert_match appointment.formatted_time, response.body
-      assert_no_match appointment.service.display_name, response.body
+    follow_redirect!
+    assert_response :success
+    assert_match appointment.formatted_time, response.body
+    assert_no_match appointment.service.display_name, response.body
 
-      post portal_appointment_checkin_confirm_path(organization_slug: @organization.slug),
-        params: { appointment_id: appointment.id }
-    end
+    post portal_appointment_checkin_confirm_path(organization_slug: @organization.slug),
+      params: { appointment_id: appointment.id }
 
     assert_redirected_to portal_appointment_checkin_success_path(organization_slug: @organization.slug)
     assert_equal "checked_in", appointment.reload.status
@@ -347,15 +343,13 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
       status: "booked"
     )
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
-        last_name: "Doe"
-      }
-      assert_redirected_to portal_appointment_checkin_select_path(organization_slug: @organization.slug)
+    post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
+      last_name: "Doe"
+    }
+    assert_redirected_to portal_appointment_checkin_select_path(organization_slug: @organization.slug)
 
-      post portal_appointment_checkin_confirm_path(organization_slug: @organization.slug),
-        params: { appointment_id: appointment.id }
-    end
+    post portal_appointment_checkin_confirm_path(organization_slug: @organization.slug),
+      params: { appointment_id: appointment.id }
 
     assert_redirected_to portal_appointment_checkin_success_path(organization_slug: @organization.slug)
     assert_equal "checked_in", appointment.reload.status
@@ -389,22 +383,20 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
       status: "booked"
     )
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
-        last_name: "Doe"
-      }
-      assert_redirected_to portal_appointment_checkin_select_path(organization_slug: @organization.slug)
+    post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
+      last_name: "Doe"
+    }
+    assert_redirected_to portal_appointment_checkin_select_path(organization_slug: @organization.slug)
 
-      follow_redirect!
-      assert_response :success
-      assert_match "Please choose your appointment time.", response.body
-      assert_match jane.formatted_time, response.body
-      assert_match john.formatted_time, response.body
-      assert_no_match jane.service.display_name, response.body
+    follow_redirect!
+    assert_response :success
+    assert_match "Please choose your appointment time.", response.body
+    assert_match jane.formatted_time, response.body
+    assert_match john.formatted_time, response.body
+    assert_no_match jane.service.display_name, response.body
 
-      post portal_appointment_checkin_confirm_path(organization_slug: @organization.slug),
-        params: { appointment_id: john.id }
-    end
+    post portal_appointment_checkin_confirm_path(organization_slug: @organization.slug),
+      params: { appointment_id: john.id }
 
     assert_redirected_to portal_appointment_checkin_success_path(organization_slug: @organization.slug)
     assert_equal "checked_in", john.reload.status
@@ -415,12 +407,10 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     enable_public_portal!(@organization, :online_appointment_check)
     start_walk_in_session!
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
-        last_name: "Smith",
-        dob: "31-13-1990"
-      }
-    end
+    post portal_appointment_checkin_path(organization_slug: @organization.slug), params: {
+      last_name: "Smith",
+      dob: "31-13-1990"
+    }
 
     assert_response :unprocessable_entity
     assert_match "Smith", response.body
@@ -434,15 +424,13 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     appointment_date = next_weekday(Date.current + 1.day)
     payload = appointment_payload(appointment_date: appointment_date)
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post portal_appointments_path(organization_slug: @organization.slug), params: { appointment: payload }
-      assert_redirected_to portal_appointment_confirmed_path(organization_slug: @organization.slug)
+    post portal_appointments_path(organization_slug: @organization.slug), params: { appointment: payload }
+    assert_redirected_to portal_appointment_confirmed_path(organization_slug: @organization.slug)
 
-      assert_no_difference -> { Appointment.count } do
-        post portal_appointments_path(organization_slug: @organization.slug), params: {
-          appointment: payload.merge(first_name: "JOHN", last_name: "SMITH")
-        }
-      end
+    assert_no_difference -> { Appointment.count } do
+      post portal_appointments_path(organization_slug: @organization.slug), params: {
+        appointment: payload.merge(first_name: "JOHN", last_name: "SMITH")
+      }
     end
 
     assert_response :unprocessable_entity
@@ -559,11 +547,9 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
   test "walk-in join redirects to the upsell prompt when a rule matches" do
     walk_in_service = seed_walk_in_upsell_rule!
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      post portal_walk_in_path(organization_slug: @organization.slug), params: {
-        service_request: walk_in_payload(walk_in_service)
-      }
-    end
+    post portal_walk_in_path(organization_slug: @organization.slug), params: {
+      service_request: walk_in_payload(walk_in_service)
+    }
 
     assert_redirected_to portal_walk_in_upsell_path(organization_slug: @organization.slug)
   end
@@ -571,45 +557,39 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
   test "walk-in upsell accept creates a second service request and shows both queue numbers" do
     walk_in_service = seed_walk_in_upsell_rule!
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      join_walk_in_for_upsell!(walk_in_service)
+    join_walk_in_for_upsell!(walk_in_service)
 
-      assert_difference -> { ServiceRequest.count }, 1 do
-        post accept_portal_walk_in_upsell_path(organization_slug: @organization.slug)
-      end
-
-      assert_redirected_to confirmed_portal_walk_in_upsell_path(organization_slug: @organization.slug)
-      follow_redirect!
-      assert_match walk_in_service.display_name, response.body
-      assert_match @suggested.display_name, response.body
+    assert_difference -> { ServiceRequest.count }, 1 do
+      post accept_portal_walk_in_upsell_path(organization_slug: @organization.slug)
     end
+
+    assert_redirected_to confirmed_portal_walk_in_upsell_path(organization_slug: @organization.slug)
+    follow_redirect!
+    assert_match walk_in_service.display_name, response.body
+    assert_match @suggested.display_name, response.body
   end
 
   test "walk-in upsell decline records the interaction and returns to confirmation" do
     walk_in_service = seed_walk_in_upsell_rule!
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      join_walk_in_for_upsell!(walk_in_service)
+    join_walk_in_for_upsell!(walk_in_service)
 
-      assert_difference -> { UpsellInteraction.count }, 1 do
-        assert_no_difference -> { ServiceRequest.count } do
-          post decline_portal_walk_in_upsell_path(organization_slug: @organization.slug)
-        end
+    assert_difference -> { UpsellInteraction.count }, 1 do
+      assert_no_difference -> { ServiceRequest.count } do
+        post decline_portal_walk_in_upsell_path(organization_slug: @organization.slug)
       end
-
-      assert_equal "declined", UpsellInteraction.order(:created_at).last.outcome
-      assert_redirected_to confirmed_portal_walk_in_upsell_path(organization_slug: @organization.slug)
     end
+
+    assert_equal "declined", UpsellInteraction.order(:created_at).last.outcome
+    assert_redirected_to confirmed_portal_walk_in_upsell_path(organization_slug: @organization.slug)
   end
 
   test "blocked dates are disabled in the portal calendar with the reason" do
     blocked = next_weekday(Date.current + 1.day)
     @organization.appointment_blocked_dates.create!(start_date: blocked, reason: "Bank holiday")
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get portal_appointment_calendar_path(organization_slug: @organization.slug),
-        params: { month: blocked.strftime("%Y-%m"), service_id: @service.id }
-    end
+    get portal_appointment_calendar_path(organization_slug: @organization.slug),
+      params: { month: blocked.strftime("%Y-%m"), service_id: @service.id }
 
     assert_response :success
     assert_match(/data-date="#{blocked.iso8601}"\s+data-disabled="true"\s+title="Closed: Bank holiday"/, response.body)
@@ -619,12 +599,10 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     blocked = next_weekday(Date.current + 1.day)
     @organization.appointment_blocked_dates.create!(start_date: blocked, reason: "Bank holiday")
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      assert_no_difference -> { Appointment.count } do
-        post portal_appointments_path(organization_slug: @organization.slug), params: {
-          appointment: appointment_payload(appointment_date: blocked)
-        }
-      end
+    assert_no_difference -> { Appointment.count } do
+      post portal_appointments_path(organization_slug: @organization.slug), params: {
+        appointment: appointment_payload(appointment_date: blocked)
+      }
     end
 
     assert_response :unprocessable_entity
@@ -639,10 +617,8 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
     )
     other_date = opening_date - 1.day
 
-    with_active_subscription(@organization, Billing::Plans::BUSINESS) do
-      get portal_appointment_calendar_path(organization_slug: @organization.slug),
-        params: { month: opening_date.strftime("%Y-%m"), service_id: @service.id }
-    end
+    get portal_appointment_calendar_path(organization_slug: @organization.slug),
+      params: { month: opening_date.strftime("%Y-%m"), service_id: @service.id }
 
     assert_match(/data-date="#{opening_date.iso8601}"\s+data-disabled="false"/, response.body)
     assert_match(/data-date="#{other_date.iso8601}"\s+data-disabled="true"/, response.body) if other_date.month == opening_date.month
@@ -725,16 +701,7 @@ class PublicPortalTest < ActionDispatch::IntegrationTest
   end
 
   def enable_public_portal!(organization, *feature_keys)
-    FeatureRegistry.sync!
-
-    portal = Feature.find_by!(key: "public_portal")
-    portal.update!(enabled: true, applies_to_all_organizations: true)
-
-    feature_keys.each do |key|
-      feature = Feature.find_by!(key: key.to_s)
-      feature.update!(enabled: true, applies_to_all_organizations: true)
-      organization.update_feature!(key, enabled: true) if feature.org_opt_in_required?
-    end
+    feature_keys.each { |key| organization.update_feature!(key, enabled: true) }
   end
 
   def start_walk_in_session!

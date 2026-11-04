@@ -9,7 +9,8 @@
 module ReservedSlug
   WORDS = %w[
     admin org invitations login logout password confirmations registration profile
-    up rails signup dashboard kiosk api billing onboarding notifications
+    up rails setup signup dashboard kiosk api billing onboarding notifications
+    privacy arrive walk-in appointments appointment-checkin opening-times
     email_preferences internal pricing contact privacy-policy gdpr terms cookies
     www mail ftp smtp pop imap ns1 ns2 autodiscover autoconfig
   ].freeze

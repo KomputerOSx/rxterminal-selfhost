@@ -1,6 +1,6 @@
 # 9. Public Booking Portal
 
-Your public booking portal is a page customers can visit directly, at your slug's URL or your custom domain. It's always on. Go to Features in the sidebar to turn on the capabilities below.
+Your public booking portal is a page customers can visit directly, at your server's address (for your main organization) or at your slug's URL. It's always on. Go to Features in the sidebar to turn on the capabilities below.
 
 ## What customers can do
 
