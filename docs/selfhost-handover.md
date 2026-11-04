@@ -1,5 +1,10 @@
 # Self-host conversion: handover
 
+> **Current status (2026-11-04):** Phases 0-5 are done and Phase 7 is prepared. **Phase 6 (patient
+> payments) is deliberately out of v1.0** and the `stripe` gem and `STRIPE_*` settings were removed.
+> What remains is on you: see "Before v1.0.0" at the bottom. Older sections below are history; where
+> they say "not done", check this note first.
+
 Status as of 2026-10-29. Goal: turn RxTerminal from a hosted multi-customer service into an
 open-source app that one pharmacy or clinic runs on its own server (`docker compose up`).
 The full plan has 8 phases (0-7); this file records what is done, what is not, and what to
@@ -287,3 +292,31 @@ RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bin/rails runner 'Rails.application
 
 A useful check after removing code: boot a production-mode server with only `APP_HOST` set and
 request `/login` and `/up`.
+
+## Before v1.0.0 (what is left)
+
+Done in the last pass: README, `LICENSE` (AGPL-3.0, no per-file headers), `SECURITY.md`,
+`CONTRIBUTING.md`, `CHANGELOG.md`, stale hosted-service docs deleted, vulnerable gems updated
+(`bin/bundler-audit` clean), CI extended with a PostgreSQL job and a Docker smoke job.
+
+**Never run, because this environment had no Docker daemon and no PostgreSQL. CI is the first real
+test of each:**
+1. `docker compose up --build` end to end (the new `docker-smoke` CI job covers the basic path).
+2. Caddy certificate issuance, Litestream backup and restore, the release workflow.
+3. The whole suite on PostgreSQL (`test-postgres` CI job, set `continue-on-error: true` until it is
+   green; remove that line then). Real PostgreSQL behaviour of the baseline migration is unproven.
+4. A clean install on Ubuntu and on arm64.
+
+**Needs a person (outward-facing, not done on purpose):**
+1. Push the stacked branches and open pull requests in order (1, 2a-2f, simplify, 3, 4, 5).
+   Nothing after Phase 0 has been pushed.
+2. Rotate every secret that was in the old production credentials; run gitleaks (a plain grep
+   for common key patterns found nothing); get the old commit `dd46bc9` purged from GitHub or
+   recreate the repo.
+3. Have the legal templates (`config/legal/`) reviewed, and decide the copyright holder wording.
+4. Tag `v1.0.0` only after the CI jobs above are green, and fill in the release date in CHANGELOG.
+5. Decide what to do with the Dependabot branches on origin.
+
+Known leftovers: `landing.css` (2.6k lines, mostly unused marketing styles) is not trimmed; the cookie
+name `_rxterminal_session` and the `RxTerminal-Title*.png` email logos still carry the product name;
+one flaky test (walk-in rate limit) failed once in a parallel run.

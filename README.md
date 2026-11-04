@@ -128,9 +128,9 @@ bin/rubocop                  # lint
 bin/brakeman                 # security scan
 ```
 
-In development a new database redirects to the setup page like production does. The seed file
-(`bin/rails db:seed`) creates a demo account instead: `admin@mail.com` / `SuperKey99!`.
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+`bin/setup` seeds a demo account in development: `admin@mail.com` / `SuperKey99!` (so the setup page
+is skipped). Use an empty database without seeds to try the first-run setup. See
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security
 

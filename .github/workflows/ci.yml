@@ -96,3 +96,77 @@ jobs:
         env:
           RAILS_ENV: test
         run: bin/rails db:test:prepare test test/concurrency/appointment_booking_check.rb
+
+  test-postgres:
+    # The app supports PostgreSQL through DATABASE_URL. This runs the whole suite against it.
+    # Not yet proven green on CI: while that is true it must not block merges. Remove
+    # continue-on-error once it passes.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: rxterminal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips libpq-dev
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run tests on PostgreSQL
+        env:
+          RAILS_ENV: test
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/rxterminal_test
+        run: bin/rails db:test:prepare test
+
+  docker-smoke:
+    # Builds the production image and checks that a fresh install starts and asks for setup.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build and start
+        run: |
+          cp .env.example .env
+          sed -i 's/^APP_PROTOCOL=.*/APP_PROTOCOL=http/' .env
+          docker compose up -d --build
+
+      - name: Wait for the app to be healthy
+        run: |
+          for i in $(seq 1 40); do
+            status=$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose ps -q app)" 2>/dev/null || true)
+            echo "health: $status"
+            [ "$status" = "healthy" ] && exit 0
+            sleep 5
+          done
+          docker compose logs app
+          exit 1
+
+      - name: Fresh install redirects to setup
+        run: |
+          curl -fsS http://localhost:3000/up
+          test "$(curl -s -o /dev/null -w '%{redirect_url}' http://localhost:3000/)" = "http://localhost:3000/setup"
+          curl -fsS http://localhost:3000/setup | grep -q "Set up your server"
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs app
