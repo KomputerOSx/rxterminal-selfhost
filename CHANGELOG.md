@@ -27,12 +27,4 @@ single-business app you run on your own server.
 - The database history is squashed into one baseline migration. Existing hosted databases cannot be
   upgraded in place.
 
-### Removed
-- Subscription billing, trials, plan limits and Stripe.
-- Custom domains per organization.
-- Platform-wide feature flags (a fixed per-organization feature list remains).
-- Marketing site, contact form and email campaigns.
-- Google and GitHub sign-in.
-- Third-party analytics.
-
 Patient payments are not part of 1.0.
