@@ -121,7 +121,7 @@ All guides are listed in [docs/README.md](docs/README.md).
 
 ## Development
 
-You need Ruby 4.0.5 (see `.ruby-version`) and libvips.
+You need Ruby 4.0.5 (see `.ruby-version`). libvips is recommended for resizing uploaded images; without it the app still works and shows images at their original size (`sudo apt install libvips42` on Ubuntu).
 
 ```bash
 bin/setup --skip-server      # install gems, prepare the database

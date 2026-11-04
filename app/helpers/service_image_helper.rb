@@ -12,7 +12,11 @@ module ServiceImageHelper
   def service_image_tag(service, width:, height: width, **options)
     return unless service_image?(service)
 
-    source = service.image.variable? ? service.image.variant(resize_to_fill: [ width * 2, height * 2 ]) : service.image
+    source = if service.image.variable? && ImageProcessingSupport.vips?
+      service.image.variant(resize_to_fill: [ width * 2, height * 2 ])
+    else
+      service.image
+    end
     image_tag source, { alt: service.display_name, width: width, height: height, loading: "lazy" }.merge(options)
   end
 end

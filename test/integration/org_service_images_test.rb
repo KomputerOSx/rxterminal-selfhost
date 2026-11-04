@@ -115,6 +115,35 @@ class OrgServiceImagesTest < ActionDispatch::IntegrationTest
     assert_not ApplicationController.helpers.service_image?(service)
   end
 
+  test "without libvips the original image is served instead of a resized variant" do
+    @service.image.attach(io: StringIO.new(PNG_BYTES), filename: "flu.png", content_type: "image/png")
+    delete session_path
+
+    ImageProcessingSupport.stub :vips?, false do
+      get root_path
+    end
+
+    src = css_select("img[alt='Flu Jab']").first["src"]
+    assert_match %r{/rails/active_storage/blobs/}, src
+    assert_no_match %r{representations}, src
+
+    get src
+    3.times { follow_redirect! if response.redirect? }
+    assert_response :success
+    assert_equal "image/png", response.media_type
+  end
+
+  test "with libvips a resized variant is requested" do
+    @service.image.attach(io: StringIO.new(PNG_BYTES), filename: "flu.png", content_type: "image/png")
+    delete session_path
+
+    ImageProcessingSupport.stub :vips?, true do
+      get root_path
+    end
+
+    assert_match %r{representations}, css_select("img[alt='Flu Jab']").first["src"]
+  end
+
   test "the resized image is actually generated and served (needs libvips)" do
     begin
       require "vips"
