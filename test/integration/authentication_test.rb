@@ -3,17 +3,10 @@ require "test_helper"
 class AuthenticationTest < ActionDispatch::IntegrationTest
   include ActiveJob::TestHelper
 
-  test "home page shows authentication links" do
+  test "root redirects anonymous visitors to login" do
     get root_path
 
-    assert_response :success
-    assert_select "a", text: "Log in"
-    assert_select "a", text: "Start free trial"
-    assert_select "a", text: "Start your free trial"
-    assert_select "a.rx-terminal-brand"
-    assert_select "a.rx-terminal-brand span.rx", text: "Rx"
-    assert_match(/Self.?Service/i, response.body)
-    assert_match(/kiosk platform/i, response.body)
+    assert_redirected_to login_path
   end
 
   test "user can sign up, confirm, and sign in" do
@@ -57,7 +50,7 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to root_path
     follow_redirect!
-    assert_select "a", text: "Log in"
+    assert_redirected_to login_path
   end
 
   test "signing in from a new user agent logs a new_device_login audit event, a repeat from a known one does not, even across logout" do

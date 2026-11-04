@@ -25,8 +25,6 @@ class SitemapsController < ApplicationController
 
   def primary_domain_urls
     marketing_urls = [
-      { loc: root_url, changefreq: "weekly" },
-      { loc: contact_url, changefreq: "monthly" },
       { loc: legal_privacy_policy_url, changefreq: "yearly" },
       { loc: legal_terms_url, changefreq: "yearly" },
       { loc: legal_gdpr_url, changefreq: "yearly" },

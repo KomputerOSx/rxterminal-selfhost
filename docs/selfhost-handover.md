@@ -69,6 +69,17 @@ watch out for. The plan text itself is the source of truth for scope.
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
 
+### Phase 2e: marketing pages removed (branch `phase-2e-marketing-pages`)
+- Deleted the landing home page, `pages/features`, `pages/security`, the contact form
+  (`ContactController`, `ContactMailer`, `ContactSpamGuard`) and their tests/views.
+- `HomeController#index` is now a placeholder: logged in goes to the dashboard, otherwise `/login`.
+  Phase 3 replaces it with the real root behaviour.
+- **Deviation:** `layouts/landing`, `landing.css` (2.6k lines, mostly now-unused marketing styles),
+  and `shared/_public_header`/`_public_footer` are kept because the legal pages still use them.
+  Trim `landing.css` and rebrand the header/footer in Phase 5 when the legal pages are templated.
+  Header/footer lost the Features/Security/Contact/"Start free trial" links.
+- Sitemap lists only legal pages plus portals. Sign-up still exists until Phase 3.
+
 ### Phase 2d: email campaigns removed (branch `phase-2d-email-campaigns`)
 - Deleted campaign models, job, mailer, admin UI, image upload, the TipTap editor (JS, CSS,
   importmap pins), the public email-preferences page and the profile "Marketing emails" card, the
@@ -113,7 +124,7 @@ watch out for. The plan text itself is the source of truth for scope.
    `admin/email_campaigns`, `email_campaign_images`, the `system.email_campaigns.manage`
    permission. `User#email_preferences` and `EmailCampaign::OPTIONAL_CATEGORIES` are used by the
    profile page: check before deleting.
-3. **2e marketing pages:** `home#index`, `pages/features`, `pages/security`, contact
+3. **2e marketing pages (DONE, see below):** `home#index`, `pages/features`, `pages/security`, contact
    (`ContactMailer`, `ContactSpamGuard`), sitemaps, `layouts/landing`, `landing.css`, the
    marketing parts of robots. The public header and footer still link to them.
 4. **2f schema squash:** drop the leftover columns and tables (`pay_*`, `billing_*`,

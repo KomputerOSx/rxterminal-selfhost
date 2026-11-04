@@ -43,11 +43,6 @@ Rails.application.routes.draw do
   # the request format - constrain it so those requests 404 instead of
   # hitting the controller with a format we have no template for.
   get "sitemap.xml", to: "sitemaps#show", as: :sitemap, constraints: { format: "xml" }
-  get "features", to: "pages#features", as: :features
-  get "security", to: "pages#security", as: :security
-  get "contact", to: "contact#new", as: :contact
-  post "contact", to: "contact#create"
-  get "contact/sent", to: "contact#sent", as: :contact_sent
 
   get "privacy-policy", to: "legal#privacy_policy", as: :legal_privacy_policy
   get "gdpr",           to: "legal#gdpr",           as: :legal_gdpr
