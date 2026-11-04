@@ -86,6 +86,25 @@
 
       <%= render "shared/material_icon_picker", form: form, selected_icon: service.icon, required: true %>
       <%= field_errors(service, :icon) %>
+
+      <div class="form-control">
+        <label class="label">
+          <%= form_label_text "Image",
+                tooltips: true,
+                tip: "Optional picture shown to customers on the booking portal and kiosk. PNG, JPEG, GIF, or WebP, up to 5 MB. Square images work best." %>
+        </label>
+        <% if service.persisted? && service_image?(service) %>
+          <div class="mb-3 flex items-center gap-4">
+            <%= service_image_tag(service, width: 96, height: 96, class: "rounded-lg border border-base-300 object-cover") %>
+            <label class="flex cursor-pointer items-center gap-2 text-sm">
+              <%= check_box_tag "service[remove_image]", "1", false, class: "checkbox checkbox-sm" %>
+              Remove this image
+            </label>
+          </div>
+        <% end %>
+        <%= form.file_field :image, accept: "image/png,image/jpeg,image/gif,image/webp", class: "input-field w-full" %>
+        <%= field_errors(service, :image) %>
+      </div>
     </div>
   </div>
 

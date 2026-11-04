@@ -23,7 +23,11 @@
   <div class="<%= preview ? "flex items-center justify-center px-10 py-12" : "kiosk-choose-content" %>">
     <div class="flex w-full max-w-[900px] flex-col gap-10">
       <div class="text-center">
-        <% if service.icon.present? %>
+        <% if service_image?(service) %>
+          <div class="kiosk-choose-service-icon">
+            <%= service_image_tag(service, width: 80, alt: "") %>
+          </div>
+        <% elsif service.icon.present? %>
           <div class="kiosk-choose-service-icon">
             <span class="material-symbols-outlined"><%= service.icon %></span>
           </div>

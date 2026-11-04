@@ -43,11 +43,17 @@ module Org
 
       @service.assign_attributes(service_params)
 
+      uploading_image = service_params[:image].present?
+
       if @service.save(context: :ui_save)
+        removing_image = !uploading_image && params.dig(:service, :remove_image) == "1" && @service.image.attached?
+        @service.image.purge if removing_image
         @service.move_to_calendar!(new_calendar) if calendar_changed && new_calendar
+        changed_fields = @service.saved_changes.except("updated_at").keys
+        changed_fields << "image" if uploading_image || removing_image
         log_audit(:service_updated, resource: @service, metadata: {
           internal_name: @service.internal_name,
-          changed_fields: @service.saved_changes.except("updated_at").keys
+          changed_fields: changed_fields
         })
         redirect_to org_service_path(@service), notice: "Service updated."
       else
@@ -131,6 +137,7 @@ module Org
         :active,
         :display_order,
         :icon,
+        :image,
         :price,
         :calendar_id,
         eligibility_requirements: { eligible: [], not_eligible: [], additional: [] }

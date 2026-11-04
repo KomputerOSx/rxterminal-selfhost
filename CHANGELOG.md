@@ -5,6 +5,9 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Optional image for each service, shown to customers on the booking portal and the kiosk.
+
 ## [1.0.0] - 2026-11-04
 
 First self-hosted release. RxTerminal began as a hosted multi-customer service; this version is a

@@ -5,6 +5,11 @@ class Service < ApplicationRecord
   belongs_to :calendar, optional: true
   belongs_to :deleted_by, class_name: "User", optional: true
 
+  MAX_IMAGE_SIZE = 5.megabytes
+
+  # Optional picture shown to customers next to the service (portal, kiosk).
+  has_one_attached :image
+
   has_many :service_requests, dependent: :restrict_with_error
   has_many :appointments, dependent: :restrict_with_error
   has_many :upsell_rules_as_trigger, class_name: "UpsellRule", foreign_key: :trigger_service_id, dependent: :destroy
@@ -18,6 +23,7 @@ class Service < ApplicationRecord
     unless: :deleted?
   validates :price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :display_order, numericality: { greater_than_or_equal_to: 0 }
+  validate :image_is_acceptable
 
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
@@ -32,6 +38,15 @@ class Service < ApplicationRecord
   scope :appointment_only, -> { where(requires_appointment: true, allows_immediate: false) }
 
   after_initialize { self.eligibility_requirements ||= {} }
+
+  def image_is_acceptable
+    return unless image.attached?
+
+    unless ActiveStorage.web_image_content_types.include?(image.blob.content_type.to_s)
+      errors.add(:image, "must be a PNG, JPEG, GIF, or WebP file")
+    end
+    errors.add(:image, "must be smaller than #{MAX_IMAGE_SIZE / 1.megabyte} MB") if image.blob.byte_size > MAX_IMAGE_SIZE
+  end
 
   def deleted?
     deleted_at.present?

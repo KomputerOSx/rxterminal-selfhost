@@ -8,7 +8,7 @@ Managing services requires the services permission, which owners and admins have
 
 1. Go to Services and click New Service.
 2. Enter an internal name (for staff) and a display name (for customers).
-3. Add a description, estimated duration, price, and an icon.
+3. Add a description, estimated duration, price, and an icon. You can also upload an image. See Service image below.
 4. Choose whether the service allows immediate walk-in requests, requires an appointment, or both. Turn on Private Consultation Option if customers can request privacy during it.
 5. Set eligibility requirements if only some customers qualify.
 6. Assign the service to a calendar.
@@ -19,3 +19,13 @@ Managing services requires the services permission, which owners and admins have
 - **Activate or deactivate** a service to control whether customers can request it, without deleting it.
 - **Reorder** services using the up and down controls. This order is what customers see.
 - **Delete** a service you no longer offer. Deleted services stay on past records but drop off the active list.
+
+## Service image
+
+An image makes a service easier to recognize on the booking portal and the kiosk. It is optional.
+
+1. Open the service and click Edit.
+2. Under Image, click Choose file and pick a PNG, JPEG, GIF, or WebP file under 5 MB. Square pictures work best.
+3. Click Save changes.
+
+Customers then see the image instead of the icon. To replace it, upload another one. To remove it, tick Remove this image and save. The icon is used again.

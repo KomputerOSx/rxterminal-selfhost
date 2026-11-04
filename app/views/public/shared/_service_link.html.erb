@@ -3,7 +3,9 @@
       class: "card border border-base-300 block",
       data: searchable ? { portal_search_target: "item", name: service.display_name } : {} do %>
   <div class="card-body flex-row items-center gap-4 p-5">
-    <% if service.icon.present? %>
+    <% if service_image?(service) %>
+      <%= service_image_tag(service, width: 56, class: "shrink-0 rounded-lg object-cover") %>
+    <% elsif service.icon.present? %>
       <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
         <%= material_icon(service.icon, size: 22) %>
       </div>
