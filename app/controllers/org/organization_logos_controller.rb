@@ -3,7 +3,7 @@
 module Org
   class OrganizationLogosController < BaseController
     # See Org::OrganizationsController - same content-type/size guard, duplicated here rather
-    # than shared, matching how Admin::EmailCampaignImagesController already duplicates it too.
+    # than shared.
     ALLOWED_CONTENT_TYPES = ActiveStorage.web_image_content_types
     MAX_FILE_SIZE = 5.megabytes
     MAX_FILES_PER_UPLOAD = OrganizationLogo::MAX_PER_ORGANIZATION

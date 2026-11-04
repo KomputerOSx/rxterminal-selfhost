@@ -96,19 +96,6 @@ class ProfileController < ApplicationController
     redirect_to profile_path
   end
 
-  def update_email_preferences
-    EmailCampaign::OPTIONAL_CATEGORIES.each do |category|
-      if params[:subscribed]&.key?(category)
-        current_user.resubscribe_to_email_category!(category)
-      else
-        current_user.unsubscribe_from_email_category!(category)
-      end
-    end
-
-    flash[:toast] = { message: "Notification preferences updated.", type: "success" }
-    redirect_to profile_path
-  end
-
   def update_notification_preferences
     Notifications::OPTIONAL_CATEGORIES.each do |category|
       %w[in_app email].each do |channel|

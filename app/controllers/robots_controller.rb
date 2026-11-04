@@ -27,7 +27,6 @@ class RobotsController < ApplicationController
     /confirmations
     /registration
     /invitations
-    /email_preferences
     /auth/
   ].freeze
 

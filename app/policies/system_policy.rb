@@ -30,10 +30,6 @@ class SystemPolicy < ApplicationPolicy
     user&.has_permission?("system.jobs.manage") || false
   end
 
-  def manage_email_campaigns?
-    user&.has_permission?("system.email_campaigns.manage") || false
-  end
-
   def manage_customer_erasure?
     user&.has_permission?("system.customer_erasure.manage") || false
   end

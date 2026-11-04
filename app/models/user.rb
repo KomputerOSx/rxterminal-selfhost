@@ -172,27 +172,9 @@ class User < ApplicationRecord
     memberships.order(:created_at).first&.organization
   end
 
-  # --- Email notification preferences ---
-  # email_preferences is a hash keyed by EmailCampaign category string. Absent key means
-  # subscribed - a category added to EmailCampaign::OPTIONAL_CATEGORIES later needs no backfill,
-  # since everyone is implicitly subscribed to a category they've never expressed an opinion on.
-
-  def subscribed_to_email_category?(category)
-    email_preferences[category.to_s] != false
-  end
-
-  def unsubscribe_from_email_category!(category)
-    update!(email_preferences: email_preferences.merge(category.to_s => false))
-  end
-
-  def resubscribe_to_email_category!(category)
-    update!(email_preferences: email_preferences.except(category.to_s))
-  end
-
-  # --- Activity notification preferences (in-app + email, separate from email_preferences
-  # above which only governs marketing/campaign mail) ---
+  # --- Activity notification preferences (in-app + email) ---
   # notification_preferences is {category => {channel => false}}. Absent key means enabled,
-  # same "absence = opted in" convention as email_preferences. always_on categories (see
+  # same "absence = opted in" convention. always_on categories (see
   # Notifications::CATEGORIES) ignore preferences entirely and are always delivered.
 
   def notification_channel_enabled?(category, channel)

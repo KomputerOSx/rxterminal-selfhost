@@ -69,6 +69,16 @@ watch out for. The plan text itself is the source of truth for scope.
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
 
+### Phase 2d: email campaigns removed (branch `phase-2d-email-campaigns`)
+- Deleted campaign models, job, mailer, admin UI, image upload, the TipTap editor (JS, CSS,
+  importmap pins), the public email-preferences page and the profile "Marketing emails" card, the
+  `system.email_campaigns.manage` permission and policy, and the campaign audit actions.
+- `User#email_preferences` helpers are gone (they only served campaigns). Activity-notification
+  preferences (`Notifications`) are separate and stay. The mailer footer lost its campaign variant.
+- Tables/columns (`email_campaigns`, `email_campaign_recipients`, `users.email_preferences`) stay until 2f.
+- Flaky: `public_portal_test` "walk-in joins beyond the rate limit are throttled" failed once in a
+  full parallel run and passed on every rerun; likely shared Rack::Attack cache state.
+
 ### Phase 2c: custom domains removed (branch `phase-2c-custom-domains`)
 - Deleted the custom-domain constraint, resolver middleware, DNS check, `org/custom_domains`,
   `internal/domain_validations`, `SitesController`, the root-mounted portal routes and the related
@@ -99,7 +109,7 @@ watch out for. The plan text itself is the source of truth for scope.
    `config/routes/public_portal_custom_domain.rb`, the JS status controller, the `custom_domain`
    column, plus `Organization#custom_domain_allowed?` (now just returns `true`), the sidebar
    link, `AppHost.allowed_request_host?`, `config.hosts` in production, and the related tests.
-2. **2d email campaigns:** `EmailCampaign`, recipients, `SendEmailCampaignJob`, mailer,
+2. **2d email campaigns (DONE, see below):** `EmailCampaign`, recipients, `SendEmailCampaignJob`, mailer,
    `admin/email_campaigns`, `email_campaign_images`, the `system.email_campaigns.manage`
    permission. `User#email_preferences` and `EmailCampaign::OPTIONAL_CATEGORIES` are used by the
    profile page: check before deleting.

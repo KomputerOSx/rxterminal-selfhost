@@ -108,7 +108,6 @@ permissions:
   system.roles.manage: "View/manage roles and permissions"
   system.audit_logs.view: "View audit logs"
   system.billing.manage: "Manage platform-wide billing (price migrations, grandfathering)"
-  system.email_campaigns.manage: "Compose and send platform-wide email campaigns"
   system.customer_erasure.manage: "GDPR customer erasure tool"
   system.subject_access.manage: "GDPR subject access request export"
   system.organization_logos.manage: "Review and approve/decline organization logo uploads"
@@ -164,7 +163,7 @@ Permission keys must match `\A[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+\z` (dot-separa
 | `system_admin` (permanent) | All `system.*` permissions |
 | `system_user` (permanent) | `system.users.manage`, `system.roles.manage` |
 
-`system.email_campaigns.manage`, `system.billing.manage`, `system.customer_erasure.manage`,
+`system.billing.manage`, `system.customer_erasure.manage`,
 `system.subject_access.manage`, and `system.organization_logos.manage` are granted to
 `system_admin` only. Orgs and kiosk devices are managed on the customer side (`app.*`
 permissions), not via platform admin CRUD.
@@ -309,7 +308,6 @@ authorize :system, :manage?, policy_class: SystemPolicy
 | `manage_roles?` | `system.roles.manage` |
 | `view_audit_logs?` | `system.audit_logs.view` |
 | `manage_billing?` | `system.billing.manage` |
-| `manage_email_campaigns?` | `system.email_campaigns.manage` |
 | `manage_customer_erasure?` | `system.customer_erasure.manage` |
 | `manage_subject_access?` | `system.subject_access.manage` |
 | `manage_organization_logos?` | `system.organization_logos.manage` |

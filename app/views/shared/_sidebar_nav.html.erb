@@ -60,7 +60,6 @@
     admin_items << { icon: "history",       label: "Audit Logs",  path: admin_audit_logs_path }  if current_user.has_permission?("system.audit_logs.view")
     admin_items << { icon: "work_history",  label: "Job Inspector", path: "/admin/jobs" } if current_user.has_permission?("system.jobs.manage")
     admin_items << { icon: "campaign",      label: "Notifications", path: admin_notifications_path }
-    admin_items << { icon: "mail",          label: "Email Campaigns", path: admin_email_campaigns_path } if current_user.has_permission?("system.email_campaigns.manage")
     admin_items << { icon: "person_off",    label: "Customer erasure", path: new_admin_customer_erasure_path } if current_user.has_permission?("system.customer_erasure.manage")
     admin_items << { icon: "download",      label: "SAR export", path: new_admin_subject_access_request_path } if current_user.has_permission?("system.subject_access.manage")
     admin_items << { icon: "engineering",   label: "Maintenance", path: edit_admin_maintenance_mode_path }
