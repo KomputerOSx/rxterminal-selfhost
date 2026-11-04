@@ -1,7 +1,5 @@
 # 6. Appointments
 
-Appointments require the Business plan. See Billing.
-
 ## Calendars
 
 Calendars group services for scheduling. Every organization starts with a default calendar, which can't be archived.

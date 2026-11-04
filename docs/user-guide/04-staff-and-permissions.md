@@ -4,8 +4,8 @@
 
 Every staff member has one role in your organization:
 
-- **Owner**, full control: billing, organization name, and promoting or demoting anyone. An organization always has at least one owner.
-- **Admin**, day-to-day management: queue, appointments, services, calendars, upsells, devices, kiosk, analytics, audit logs, and most organization settings. Can invite and remove staff, but can't promote, demote, or manage billing or the organization name.
+- **Owner**, full control: organization name, and promoting or demoting anyone. An organization always has at least one owner.
+- **Admin**, day-to-day management: queue, appointments, services, calendars, upsells, devices, kiosk, analytics, audit logs, and most organization settings. Can invite and remove staff, but can't promote, demote, or change the organization name.
 - **User**, queue and appointment work only.
 
 ## Inviting staff
@@ -13,7 +13,7 @@ Every staff member has one role in your organization:
 1. Go to Members and enter the person's email address in the invite field.
 2. Click Invite.
 
-They receive an email with a link to join. New invitations always join as a user. Promote them afterward if needed. On the Starter plan, you can't invite anyone while you're at your member limit.
+They receive an email with a link to join and create their account. This needs email (SMTP) set up on your server. See Branding and Legal Pages. New invitations always join as a user. Promote them afterward if needed.
 
 ## Promoting and demoting
 

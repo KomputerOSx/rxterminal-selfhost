@@ -1,6 +1,6 @@
 # RxTerminal User Guide
 
-Source for the user-facing docs book (staff and admin manual), written in Markdown for upload to Writebook.
+Source for the user-facing docs book (staff and admin manual), written in Markdown.
 
 ## Writing rules
 
@@ -12,7 +12,7 @@ Follow these for every page in this guide:
 4. Steps are numbered lists. Concepts are short paragraphs or bullets, not both.
 5. One page (file) per chapter. Use `##` headings for sections within a chapter.
 6. Name real UI labels exactly as they appear in the app (button text, field names, page titles).
-7. When referring to another chapter, name it in plain text (for example "See Billing."). Don't link to its filename. Filenames are source-repo artifacts and won't mean anything once this is uploaded to Writebook.
+7. When referring to another chapter, name it in plain text (for example "See Kiosk."). Don't link to its filename. Filenames are source-repo artifacts and won't mean anything once this is uploaded to Writebook.
 
 ## Chapters
 
@@ -27,9 +27,9 @@ Follow these for every page in this guide:
 9. Public Booking Portal
 10. Notifications
 11. Analytics
-12. Billing
+12. Branding and Legal Pages
 13. Account and Security
 14. Audit Logs
 15. Troubleshooting and FAQ
 
-Audience: organization owners, admins, and staff. Platform-operator tools (system-wide admin, email campaigns, GDPR tooling) are out of scope, since customers never see them.
+Audience: organization owners, admins, and staff. Installing and running the server is covered in the project README. Chapter 12 covers the settings the person running the server controls.

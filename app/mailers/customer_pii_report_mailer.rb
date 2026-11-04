@@ -14,7 +14,7 @@ class CustomerPiiReportMailer < ApplicationMailer
 
     mail(
       to: recipient_email,
-      subject: "Your #{report_label} data export - RxTerminal"
+      subject: "Your #{report_label} data export - #{AppConfig.name}"
     )
   end
 end

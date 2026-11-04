@@ -1,7 +1,7 @@
 <div class="w-full max-w-md space-y-8">
   <div class="text-center">
     <div class="rx-terminal-brand inline-flex items-center text-6xl normal-case">
-      <span class="rx">Rx</span>Terminal
+      <% if AppConfig.default_name? %><span class="rx">Rx</span>Terminal<% else %><%= AppConfig.name %><% end %>
     </div>
   </div>
 

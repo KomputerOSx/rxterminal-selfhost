@@ -1,4 +1,10 @@
-<%# RxTerminal wordmark — blue "Rx" + theme-aware "Terminal" (black in light, white in dark). %>
+<%# Product wordmark: LOGO_URL image if set, the blue "Rx" + "Terminal" mark for the default name, else plain APP_NAME. %>
 <%= link_to root_path, class: "rx-terminal-brand mt-0.5 inline-flex items-center text-2xl normal-case no-underline hover:opacity-90 #{local_assigns[:class]}" do %>
-  <span class="rx">Rx</span>Terminal
+  <% if AppConfig.logo_url %>
+    <%= image_tag AppConfig.logo_url, alt: AppConfig.name, class: "h-[1.2em] w-auto" %>
+  <% elsif AppConfig.default_name? %>
+    <span class="rx">Rx</span>Terminal
+  <% else %>
+    <%= AppConfig.name %>
+  <% end %>
 <% end %>

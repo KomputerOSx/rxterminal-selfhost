@@ -1,4 +1,4 @@
-Reset your RxTerminal password
+Reset your <%= AppConfig.name %> password
 
 Account: <%= @user.email %>
 
@@ -15,6 +15,6 @@ IP address: <%= @request_details[:ip_address].presence || "Unknown" %>
 Browser/device: <%= @request_details[:user_agent].presence || "Unknown" %>
 
 If this was not you, ignore this email and ask an administrator to review your account.
-RxTerminal will never ask you to share this link or your password.
+<%= AppConfig.name %> will never ask you to share this link or your password.
 
 <%= mailer_powered_by_text %>

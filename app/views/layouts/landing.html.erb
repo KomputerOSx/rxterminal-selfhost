@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
   <head>
-    <title><%= content_for?(:title) ? "#{yield(:title)} - RxTerminal" : "RxTerminal - All-in-One Self-Service Kiosk Platform" %></title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} - #{AppConfig.name}" : AppConfig.name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= javascript_tag nonce: true do %>
       document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "light");
@@ -9,7 +9,7 @@
     <% if content_for?(:meta_description) %>
       <meta name="description" content="<%= yield :meta_description %>">
     <% else %>
-      <meta name="description" content="RxTerminal is an all-in-one self-service kiosk platform for UK businesses.">
+      <meta name="description" content="Queue and appointment booking for <%= AppConfig.operator_name %>.">
     <% end %>
     <link rel="canonical" href="<%= request.base_url + request.path %>">
     <%= csrf_meta_tags %>

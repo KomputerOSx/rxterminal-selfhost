@@ -5,20 +5,20 @@ module MailerHelper
   MAILER_POWERED_BY_LOGO_STYLE = "display:inline-block;height:12px;width:auto;vertical-align:middle;border:0;"
 
   def mailer_logo_image_tag(filename: MailerTheme::LOGO_FILENAME, style: MAILER_HEADER_LOGO_STYLE)
-    logo_url = mailer_inline_logo_url(filename)
+    logo_url = AppConfig.logo_url || (AppConfig.default_name? ? mailer_inline_logo_url(filename) : nil)
 
     if logo_url
-      image_tag logo_url, alt: "RxTerminal", style: style
-    elsif (asset_path = mailer_logo_asset_path(filename))
-      image_tag asset_path, alt: "RxTerminal", style: style
+      image_tag logo_url, alt: AppConfig.name, style: style
+    elsif AppConfig.default_name? && (asset_path = mailer_logo_asset_path(filename))
+      image_tag asset_path, alt: AppConfig.name, style: style
     else
-      content_tag(:span, "RxTerminal",
+      content_tag(:span, AppConfig.name,
                   style: "font-size:18px;font-weight:700;letter-spacing:0.04em;color:#{MailerTheme::HEADER_FOOTER_TEXT};")
     end
   end
 
   def mailer_website_url
-    "https://rxterminal.co.uk"
+    AppConfig.site_url
   end
 
   def mailer_privacy_policy_url
@@ -33,27 +33,23 @@ module MailerHelper
     mailer_website_url.sub(%r{\Ahttps?://}, "")
   end
 
+  # Small open-source credit; links to the project, not to this install.
   def mailer_powered_by_html
-    safe_join([
-      content_tag(:span, "Powered by ",
-                  style: "color:#{MailerTheme::FOOTER_MUTED};font-size:12px;vertical-align:middle;"),
-      link_to(mailer_website_url,
-              style: "text-decoration:none;vertical-align:middle;display:inline-block;line-height:0;") do
-        mailer_logo_image_tag(filename: MailerTheme::LOGO_SMALL_FILENAME, style: MAILER_POWERED_BY_LOGO_STYLE)
-      end
-    ])
+    content_tag(:span, style: "color:#{MailerTheme::FOOTER_MUTED};font-size:12px;") do
+      safe_join([ "Powered by ", link_to(AppConfig::DEFAULT_NAME, AppConfig::PROJECT_URL, style: "color:#{MailerTheme::FOOTER_MUTED};") ])
+    end
   end
 
   def mailer_powered_by_text
-    "Powered by RxTerminal (#{mailer_website_url})"
+    "Powered by #{AppConfig::DEFAULT_NAME} (#{AppConfig::PROJECT_URL})"
   end
 
   def mailer_contact_email
-    "contact@strixon.co.uk"
+    AppConfig.support_email.to_s
   end
 
   def mailer_company_name
-    "Strixon Ltd"
+    AppConfig.operator_name
   end
 
   private

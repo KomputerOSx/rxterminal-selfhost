@@ -24,7 +24,3 @@ The upsell prompt appears right after a matching walk-in or kiosk request, once 
 - View each rule's stats: how often it was accepted, booked later, or declined, over today, this week, this month, or all time.
 - **Delete** a rule you no longer need.
 - **Age and visit type targeting** need date of birth collection turned on (Settings, under Organization details). Turn it off and these fields disappear from the rule until you turn it back on. Existing values are kept, not deleted.
-
-## Plan limits
-
-The Starter plan allows 1 upsell rule. The Business plan has no limit.

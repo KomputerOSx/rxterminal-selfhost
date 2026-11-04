@@ -44,8 +44,8 @@ class AppointmentMailerTest < ActionMailer::TestCase
     assert_match @appointment.booking_reference, mail.body.encoded
     assert_match(/1 High Street/, mail.body.encoded)
     assert_match(/Powered by/, mail.body.encoded)
-    assert_match(/rxterminal\.co\.uk/, mail.body.encoded)
-    assert_match(/rxterminal-title-small\.png|RxTerminal-Title-small\.png/, mail.body.encoded)
+    assert_match(/github\.com\/KomputerOSx\/rxterminal-selfhost/, mail.body.encoded)
+    assert_no_match(/strixon|rxterminal\.co\.uk/i, mail.body.encoded)
   end
 
   test "booking confirmation includes calendar attachment" do

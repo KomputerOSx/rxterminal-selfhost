@@ -1,0 +1,72 @@
+<!--
+  TEMPLATE - not legal advice. Review and edit for your organisation and jurisdiction.
+  Placeholders: {{organization_name}} {{organization_address}} {{contact_email}} {{contact_phone}}
+  {{app_name}} {{pii_retention_days}}
+  To customise: bin/rails selfhost:legal:export, then edit storage/legal/gdpr.html
+-->
+<p class="legal-subtitle">This statement describes how {{organization_name}} protects personal data processed through this system.</p>
+
+<section>
+  <h2>1. Who Is Responsible</h2>
+  <p><strong>{{organization_name}}</strong> ({{organization_address}}) is the Data Controller for the personal data collected through this portal and the staff system behind it. Data protection contact: <a href="mailto:{{contact_email}}">{{contact_email}}</a>.</p>
+  <p>The software is {{app_name}}, open-source software run on infrastructure chosen and controlled by {{organization_name}}. Its authors do not host, receive or access your data.</p>
+</section>
+
+<section>
+  <h2>2. What Personal Data Is Processed</h2>
+  <ul>
+    <li><strong>Customers:</strong> name, date of birth, postcode, email address (optional), the service requested, and queue and appointment history.</li>
+    <li><strong>Staff:</strong> name, email address, role and sign-in activity.</li>
+    <li><strong>Health information:</strong> only what a customer chooses to provide when describing a request.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>3. Lawful Basis</h2>
+  <ul>
+    <li><strong>Legitimate interests (Art. 6(1)(f)):</strong> managing queues and appointments.</li>
+    <li><strong>Public task (Art. 6(1)(e)):</strong> where the service is publicly funded.</li>
+    <li><strong>Health or social care (Art. 9(2)(h)):</strong> for any health-related information provided.</li>
+    <li><strong>Contract and legal obligation:</strong> for staff accounts and required records.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>4. Retention</h2>
+  <ul>
+    <li>Customer identifying details are anonymised automatically after <strong>{{pii_retention_days}} days</strong>.</li>
+    <li>Anonymised records may be kept for statistics and regulatory purposes.</li>
+    <li>Staff account data is kept while the account is active and removed on request when the account is deleted.</li>
+    <li>Audit logs are kept according to {{organization_name}}'s retention setting.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Where Data Is Stored And Who Processes It</h2>
+  <p>Data is stored on the servers operated by or for {{organization_name}}. Any hosting, email or backup providers used are engaged by {{organization_name}} under appropriate data protection terms. Contact <a href="mailto:{{contact_email}}">{{contact_email}}</a> for the current list.</p>
+</section>
+
+<section>
+  <h2>6. Your Rights</h2>
+  <p>You can ask to access, correct, erase, restrict or object to the use of your data, or to receive it in a portable format. Contact <a href="mailto:{{contact_email}}">{{contact_email}}</a>; we respond within one calendar month.</p>
+</section>
+
+<section>
+  <h2>7. Security</h2>
+  <ul>
+    <li>Patient identifiers are encrypted at rest in the database.</li>
+    <li>Staff access is role-based, with optional two-factor authentication and an audit trail.</li>
+    <li>Connections are encrypted with HTTPS when the site is configured for it.</li>
+    <li>Access to the underlying server and backups is limited to authorised people.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8. Data Breaches</h2>
+  <p>If a personal data breach occurs, {{organization_name}} will assess the risk without delay, notify the supervisory authority within 72 hours where required, and tell affected individuals when there is a high risk to them.</p>
+</section>
+
+<section>
+  <h2>9. Complaints</h2>
+  <p>Contact <a href="mailto:{{contact_email}}">{{contact_email}}</a> first. You may also complain to the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>, or to your local data protection authority if you are outside the UK.</p>
+</section>

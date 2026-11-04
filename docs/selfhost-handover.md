@@ -69,6 +69,23 @@ watch out for. The plan text itself is the source of truth for scope.
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
 
+### Phase 5 (partly done): debranding, legal templates, user guide (branch `phase-5-debrand`)
+- **Matomo analytics to `analytics.strixon.co.uk` removed** from the staff layout (it sent every staff
+  page view to the original operator). No third-party analytics remain.
+- `AppConfig` (`APP_NAME`, `SUPPORT_EMAIL`, `LOGO_URL`; fallbacks to the primary org) drives titles,
+  wordmark, PWA manifest, emails, footer. "Powered by RxTerminal" credit now links to the project repo.
+- Legal pages are templates: `config/legal/*.html` with `{{placeholders}}`, rendered by `LegalDocument`
+  (sanitised). Operators override by putting a file in `storage/legal/` (or `LEGAL_DIR`); read per
+  request. `bin/rails selfhost:legal:export` / `selfhost:legal:status`. The old SaaS terms (Strixon as
+  processor, SLA, fees, liability cap) were rewritten as a plain portal Terms of Use. **These are
+  templates, not legal advice; the UK GDPR/ICO wording is the default.**
+- User guide: billing chapter replaced by "Branding and Legal Pages"; plan limits, trial, custom
+  domain, logo review and OAuth sign-up text removed or rewritten.
+- Still to do in Phase 5: README, AGPL `LICENSE` (copyright holder not decided), `SECURITY.md`,
+  `CONTRIBUTING.md`, `CHANGELOG.md`, delete `docs/rewrite-plan.md`, review `docs/plans/`, trim
+  `landing.css`, fix `docs/rbac.md`/`design.md` leftovers. Cookie name `_rxterminal_session` and the
+  `RxTerminal-Title*.png` email logos are kept (renaming the cookie logs everyone out).
+
 ### Phase 4: Docker and releases (branch `phase-4-docker`) - NOT RUN, see below
 - `Dockerfile`: `SOLID_QUEUE_IN_PUMA=true` (jobs run inside the web process), `/rails/storage` created
   and owned by the non-root user and declared a `VOLUME`, `HEALTHCHECK` on `/up`. `/up` is excluded

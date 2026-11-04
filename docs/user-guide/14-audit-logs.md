@@ -4,7 +4,7 @@ Audit Logs record staff and system actions in your organization: members added o
 
 ## Viewing logs
 
-Go to Audit Logs. Requires the audit logs permission. By default, you'll see the last 7 days. Older entries are available going back as far as your plan's retention: 7 days on Starter, unlimited on Business.
+Go to Audit Logs. Requires the audit logs permission. By default, you'll see the last 7 days. Older entries are kept until the server administrator's retention limit, if one is set. By default nothing is deleted.
 
 - Filter by date range, user, event type, or resource.
 - Use Extensive Search to search everything, including IP addresses and full event detail.

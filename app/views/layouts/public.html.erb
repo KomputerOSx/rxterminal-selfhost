@@ -88,7 +88,7 @@
           <% if @organization %>
             <nav class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-base-content/60">
               <%= link_to "Privacy Policy", portal_privacy_policy_path, class: "link link-hover" %>
-              <%= link_to "GDPR Statement", portal_gdpr_path, class: "link link-hover" %>
+              <%= link_to "Data Protection", portal_gdpr_path, class: "link link-hover" %>
               <%= link_to "Terms & Conditions", portal_terms_path, class: "link link-hover" %>
               <%= link_to "Cookies Policy", portal_cookies_path, class: "link link-hover" %>
             </nav>
@@ -96,7 +96,7 @@
 
           <div class="flex flex-col gap-1 text-xs text-base-content/50 sm:flex-row sm:items-center sm:justify-between">
             <span>&copy; <%= Date.current.year %> <%= @organization&.name %>. All rights reserved.</span>
-            <span class="inline-flex items-center gap-1">Powered by <%= render "shared/rx_terminal_brand", class: "text-base" %></span>
+            <span class="inline-flex items-center gap-1">Powered by <%= link_to AppConfig::DEFAULT_NAME, AppConfig::PROJECT_URL, target: "_blank", rel: "noopener", class: "link link-hover" %></span>
           </div>
         </div>
       </footer>

@@ -1,0 +1,45 @@
+<!--
+  TEMPLATE - not legal advice. Review and edit for your organisation and jurisdiction.
+  Placeholders: {{organization_name}} {{contact_email}} {{app_name}}
+  If you add analytics or other third-party scripts, you must update this page (and may need consent).
+  To customise: bin/rails selfhost:legal:export, then edit storage/legal/cookies_policy.html
+-->
+<p class="legal-subtitle">This policy explains how {{organization_name}} uses cookies on this website.</p>
+
+<section>
+  <h2>1. What Are Cookies</h2>
+  <p>Cookies are small text files stored on your device when you visit a website. They let the site remember your session and preferences.</p>
+</section>
+
+<section>
+  <h2>2. Cookies We Use</h2>
+  <p>This site uses only the cookies it needs to work. They do not track you across other websites.</p>
+  <table>
+    <thead>
+      <tr><th>Cookie</th><th>Purpose</th><th>Expires</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>_rxterminal_session</code></td><td>Keeps your session: form protection, privacy-notice acknowledgement and booking or queue progress</td><td>Session</td></tr>
+      <tr><td><code>session_id</code></td><td>Keeps staff signed in</td><td>Until sign-out or expiry</td></tr>
+      <tr><td><code>trusted_two_factor</code></td><td>Remembers a staff device after two-factor sign-in (staff only, if enabled)</td><td>24 hours</td></tr>
+      <tr><td><code>kiosk_jwt_token</code>, <code>kiosk_api_key</code>, <code>kiosk_device_id</code></td><td>Sign in an in-store kiosk device (set on kiosk devices only)</td><td>24 hours to 1 year</td></tr>
+      <tr><td><code>waiting_display_token</code></td><td>Keeps a waiting-area display screen connected (display screens only)</td><td>30 days</td></tr>
+    </tbody>
+  </table>
+  <p>We do not use analytics, advertising or marketing cookies.</p>
+</section>
+
+<section>
+  <h2>3. Managing Cookies</h2>
+  <p>You can delete or block cookies in your browser settings. Blocking the cookies above will stop parts of the site, such as booking and sign-in, from working.</p>
+</section>
+
+<section>
+  <h2>4. Changes</h2>
+  <p>We may update this policy; the current version is always on this page.</p>
+</section>
+
+<section>
+  <h2>5. Contact</h2>
+  <p>{{organization_name}}, <a href="mailto:{{contact_email}}">{{contact_email}}</a></p>
+</section>

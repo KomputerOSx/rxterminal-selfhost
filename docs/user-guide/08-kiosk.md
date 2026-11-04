@@ -1,6 +1,6 @@
 # 8. Kiosk
 
-The kiosk is a touch-friendly, self-service screen for customers to join the queue on their own. It requires the Business plan and a registered device.
+The kiosk is a touch-friendly, self-service screen for customers to join the queue on their own. It requires a registered device.
 
 ## Registering a device
 

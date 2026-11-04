@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html data-theme="dark">
   <head>
-    <title><%= content_for?(:title) ? "#{yield(:title)} - RxTerminal" : "RxTerminal" %></title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} - #{AppConfig.name}" : AppConfig.name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="RxTerminal">
+    <meta name="application-name" content="<%= AppConfig.name %>">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

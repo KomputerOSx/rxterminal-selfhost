@@ -19,11 +19,11 @@ class AppointmentCalendarExport
     calendar_body = <<~ICS
       BEGIN:VCALENDAR
       VERSION:2.0
-      PRODID:-//RxTerminal//EN
+      PRODID:-//#{AppConfig.name}//EN
       CALSCALE:GREGORIAN
       METHOD:PUBLISH
       BEGIN:VEVENT
-      UID:#{@appointment.booking_reference}@rxterminal
+      UID:#{@appointment.booking_reference}@#{AppConfig.site_domain}
       DTSTART:#{start_dt.utc.strftime("%Y%m%dT%H%M%SZ")}
       DTEND:#{end_dt.utc.strftime("%Y%m%dT%H%M%SZ")}
       SUMMARY:#{@service.display_name} at #{@organization.name}
