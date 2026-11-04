@@ -3,7 +3,7 @@
 module Org
   class ServicesController < BaseController
     before_action :authorize_manage
-    before_action :set_service, only: [ :show, :edit, :update, :destroy, :toggle, :move_up, :move_down ]
+    before_action :set_service, only: [ :show, :edit, :update, :destroy, :destroy_image, :toggle, :move_up, :move_down ]
 
     def index
       @services = Current.organization.services.plan_active.by_display_order
@@ -46,11 +46,9 @@ module Org
       uploading_image = service_params[:image].present?
 
       if @service.save(context: :ui_save)
-        removing_image = !uploading_image && params.dig(:service, :remove_image) == "1" && @service.image.attached?
-        @service.image.purge if removing_image
         @service.move_to_calendar!(new_calendar) if calendar_changed && new_calendar
         changed_fields = @service.saved_changes.except("updated_at").keys
-        changed_fields << "image" if uploading_image || removing_image
+        changed_fields << "image" if uploading_image
         log_audit(:service_updated, resource: @service, metadata: {
           internal_name: @service.internal_name,
           changed_fields: changed_fields
@@ -58,6 +56,20 @@ module Org
         redirect_to org_service_path(@service), notice: "Service updated."
       else
         render :edit, status: :unprocessable_entity
+      end
+    end
+
+    # Removes the service's image straight away (the Remove image button on the edit form).
+    def destroy_image
+      if @service.image.attached?
+        @service.image.purge
+        log_audit(:service_updated, resource: @service, metadata: {
+          internal_name: @service.internal_name,
+          changed_fields: [ "image" ]
+        })
+        redirect_to edit_org_service_path(@service), notice: "Image removed."
+      else
+        redirect_to edit_org_service_path(@service)
       end
     end
 

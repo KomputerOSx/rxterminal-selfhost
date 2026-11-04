@@ -96,10 +96,11 @@
         <% if service.persisted? && service_image?(service) %>
           <div class="mb-3 flex items-center gap-4">
             <%= service_image_tag(service, width: 96, height: 96, class: "rounded-lg border border-base-300 object-cover") %>
-            <label class="flex cursor-pointer items-center gap-2 text-sm">
-              <%= check_box_tag "service[remove_image]", "1", false, class: "checkbox checkbox-sm" %>
-              Remove this image
-            </label>
+            <%# Submits the separate form below, so it works without saving the rest of this form. %>
+            <button type="submit" form="remove_service_image_form" formnovalidate class="btn btn-outline btn-error btn-sm gap-1">
+              <%= material_icon("delete", size: 16) %>
+              Remove image
+            </button>
           </div>
         <% end %>
         <%= form.file_field :image, accept: "image/png,image/jpeg,image/gif,image/webp", class: "input-field w-full" %>
@@ -248,3 +249,8 @@
     <%= form.submit service.persisted? ? "Save changes" : "Create service", class: "btn btn-primary btn-sm" %>
   </div>
 <% end %>
+
+<% if service.persisted? && service_image?(service) %>
+  <%= form_with url: image_org_service_path(service), method: :delete, id: "remove_service_image_form", class: "hidden" do %><% end %>
+<% end %>
+

@@ -160,6 +160,7 @@ Rails.application.routes.draw do
         post :toggle
         patch :move_up
         patch :move_down
+        delete :image, action: :destroy_image
       end
     end
 

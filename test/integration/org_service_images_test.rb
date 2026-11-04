@@ -57,8 +57,29 @@ class OrgServiceImagesTest < ActionDispatch::IntegrationTest
     patch org_service_path(@service), params: { service: { image: upload(filename: "new.png") } }
     assert_not_equal old_blob, @service.reload.image.blob_id
 
-    patch org_service_path(@service), params: { service: { display_name: "Flu Jab", remove_image: "1" } }
+    delete image_org_service_path(@service)
+    assert_redirected_to edit_org_service_path(@service)
     assert_not @service.reload.image.attached?
+    assert_includes AuditLog.where(event_type: :service_updated).last.metadata["changed_fields"], "image"
+  end
+
+  test "removing when there is no image is harmless" do
+    delete image_org_service_path(@service)
+
+    assert_redirected_to edit_org_service_path(@service)
+    assert_not @service.reload.image.attached?
+  end
+
+  test "a member without service permission cannot remove the image" do
+    @service.image.attach(io: StringIO.new(PNG_BYTES), filename: "old.png", content_type: "image/png")
+    member = users(:two)
+    @organization.memberships.create!(user: member)
+    delete session_path
+    post login_path, params: { email: member.email, password: "password123" }
+
+    delete image_org_service_path(@service)
+
+    assert @service.reload.image.attached?
   end
 
   test "saving without touching the image keeps it" do
@@ -69,14 +90,16 @@ class OrgServiceImagesTest < ActionDispatch::IntegrationTest
     assert @service.reload.image.attached?
   end
 
-  test "the form shows the current image and a remove option" do
+  test "the form shows the current image and a Remove image button that acts straight away" do
     @service.image.attach(io: StringIO.new(PNG_BYTES), filename: "old.png", content_type: "image/png")
 
     get edit_org_service_path(@service)
 
     assert_response :success
     assert_select "input[type=file][name='service[image]']"
-    assert_select "input[type=checkbox][name='service[remove_image]']"
+    assert_select "input[type=checkbox][name='service[remove_image]']", count: 0
+    assert_select "button[form=remove_service_image_form]", text: /Remove image/
+    assert_select "form#remove_service_image_form[action=?]", image_org_service_path(@service)
   end
 
   test "customers see the image on the public portal in place of the icon" do
