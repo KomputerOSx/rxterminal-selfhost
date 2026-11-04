@@ -5,7 +5,7 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-## [1.0.0] - not yet released
+## [1.0.0] - 2026-11-04
 
 First self-hosted release. RxTerminal began as a hosted multi-customer service; this version is a
 single-business app you run on your own server.
