@@ -95,7 +95,9 @@ jobs:
       - name: Run concurrency checks
         env:
           RAILS_ENV: test
-        run: bin/rails db:test:prepare test test/concurrency/appointment_booking_check.rb
+        run: |
+          bin/rails db:test:prepare
+          bin/rails test test/concurrency/appointment_booking_check.rb
 
   test-postgres:
     # The app supports PostgreSQL through DATABASE_URL. This runs the whole suite against it.
