@@ -5,12 +5,20 @@ and the project uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-04
+
 ### Added
-- Optional image for each service, shown to customers on the booking portal and the kiosk.
+- Optional image for each service, shown to customers on the booking portal and the kiosk. Upload it
+  from the service form; a Remove image button deletes it immediately.
 - A list / two-column switch beside the service search on the booking portal.
 
 ### Changed
 - The legal pages open inside the public portal (same header, footer and styling) instead of a separate page.
+- Larger service images and text in the portal's list view; two-column cards show the whole image.
+
+### Fixed
+- The service dropdown on the appointment form no longer shows a doubled box.
+- Service images load on machines without libvips (the original image is served instead of a resized copy).
 
 ## [1.0.0] - 2026-11-04
 
