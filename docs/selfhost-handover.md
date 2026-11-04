@@ -69,6 +69,20 @@ watch out for. The plan text itself is the source of truth for scope.
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
 
+### Phase 2f: schema squash (branch `phase-2f-schema-squash`, on top of the simplify branch)
+- The 98 migrations are replaced by `db/migrate/20261104000000_baseline_schema.rb`, built from the
+  cleaned `schema.rb`. Dropped: `pay_*`, billing event receipts, `features`,
+  `feature_organization_accesses`, campaign tables, `organization_logos`, and the billing, trial,
+  plan, grandfathering, `custom_domain`, `preferred_currency`, `slug_changed_at` columns on
+  `organizations` plus `users.email_preferences` and `users.trial_granted_at`. `organizations.features`
+  (the per-org choices) stays.
+- Verified: migrating an empty database reproduces `schema.rb` exactly; 789 tests pass; a production
+  boot on a fresh SQLite file serves `/up` and `/login` and `/` redirects.
+- **Existing databases cannot upgrade to this baseline** (the old migration versions are gone). Only
+  fresh installs are supported; the hosted service data is not carried over.
+- Also fixed `db/seeds.rb`, which still called the deleted `Billing`/`OrganizationTrial` code.
+- The "gutted dev roles" gotcha below is gone for databases built from the baseline; recreate old dev DBs.
+
 ### Extra simplifications (branch `simplify-slug-and-logos`, stacked on 2e)
 - Removed the 30-day slug change limit (`Organization#slug_change_locked?` etc.; the slug field is
   always editable). The `slug_changed_at` column stays until 2f.
@@ -138,7 +152,7 @@ watch out for. The plan text itself is the source of truth for scope.
 3. **2e marketing pages (DONE, see below):** `home#index`, `pages/features`, `pages/security`, contact
    (`ContactMailer`, `ContactSpamGuard`), sitemaps, `layouts/landing`, `landing.css`, the
    marketing parts of robots. The public header and footer still link to them.
-4. **2f schema squash:** drop the leftover columns and tables (`pay_*`, `billing_*`,
+4. **2f schema squash (DONE, see below):** drop the leftover columns and tables (`pay_*`, `billing_*`,
    `pending_plan_*`, `plan_reconciliation_*`, `trial_*` on organizations and users,
    `grandfathered_at`, `organization_logos`, `slug_changed_at`, `over_member_limit_at`, `stripe_subscription_schedule_id`,
    `preferred_currency`, `custom_domain`, the `features` and `feature_organization_accesses`
