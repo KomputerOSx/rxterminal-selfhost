@@ -86,6 +86,26 @@
 
       <%= render "shared/material_icon_picker", form: form, selected_icon: service.icon, required: true %>
       <%= field_errors(service, :icon) %>
+
+      <div class="form-control">
+        <label class="label">
+          <%= form_label_text "Image",
+                tooltips: true,
+                tip: "Optional picture shown to customers on the booking portal and kiosk. PNG, JPEG, GIF, or WebP, up to 5 MB. Square images work best." %>
+        </label>
+        <% if service.persisted? && service_image?(service) %>
+          <div class="mb-3 flex items-center gap-4">
+            <%= service_image_tag(service, width: 96, height: 96, class: "rounded-lg border border-base-300 object-cover") %>
+            <%# Submits the separate form below, so it works without saving the rest of this form. %>
+            <button type="submit" form="remove_service_image_form" formnovalidate class="btn btn-outline btn-error btn-sm gap-1">
+              <%= material_icon("delete", size: 16) %>
+              Remove image
+            </button>
+          </div>
+        <% end %>
+        <%= form.file_field :image, accept: "image/png,image/jpeg,image/gif,image/webp", class: "input-field w-full" %>
+        <%= field_errors(service, :image) %>
+      </div>
     </div>
   </div>
 
@@ -229,3 +249,8 @@
     <%= form.submit service.persisted? ? "Save changes" : "Create service", class: "btn btn-primary btn-sm" %>
   </div>
 <% end %>
+
+<% if service.persisted? && service_image?(service) %>
+  <%= form_with url: image_org_service_path(service), method: :delete, id: "remove_service_image_form", class: "hidden" do %><% end %>
+<% end %>
+

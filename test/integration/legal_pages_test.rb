@@ -6,7 +6,7 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
     @organization.update!(name: "High Street Pharmacy", contact_email: "hello@highstreet.test")
   end
 
-  test "legal pages render on the root domain with the organization's details" do
+  test "legal pages at the site root use the public portal layout and the organization's details" do
     [
       [ legal_terms_path, "Terms of Use" ],
       [ legal_privacy_policy_path, "Privacy Policy" ],
@@ -17,12 +17,23 @@ class LegalPagesTest < ActionDispatch::IntegrationTest
 
       assert_response :success
       assert_select "h1", text: heading
+      assert_select "title", text: "#{heading} - High Street Pharmacy"
       assert_match "High Street Pharmacy", response.body
       assert_match "hello@highstreet.test", response.body
       assert_no_match(/strixon|{{|}}/i, response.body)
-      assert_match 'localStorage.getItem("theme")', response.body
-      assert_select "a[href=?]", path
+      # Same chrome as the rest of the portal: its footer links, not the old marketing layout.
+      assert_select "footer a[href=?]", "/privacy-policy"
+      assert_select "a", text: "Back"
+      assert_no_match 'localStorage.getItem("theme")', response.body
+      assert_no_match(/landing/, response.body)
     end
+  end
+
+  test "legal pages are also available under a branch's own slug" do
+    get portal_privacy_policy_path(organization_slug: @organization.slug)
+
+    assert_response :success
+    assert_select "h1", text: "Privacy Policy"
   end
 
   test "pages contain no third-party analytics" do

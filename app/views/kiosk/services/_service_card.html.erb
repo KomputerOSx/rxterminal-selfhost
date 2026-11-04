@@ -17,7 +17,11 @@
 
   <div class="text-center">
     <div class="<%= kiosk_service_icon_classes(service) %>">
-      <span class="material-symbols-outlined"><%= service.icon.presence || "medical_services" %></span>
+      <% if service_image?(service) %>
+        <%= service_image_tag(service, width: 120, alt: "") %>
+      <% else %>
+        <span class="material-symbols-outlined"><%= service.icon.presence || "medical_services" %></span>
+      <% end %>
     </div>
 
     <div class="kiosk-service-name"><%= service.display_name %></div>

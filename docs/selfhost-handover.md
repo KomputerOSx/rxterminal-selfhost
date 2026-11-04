@@ -317,6 +317,15 @@ test of each:**
 4. Tag `v1.0.0` only after the CI jobs above are green, and fill in the release date in CHANGELOG.
 5. Decide what to do with the Dependabot branches on origin.
 
-Known leftovers: `landing.css` (2.6k lines, mostly unused marketing styles) is not trimmed; the cookie
+Known leftovers: the cookie
 name `_rxterminal_session` and the `RxTerminal-Title*.png` email logos still carry the product name;
 one flaky test (walk-in rate limit) failed once in a parallel run.
+
+## After 1.0.0 (service-images branch / PR #33)
+- Optional image per service (Active Storage, shown on the portal and kiosk, falls back to the
+  original upload when libvips is missing). Remove image is its own `DELETE /org/services/:id/image`.
+- Portal service pickers (home and walk-in) share `public/shared/_service_picker` with a list /
+  two-column switch.
+- The root legal pages (`/privacy-policy`, `/terms`, `/gdpr`, `/cookies`) now render through
+  `Public::LegalController` in the portal layout for the primary organization. The old marketing
+  layout, `LegalController`, `landing.css`, and the old public header/footer were deleted.

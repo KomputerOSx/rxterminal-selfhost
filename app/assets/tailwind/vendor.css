@@ -59,3 +59,14 @@
 .select-field.tomselected {
   @apply sr-only;
 }
+
+/* Tom Select copies the select's classes onto its wrapper, which would draw a second box and
+   chevron around the real control. The inner .ts-control above is the one that is styled. */
+.ts-wrapper.single.select-field:not([multiple]) {
+  @apply bg-transparent p-0 shadow-none ring-0;
+  background-image: none;
+}
+
+[data-portal-app] .ts-wrapper.single .ts-control {
+  @apply bg-base-200;
+}

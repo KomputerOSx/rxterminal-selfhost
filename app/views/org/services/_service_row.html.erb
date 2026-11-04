@@ -1,7 +1,11 @@
 <tr id="<%= dom_id(service) %>" class="hover:bg-base-200">
   <td>
     <div class="flex items-center gap-3">
-      <%= service_icon_tag(service.icon, size: 22, extra_class: "text-primary shrink-0") %>
+      <% if service_image?(service) %>
+        <%= service_image_tag(service, width: 40, class: "shrink-0 rounded-lg object-cover") %>
+      <% else %>
+        <%= service_icon_tag(service.icon, size: 22, extra_class: "text-primary shrink-0") %>
+      <% end %>
       <div>
         <div class="font-medium"><%= service.display_name %></div>
         <div class="font-mono text-xs text-base-content/50"><%= service.internal_name %></div>

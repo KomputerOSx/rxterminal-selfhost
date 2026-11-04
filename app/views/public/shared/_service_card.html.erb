@@ -1,29 +1,41 @@
 <%# locals: (service:, url:, searchable: false) %>
+<%# Picture (or icon) fills the space above; the text sits at the bottom of the card. The picture is
+    shown whole (never cropped or stretched), so cards in a row line up whatever the image shape. %>
 <%= link_to url,
-      class: "card border border-base-300 block h-full",
+      class: "card border border-base-300 block h-full overflow-hidden",
       data: searchable ? { portal_search_target: "item", name: service.display_name } : {} do %>
-  <div class="card-body items-center gap-3 p-5 text-center">
-    <% if service.icon.present? %>
-      <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-        <%= material_icon(service.icon, size: 26) %>
+  <div class="flex h-full flex-col">
+    <% if service_image?(service) %>
+      <div class="flex min-h-40 flex-1 items-center justify-center px-3 pt-3">
+        <%= service_image_tag(service, width: 320, height: 176, fit: :limit, class: "h-auto w-auto max-h-44 max-w-full object-contain") %>
       </div>
+    <% elsif service.icon.present? %>
+      <div class="flex min-h-24 flex-1 items-center justify-center px-3 pt-4">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <%= material_icon(service.icon, size: 26) %>
+        </div>
+      </div>
+    <% else %>
+      <div class="flex-1"></div>
     <% end %>
 
-    <p class="font-medium"><%= service.display_name %></p>
+    <div class="mt-auto flex flex-col items-center gap-1.5 px-4 pb-4 pt-3 text-center">
+      <p class="font-medium"><%= service.display_name %></p>
 
-    <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-base-content/60">
-      <span class="inline-flex items-center gap-1">
-        <%= material_icon("schedule", size: 14) %>
-        <%= service.estimated_duration %> min
-      </span>
-      <span class="inline-flex items-center gap-1">
-        <%= material_icon("sell", size: 14) %>
-        <%= portal_service_price_label(service) %>
-      </span>
+      <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-base-content/60">
+        <span class="inline-flex items-center gap-1">
+          <%= material_icon("schedule", size: 14) %>
+          <%= service.estimated_duration %> min
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <%= material_icon("sell", size: 14) %>
+          <%= portal_service_price_label(service) %>
+        </span>
+      </div>
+
+      <% if service.description.present? %>
+        <p class="text-sm text-base-content/50"><%= truncate(service.description, length: 100) %></p>
+      <% end %>
     </div>
-
-    <% if service.description.present? %>
-      <p class="text-sm text-base-content/50"><%= truncate(service.description, length: 100) %></p>
-    <% end %>
   </div>
 <% end %>

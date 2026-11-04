@@ -581,6 +581,19 @@ html[data-turbo-visit-direction="back"]:not([data-kiosk-vt])::view-transition-ne
   font-size: 64px !important;
 }
 
+/* Uploaded service image fills the round tile. */
+.kiosk-service-icon,
+.kiosk-choose-service-icon {
+  overflow: hidden;
+}
+
+.kiosk-service-icon img,
+.kiosk-choose-service-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .kiosk-service-name {
   margin-bottom: 16px;
   font-size: 36px;

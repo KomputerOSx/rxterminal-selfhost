@@ -42,6 +42,8 @@
     <% end %>
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# Styles for the searchable service dropdown (Tom Select), same as the staff layouts. %>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.6.1/dist/css/tom-select.css" rel="stylesheet">
     <%= javascript_importmap_tags %>
     <%= render "shared/fonts" %>
   </head>
@@ -89,7 +91,7 @@
             <nav class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-base-content/60">
               <%= link_to "Privacy Policy", portal_privacy_policy_path, class: "link link-hover" %>
               <%= link_to "Data Protection", portal_gdpr_path, class: "link link-hover" %>
-              <%= link_to "Terms & Conditions", portal_terms_path, class: "link link-hover" %>
+              <%= link_to "Terms of Use", portal_terms_path, class: "link link-hover" %>
               <%= link_to "Cookies Policy", portal_cookies_path, class: "link link-hover" %>
             </nav>
           <% end %>
