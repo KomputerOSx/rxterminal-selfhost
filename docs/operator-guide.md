@@ -35,7 +35,7 @@ docker compose ps                   # wait until "healthy"
 ```
 
 To use the published image instead of building, set the image in `.env` and skip `--build`:
-`RXTERMINAL_IMAGE=ghcr.io/komputerosx/rxterminal-selfhost:1.0.0`.
+`RXTERMINAL_IMAGE=ghcr.io/komputerosx/rxterminal-selfhost:1.1.0`.
 
 Open your address and complete the setup page right away. **The first person to finish it becomes the
 owner**, so do not leave a fresh server reachable from the internet unattended.
@@ -235,7 +235,7 @@ The app updates its database when it starts. Watch it with `docker compose logs 
 **Rolling back:** database changes are not reversible. To go back, set the previous image tag and restore
 the backup from step 2 (5.4).
 
-Pin a version tag (such as `1.0.0`) instead of `latest` if you want upgrades to happen only when you choose.
+Pin a version tag (such as `1.1.0`) instead of `latest` if you want upgrades to happen only when you choose.
 Note that 1.0.0 cannot upgrade a database from the old hosted service; it is a fresh start.
 
 ## 7. Using PostgreSQL instead of SQLite
