@@ -5,7 +5,6 @@ permissions:
   system.audit_logs.view: "View audit logs"
   system.customer_erasure.manage: "GDPR customer erasure tool"
   system.subject_access.manage: "GDPR subject access request export"
-  system.organization_logos.manage: "Review and approve/decline organization logo uploads"
   app.members.invite: "Invite people to the organization"
   app.members.remove: "Remove members from the organization"
   app.members.promote: "Promote/demote members between admin and user"
@@ -30,7 +29,7 @@ roles:
     system_admin:
       permanent: true
       description: "Permanent platform operator role"
-      permissions: [system.users.manage, system.jobs.manage, system.roles.manage, system.audit_logs.view, system.customer_erasure.manage, system.subject_access.manage, system.organization_logos.manage]
+      permissions: [system.users.manage, system.jobs.manage, system.roles.manage, system.audit_logs.view, system.customer_erasure.manage, system.subject_access.manage]
     system_user:
       permanent: true
       description: "Permanent basic platform operator role"

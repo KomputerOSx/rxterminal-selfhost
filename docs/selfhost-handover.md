@@ -69,6 +69,17 @@ watch out for. The plan text itself is the source of truth for scope.
   and the ownership-promotion mailer, since neither is billing-specific.
 - The `stripe` gem is still in the Gemfile for Phase 6.
 
+### Extra simplifications (branch `simplify-slug-and-logos`, stacked on 2e)
+- Removed the 30-day slug change limit (`Organization#slug_change_locked?` etc.; the slug field is
+  always editable). The `slug_changed_at` column stays until 2f.
+- Removed the logo approval workflow: `OrganizationLogo` model, admin review UI, review mailer and
+  reminder job, the three logo notification rules, the `system.organization_logos.manage`
+  permission. Logos now upload straight to `organization.kiosk_logo` via
+  `PUT/POST/DELETE /org/organization_logo` (one file, PNG/JPEG/GIF/WebP, max 5 MB). Audit events
+  are `organization_logo_uploaded` / `organization_logo_removed`.
+- Add the `organization_logos` table and `organizations.slug_changed_at` to the 2f drop list.
+- Heads-up: changing a slug still breaks old links/QR codes. Phase 3 plans `/<slug>` to `/` redirects.
+
 ### Phase 2e: marketing pages removed (branch `phase-2e-marketing-pages`)
 - Deleted the landing home page, `pages/features`, `pages/security`, the contact form
   (`ContactController`, `ContactMailer`, `ContactSpamGuard`) and their tests/views.
@@ -129,7 +140,7 @@ watch out for. The plan text itself is the source of truth for scope.
    marketing parts of robots. The public header and footer still link to them.
 4. **2f schema squash:** drop the leftover columns and tables (`pay_*`, `billing_*`,
    `pending_plan_*`, `plan_reconciliation_*`, `trial_*` on organizations and users,
-   `grandfathered_at`, `over_member_limit_at`, `stripe_subscription_schedule_id`,
+   `grandfathered_at`, `organization_logos`, `slug_changed_at`, `over_member_limit_at`, `stripe_subscription_schedule_id`,
    `preferred_currency`, `custom_domain`, the `features` and `feature_organization_accesses`
    tables, and the campaign tables). Replace `db/migrate/*` with one baseline migration generated
    from the cleaned schema, and check `bin/rails db:prepare` on an empty database.

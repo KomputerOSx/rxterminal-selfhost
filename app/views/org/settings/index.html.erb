@@ -15,15 +15,12 @@
             <div class="form-control max-w-md">
               <%= form.label :slug, class: "label" do %>
                 <%= form_label_text "Slug", tooltips: true,
-                      tip: (Current.organization.slug_change_locked? ?
-                        "You can change your slug again on #{Current.organization.slug_changeable_at.to_date.strftime('%-d %b %Y')}." :
-                        "You can change your slug once every 30 days. Links and QR codes using the old slug stop working.") %>
+                      tip: "Links and QR codes using the old slug stop working." %>
               <% end %>
               <%= form.text_field :slug,
                     class: error_class_for(Current.organization, :slug, "input-field w-full font-mono"),
                     autocomplete: "off",
-                    spellcheck: false,
-                    disabled: Current.organization.slug_change_locked? && Current.organization.errors[:slug].empty? %>
+                    spellcheck: false %>
               <%= field_errors(Current.organization, :slug) %>
             </div>
 

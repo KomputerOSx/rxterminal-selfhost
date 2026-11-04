@@ -22,11 +22,6 @@ default: &default
     queue: default
     schedule: every day at 9am
 
-  organization_logo_review_reminder:
-    class: OrganizationLogoReviewReminderJob
-    queue: default
-    schedule: every day at 9am
-
 development:
   <<: *default
 

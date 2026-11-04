@@ -99,11 +99,8 @@ class AuditLog < ApplicationRecord
     payment_failed: "payment_failed",
     new_device_login: "new_device_login",
     appointment_booked_online: "appointment_booked_online",
-    organization_logo_submitted: "organization_logo_submitted",
-    organization_logo_approved: "organization_logo_approved",
-    organization_logo_declined: "organization_logo_declined",
-    organization_logo_activated: "organization_logo_activated",
-    organization_logo_withdrawn: "organization_logo_withdrawn"
+    organization_logo_uploaded: "organization_logo_uploaded",
+    organization_logo_removed: "organization_logo_removed"
   }
 
   validates :event_type, presence: true

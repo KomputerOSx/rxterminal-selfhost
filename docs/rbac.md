@@ -110,7 +110,6 @@ permissions:
   system.billing.manage: "Manage platform-wide billing (price migrations, grandfathering)"
   system.customer_erasure.manage: "GDPR customer erasure tool"
   system.subject_access.manage: "GDPR subject access request export"
-  system.organization_logos.manage: "Review and approve/decline organization logo uploads"
   app.members.invite: "Invite people to the organization"
   app.members.remove: "Remove members from the organization"
   app.members.promote: "Promote/demote members between admin and user"
@@ -163,8 +162,8 @@ Permission keys must match `\A[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+\z` (dot-separa
 | `system_admin` (permanent) | All `system.*` permissions |
 | `system_user` (permanent) | `system.users.manage`, `system.roles.manage` |
 
-`system.billing.manage`, `system.customer_erasure.manage`,
-`system.subject_access.manage`, and `system.organization_logos.manage` are granted to
+`system.customer_erasure.manage`
+and `system.subject_access.manage` are granted to
 `system_admin` only. Orgs and kiosk devices are managed on the customer side (`app.*`
 permissions), not via platform admin CRUD.
 
@@ -310,7 +309,6 @@ authorize :system, :manage?, policy_class: SystemPolicy
 | `manage_billing?` | `system.billing.manage` |
 | `manage_customer_erasure?` | `system.customer_erasure.manage` |
 | `manage_subject_access?` | `system.subject_access.manage` |
-| `manage_organization_logos?` | `system.organization_logos.manage` |
 
 Two-tier gating: `Admin::BaseController` requires `manage?` (any system operator). Individual
 controllers then require the specific permission (e.g. `Admin::UsersController` requires

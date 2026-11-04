@@ -56,8 +56,6 @@ module Org
 
       organization = Current.organization
 
-      organization.enforce_slug_change_limit = true
-
       if organization.update(permitted)
         log_audit(:organization_updated, resource: organization, metadata: {
           changed_fields: organization.saved_changes.except("updated_at").keys
@@ -70,7 +68,6 @@ module Org
               turbo_stream.update(dom_id(Current.organization, :dialog), partial: "org/settings/name_dialog_content"),
               turbo_stream.replace(dom_id(Current.organization, :nav_label), partial: "shared/org_nav_label", locals: { organization: Current.organization }),
               turbo_stream.replace(dom_id(Current.organization, :nav_item_label), partial: "shared/org_nav_item_label", locals: { organization: Current.organization }),
-              turbo_stream.replace(dom_id(Current.organization, :logo_gallery), partial: "org/settings/logo_gallery", locals: { organization: Current.organization }),
               turbo_stream.update("flash_messages", partial: "shared/flash")
             ]
           end
@@ -87,8 +84,7 @@ module Org
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.update(dom_id(Current.organization, :dialog), partial: "org/settings/name_dialog_content"),
-            turbo_stream.replace(dom_id(Current.organization, :logo_gallery), partial: "org/settings/logo_gallery", locals: { organization: Current.organization })
+            turbo_stream.update(dom_id(Current.organization, :dialog), partial: "org/settings/name_dialog_content")
           ], status: :unprocessable_entity
         end
         format.html do

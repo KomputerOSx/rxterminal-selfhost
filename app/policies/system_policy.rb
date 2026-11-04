@@ -37,8 +37,4 @@ class SystemPolicy < ApplicationPolicy
   def manage_subject_access?
     user&.has_permission?("system.subject_access.manage") || false
   end
-
-  def manage_organization_logos?
-    user&.has_permission?("system.organization_logos.manage") || false
-  end
 end

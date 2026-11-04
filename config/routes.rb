@@ -92,12 +92,6 @@ Rails.application.routes.draw do
     resources :customer_erasures, only: [ :new, :create ]
     resources :subject_access_requests, only: [ :new, :create ]
     get "customer_pii_exports/:token", to: "customer_pii_exports#show", as: :customer_pii_export
-    resources :organization_logos, only: [ :index, :show ] do
-      member do
-        patch :approve
-        patch :decline
-      end
-    end
   end
 
   # --- Organization invitations (public acceptance endpoint) ---
@@ -107,14 +101,7 @@ Rails.application.routes.draw do
   # --- Org-facing members/invitations management (distinct from the system-scope Admin:: namespace) ---
   namespace :org do
     resource :organization, only: [ :update, :new, :create ], controller: "organizations"
-    resources :organization_logos, only: [ :create, :destroy ] do
-      member do
-        patch :activate
-      end
-      collection do
-        patch :deactivate
-      end
-    end
+    resource :organization_logo, only: [ :create, :destroy ]
     get "settings", to: "settings#index", as: :settings
     resource :opening_hours, only: [ :show, :update ], controller: "opening_hours"
     resource :appointment_booking, only: [ :show, :update ], controller: "appointment_booking" do

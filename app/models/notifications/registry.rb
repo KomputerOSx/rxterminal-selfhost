@@ -11,10 +11,7 @@ module Notifications
       Notifications::Rules::PasswordChanged,
       Notifications::Rules::EmailChanged,
       Notifications::Rules::NewDeviceLogin,
-      Notifications::Rules::AppointmentBookedOnline,
-      Notifications::Rules::OrganizationLogoSubmitted,
-      Notifications::Rules::OrganizationLogoApproved,
-      Notifications::Rules::OrganizationLogoDeclined
+      Notifications::Rules::AppointmentBookedOnline
     ].index_by { |rule| rule.event_type }.freeze
 
     def self.for(event_type)

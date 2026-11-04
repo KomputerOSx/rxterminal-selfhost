@@ -6,7 +6,6 @@ class Organization < ApplicationRecord
   SLUG_FORMAT = /\A[a-z0-9](?:[a-z0-9\-]*[a-z0-9])?\z/
   WEEKDAYS = %w[monday tuesday wednesday thursday friday saturday sunday].freeze
   APPOINTMENT_BOOKING_MODES = %w[rolling openings].freeze
-  SLUG_CHANGE_INTERVAL = 30.days
   POSTCODE_REGIONS = %w[uk us ca au].freeze
   SERVICE_CURRENCIES = %w[gbp usd eur cad aud].freeze
   DEFAULT_SERVICE_CURRENCY = "gbp"
@@ -51,7 +50,6 @@ class Organization < ApplicationRecord
   has_one_attached :kiosk_logo
   belongs_to :kiosk_featured_service, class_name: "Service", optional: true
 
-  has_many :organization_logos, dependent: :destroy
   has_many :memberships, dependent: :destroy
   has_many :users, through: :memberships
   has_many :membership_roles, through: :memberships
@@ -65,10 +63,8 @@ class Organization < ApplicationRecord
   has_many :upsell_rules, dependent: :destroy
   has_many :devices, dependent: :destroy
 
-  attr_accessor :enforce_slug_change_limit
 
   before_validation :normalize_slug, if: -> { slug.present? && will_save_change_to_slug? }
-  before_save :stamp_slug_change, if: :limited_slug_change?
 
   validates :name, presence: true, profanity: true
   validates :slug, presence: true, uniqueness: true,
@@ -97,7 +93,6 @@ class Organization < ApplicationRecord
     message.presence unless message == DEFAULT_APPOINTMENT_EMAIL_MESSAGE
   }
   validates :appointment_email_message, length: { maximum: APPOINTMENT_EMAIL_MESSAGE_MAX_LENGTH }, allow_blank: true
-  validate :slug_change_allowed, if: :limited_slug_change?
   validate :operating_hours_are_valid
   validates :bookable_times, bookable_times: true
   validate :at_least_one_homescreen_button_visible
@@ -197,14 +192,6 @@ class Organization < ApplicationRecord
     SERVICE_CURRENCY_SYMBOLS.fetch(service_currency, SERVICE_CURRENCY_SYMBOLS.fetch(DEFAULT_SERVICE_CURRENCY))
   end
 
-  def slug_changeable_at
-    slug_changed_at && slug_changed_at + SLUG_CHANGE_INTERVAL
-  end
-
-  def slug_change_locked?
-    slug_changeable_at.present? && slug_changeable_at > Time.current
-  end
-
   def self.weekday_key(date)
     WEEKDAYS[date.cwday - 1]
   end
@@ -290,20 +277,6 @@ class Organization < ApplicationRecord
 
   def normalize_slug
     self.slug = slug.to_s.downcase.strip
-  end
-
-  def limited_slug_change?
-    enforce_slug_change_limit && persisted? && will_save_change_to_slug?
-  end
-
-  def slug_change_allowed
-    return unless slug_change_locked?
-
-    errors.add(:slug, "can only be changed once every 30 days, next change allowed from #{slug_changeable_at.to_date.strftime('%d/%m/%Y')}")
-  end
-
-  def stamp_slug_change
-    self.slug_changed_at = Time.current
   end
 
   def operating_hours_are_valid
