@@ -112,6 +112,9 @@ migrates its database on start. Take a backup first.
 
 ## Documentation
 
+All guides are listed in [docs/README.md](docs/README.md).
+
+- [Operator guide](docs/operator-guide.md): install, HTTPS and nginx, email, backup and restore, upgrading
 - [User guide](docs/user-guide/README.md): setup, services, queues, appointments, kiosk, staff
 - [Encryption](docs/encryption.md): what is encrypted and how the keys work
 - [Roles and permissions](docs/rbac.md)
