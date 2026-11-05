@@ -26,7 +26,7 @@ gem "csv"
 gem "bcrypt", "~> 3.1.7"
 
 # TOTP-based two-factor authentication
-gem "rotp", "~> 6.3"
+gem "rotp", "~> 6.4"
 gem "rqrcode", "~> 2.2"
 
 # OmniAuth for "Sign in with Google/GitHub"
